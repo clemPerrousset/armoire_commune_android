@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">L\'Armoire Commune</string>
+
+    <!-- Auth -->
+    <string name="login_title">Connexion</string>
+    <string name="signup_title">Inscription</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Mot de passe</string>
+    <string name="nom_hint">Nom</string>
+    <string name="prenom_hint">Prénom</string>
+    <string name="login_button">Se connecter</string>
+    <string name="signup_button">S\'inscrire</string>
+    <string name="go_to_signup">Pas encore de compte ? S\'inscrire</string>
+    <string name="go_to_login">Déjà un compte ? Se connecter</string>
+
+    <!-- Home -->
+    <string name="home_title">Accueil</string>
+    <string name="menu_library">La Bibliothèque</string>
+    <string name="menu_my_reservations">Mes Réservations</string>
+    <string name="menu_profile">Mon Profil</string>
+    <string name="menu_admin_create_object">Créer Objet</string>
+    <string name="menu_admin_create_tag">Créer Tag</string>
+    <string name="menu_admin_create_lieu">Créer Lieu</string>
+    <string name="menu_admin_reservations">Gestion Réservations</string>
+
+    <!-- Objects -->
+    <string name="object_list_title">Objets</string>
+    <string name="reserve_button">Réserver</string>
+    <string name="available">Disponible</string>
+    <string name="unavailable">Indisponible</string>
+
+    <!-- Reservation -->
+    <string name="reservation_title">Nouvelle Réservation</string>
+    <string name="select_pickup_location">Choisir un point de retrait</string>
+    <string name="confirm_reservation">Confirmer la réservation</string>
+    <string name="date_start">Date de début</string>
+
+    <!-- Admin -->
+    <string name="create_object_title">Ajouter un Objet</string>
+    <string name="create_lieu_title">Ajouter un Lieu</string>
+    <string name="location_address_hint">Adresse</string>
+    <string name="use_my_location">Ma position</string>
+    <string name="validate">Valider</string>
+</resources>
