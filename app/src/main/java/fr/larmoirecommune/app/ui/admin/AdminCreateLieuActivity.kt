@@ -6,7 +6,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import fr.larmoirecommune.app.databinding.ActivityAdminCreateLieuBinding
+import android.text.Editable
+import android.text.TextWatcher
 import fr.larmoirecommune.app.repository.AdminRepository
+import fr.larmoirecommune.app.utils.GeoUtils
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
@@ -19,6 +24,8 @@ class AdminCreateLieuActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAdminCreateLieuBinding
     private val repository = AdminRepository()
     private var selectedPoint: GeoPoint? = null
+    private var searchJob: Job? = null
+    private var isUpdatingAddress = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +35,7 @@ class AdminCreateLieuActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupMap()
+        setupAddressSearch()
 
         binding.validateButton.setOnClickListener {
             val nom = binding.lieuName.text.toString()
@@ -58,6 +66,7 @@ class AdminCreateLieuActivity : AppCompatActivity() {
 
         val mapEventsOverlay = MapEventsOverlay(object : MapEventsReceiver {
             override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
+                // Just move marker, don't reverse geocode on single tap (UX choice)
                 p?.let {
                     selectedPoint = it
                     updateMarker(it)
@@ -66,18 +75,56 @@ class AdminCreateLieuActivity : AppCompatActivity() {
             }
 
             override fun longPressHelper(p: GeoPoint?): Boolean {
-                return false
+                p?.let {
+                    selectedPoint = it
+                    updateMarker(it)
+                    // Reverse Geocode
+                    lifecycleScope.launch {
+                        val address = GeoUtils.reverseGeocode(it.latitude, it.longitude)
+                        if (address != null) {
+                            isUpdatingAddress = true
+                            binding.lieuAddress.setText(address)
+                            isUpdatingAddress = false
+                        }
+                    }
+                }
+                return true
             }
         })
         binding.map.overlays.add(0, mapEventsOverlay)
     }
 
+    private fun setupAddressSearch() {
+        binding.lieuAddress.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (isUpdatingAddress) return
+
+                val query = s.toString()
+                if (query.length > 5) {
+                    searchJob?.cancel()
+                    searchJob = lifecycleScope.launch {
+                        delay(1000) // Debounce
+                        val point = GeoUtils.searchAddress(query)
+                        if (point != null) {
+                            selectedPoint = point
+                            updateMarker(point)
+                            binding.map.controller.animateTo(point)
+                        }
+                    }
+                }
+            }
+        })
+    }
+
     private fun updateMarker(p: GeoPoint) {
-        // Simple marker update
+        // Remove previous markers
+        binding.map.overlays.removeAll { it is Marker }
+
         val marker = Marker(binding.map)
         marker.position = p
         marker.title = "Nouveau Lieu"
-        // In real app, clear old markers.
         binding.map.overlays.add(marker)
         binding.map.invalidate()
     }
