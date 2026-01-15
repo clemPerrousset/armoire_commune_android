@@ -1,0 +1,54 @@
+[
+    {
+        "merged": "fr.larmoirecommune.app-mergeDebugResources-39:/layout/activity_object_list.xml",
+        "source": "fr.larmoirecommune.app-main-42:/layout/activity_object_list.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-mergeDebugResources-39:/layout/item_object.xml",
+        "source": "fr.larmoirecommune.app-main-42:/layout/item_object.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-mergeDebugResources-39:/layout/activity_main.xml",
+        "source": "fr.larmoirecommune.app-main-42:/layout/activity_main.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-mergeDebugResources-39:/layout/activity_object_detail.xml",
+        "source": "fr.larmoirecommune.app-main-42:/layout/activity_object_detail.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-mergeDebugResources-39:/layout/activity_signup.xml",
+        "source": "fr.larmoirecommune.app-main-42:/layout/activity_signup.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-mergeDebugResources-39:/layout/activity_login.xml",
+        "source": "fr.larmoirecommune.app-main-42:/layout/activity_login.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-mergeDebugResources-39:/layout/item_dashboard.xml",
+        "source": "fr.larmoirecommune.app-main-42:/layout/item_dashboard.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-mergeDebugResources-39:/layout/activity_admin_create_object.xml",
+        "source": "fr.larmoirecommune.app-main-42:/layout/activity_admin_create_object.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-mergeDebugResources-39:/layout/activity_admin_create_lieu.xml",
+        "source": "fr.larmoirecommune.app-main-42:/layout/activity_admin_create_lieu.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-mergeDebugResources-39:/layout/activity_reservation.xml",
+        "source": "fr.larmoirecommune.app-main-42:/layout/activity_reservation.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-mergeDebugResources-39:/layout/item_reservation.xml",
+        "source": "fr.larmoirecommune.app-main-42:/layout/item_reservation.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-mergeDebugResources-39:/layout/activity_reservation_list.xml",
+        "source": "fr.larmoirecommune.app-main-42:/layout/activity_reservation_list.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-mergeDebugResources-39:/layout/activity_admin_reservations.xml",
+        "source": "fr.larmoirecommune.app-main-42:/layout/activity_admin_reservations.xml"
+    }
+]
