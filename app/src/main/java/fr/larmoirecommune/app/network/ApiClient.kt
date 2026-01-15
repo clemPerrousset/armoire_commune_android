@@ -18,6 +18,7 @@ object ApiClient {
 
     var token: String? = null
     var currentUserIsAdmin: Boolean = false
+    var currentUserEmail: String? = null
 
     val client = HttpClient(CIO) {
         install(ContentNegotiation) {
@@ -48,7 +49,7 @@ object ApiClient {
 
     fun setTokenAndParse(newToken: String) {
         token = newToken
-        currentUserIsAdmin = try {
+        try {
             val parts = newToken.split(".")
             if (parts.size == 3) {
                 // Base64.decode depends on Android SDK, mocking/robolectric works,
@@ -56,11 +57,16 @@ object ApiClient {
                 // We use Base64.URL_SAFE usually for JWT but DEFAULT works often if padding correct.
                 val payload = String(Base64.decode(parts[1], Base64.URL_SAFE)) // JWT usually URL_SAFE
                 val json = JSONObject(payload)
-                json.optBoolean("is_admin") || json.optString("role") == "admin"
-            } else false
+                currentUserIsAdmin = json.optBoolean("is_admin") || json.optString("role") == "admin"
+                currentUserEmail = json.optString("sub")
+            } else {
+                currentUserIsAdmin = false
+                currentUserEmail = null
+            }
         } catch (e: Exception) {
             e.printStackTrace()
-            false
+            currentUserIsAdmin = false
+            currentUserEmail = null
         }
     }
 }

@@ -20,12 +20,16 @@ class ObjectRepository {
         }
     }
 
+    // Cache for object details
+    private var cachedObjects: List<Objet> = emptyList()
+
     suspend fun getObject(id: Int): Objet? {
-        // Not in docs list but assumed standard REST or filter from list
-        // Or re-fetch list. Let's assume /objets returns list, we filter locally if needed or if there is an endpoint
-        // Docs don't show /objets/{id}. We might have to find it from the list.
-        // For now return null or implement logic in ViewModel
-        return null
+        // First check cache
+        cachedObjects.find { it.id == id }?.let { return it }
+
+        // If not found, refresh list
+        cachedObjects = getObjects(false)
+        return cachedObjects.find { it.id == id }
     }
 
     suspend fun createReservation(objetId: Int, lieuId: Int, dateDebut: String): Boolean {

@@ -11,6 +11,7 @@ import fr.larmoirecommune.app.ui.objects.ReservationActivity
 import fr.larmoirecommune.app.ui.admin.AdminCreateObjectActivity
 import fr.larmoirecommune.app.ui.admin.AdminCreateLieuActivity
 import fr.larmoirecommune.app.ui.admin.AdminReservationsActivity
+import fr.larmoirecommune.app.ui.profile.ProfileActivity
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -28,7 +29,7 @@ class MainActivity : AppCompatActivity() {
                  startActivity(Intent(this, fr.larmoirecommune.app.ui.objects.ReservationListActivity::class.java))
             },
             DashboardItem(getString(R.string.menu_profile)) {
-                // TODO Profile
+                startActivity(Intent(this, ProfileActivity::class.java))
             }
         )
 
