@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/resObjectImage"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:background="#EEE"
+            android:src="@drawable/ic_launcher_background"/>
+
+        <TextView
+            android:id="@+id/resStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Statut : Active"
+            android:textSize="18sp"
+            android:textAllCaps="true"
+            android:textColor="@android:color/holo_blue_dark"
+            android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:id="@+id/resObjectName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nom de l'objet"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#CCC"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dates de réservation"
+            android:textStyle="bold"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/resDates"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Du 01/01/2024 au 05/01/2024"
+            android:textSize="16sp"
+            android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lieu de récupération"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:id="@+id/resLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nom du lieu"
+            android:textSize="16sp"
+            android:layout_marginTop="4dp"/>
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Annuler la réservation"
+            android:backgroundTint="@android:color/holo_red_light"
+            android:layout_marginTop="32dp"/>
+
+    </LinearLayout>
+</ScrollView>

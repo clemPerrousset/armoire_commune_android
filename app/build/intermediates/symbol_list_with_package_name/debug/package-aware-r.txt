@@ -3244,6 +3244,7 @@ id buttonPanel
 id cache_measures
 id calendarView
 id callMeasure
+id cancelButton
 id cancel_button
 id carryVelocity
 id center
@@ -3536,6 +3537,8 @@ id ratio
 id rectangles
 id report_drawn
 id resDates
+id resLocation
+id resObjectImage
 id resObjectName
 id resStatus
 id reservationRecycler
@@ -3806,6 +3809,7 @@ layout activity_object_detail
 layout activity_object_list
 layout activity_profile
 layout activity_reservation
+layout activity_reservation_detail
 layout activity_reservation_list
 layout activity_signup
 layout bonuspack_bubble

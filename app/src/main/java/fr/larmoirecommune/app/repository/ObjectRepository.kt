@@ -11,25 +11,52 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
 class ObjectRepository {
+    // --- GESTION DES OBJETS ---
+    private var cachedObjects: List<Objet> = emptyList()
+
     suspend fun getObjects(available: Boolean = false): List<Objet> {
         return try {
             val url = if (available) "/objets?available=true" else "/objets"
-            ApiClient.client.get(ApiClient.getUrl(url)).body()
+            val list: List<Objet> = ApiClient.client.get(ApiClient.getUrl(url)).body()
+            if (!available) cachedObjects = list // On met en cache la liste complète
+            list
         } catch (e: Exception) {
             emptyList()
         }
     }
 
-    // Cache for object details
-    private var cachedObjects: List<Objet> = emptyList()
-
     suspend fun getObject(id: Int): Objet? {
-        // First check cache
         cachedObjects.find { it.id == id }?.let { return it }
-
-        // If not found, refresh list
-        cachedObjects = getObjects(false)
+        // Si pas trouvé, on recharge
+        getObjects(false)
         return cachedObjects.find { it.id == id }
+    }
+
+    // --- GESTION DES RÉSERVATIONS ---
+
+    // Ajout d'un cache pour éviter de rappeler l'API quand on clique sur le détail
+    private var cachedReservations: List<Reservation> = emptyList()
+
+    suspend fun getMyReservations(): List<Reservation> {
+        return try {
+            val list: List<Reservation> = ApiClient.client.get(ApiClient.getUrl("/reservations/me")).body()
+            cachedReservations = list // Mise à jour du cache
+            list
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    // Nouvelle méthode pour le détail (similaire à getObject)
+    suspend fun getReservation(id: Int): Reservation? {
+        // 1. On cherche dans le cache actuel
+        cachedReservations.find { it.id == id }?.let { return it }
+
+        // 2. Si pas trouvé, on recharge la liste depuis l'API
+        getMyReservations()
+
+        // 3. On re-cherche
+        return cachedReservations.find { it.id == id }
     }
 
     suspend fun createReservation(objetId: Int, lieuId: Int, dateDebut: String): Boolean {
@@ -42,17 +69,11 @@ class ObjectRepository {
                     "date_debut" to dateDebut
                 ))
             }
+            // On vide le cache car une nouvelle réservation existe peut-être
+            cachedReservations = emptyList()
             true
         } catch (e: Exception) {
             false
-        }
-    }
-
-    suspend fun getMyReservations(): List<Reservation> {
-        return try {
-             ApiClient.client.get(ApiClient.getUrl("/reservations/me")).body()
-        } catch (e: Exception) {
-            emptyList()
         }
     }
 }

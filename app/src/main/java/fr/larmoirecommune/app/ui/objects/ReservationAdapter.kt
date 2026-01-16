@@ -2,16 +2,26 @@ package fr.larmoirecommune.app.ui.objects
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import fr.larmoirecommune.app.databinding.ItemReservationBinding
 import fr.larmoirecommune.app.model.Reservation
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class ReservationAdapter(
-    private val items: List<Reservation>,
     private val onItemClick: (Reservation) -> Unit
-) : RecyclerView.Adapter<ReservationAdapter.ReservationViewHolder>() {
+) : ListAdapter<Reservation, ReservationAdapter.ReservationViewHolder>(ReservationDiffCallback()) {
+
+    // On définit comment comparer les réservations pour mettre à jour la liste intelligemment
+    class ReservationDiffCallback : DiffUtil.ItemCallback<Reservation>() {
+        override fun areItemsTheSame(oldItem: Reservation, newItem: Reservation): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Reservation, newItem: Reservation): Boolean {
+            return oldItem == newItem
+        }
+    }
 
     inner class ReservationViewHolder(val binding: ItemReservationBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -21,19 +31,16 @@ class ReservationAdapter(
     }
 
     override fun onBindViewHolder(holder: ReservationViewHolder, position: Int) {
-        val item = items[position]
-        // Assuming dates are formatted strings or can be formatted.
-        // Based on model, they might be Strings or Date objects depending on serialization.
-        // The API returns ISO strings, Ktor serialization might have parsed them or left as strings.
-        // Let's assume they are Strings as per typical JSON handling if not using custom serializers
+        // Avec ListAdapter, on récupère l'objet via getItem(position)
+        val item = getItem(position)
 
-        holder.binding.resObjectName.text = "Objet #${item.objet_id}" // API doesn't nest full object by default usually, unless expanded
-        // But the model had: objet: Optional[Objet] = Relationship(...)
-        // If Ktor populated it:
+        // Gestion du nom de l'objet (par défaut l'ID, sinon le nom si l'objet est chargé)
+        holder.binding.resObjectName.text = "Objet #${item.objet_id}"
         item.objet?.let {
             holder.binding.resObjectName.text = it.nom
         }
 
+        // Affichage des dates et du statut
         holder.binding.resDates.text = "Du ${item.date_debut} au ${item.date_fin}"
         holder.binding.resStatus.text = item.status
 
@@ -41,6 +48,4 @@ class ReservationAdapter(
             onItemClick(item)
         }
     }
-
-    override fun getItemCount(): Int = items.size
 }
