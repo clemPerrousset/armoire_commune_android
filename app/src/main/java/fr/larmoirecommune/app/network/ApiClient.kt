@@ -14,7 +14,7 @@ import io.ktor.client.plugins.auth.providers.bearer
 import org.json.JSONObject
 
 object ApiClient {
-    private const val BASE_URL = "http://51.83.99.103:8000"
+    private const val BASE_URL = "http://51.83.99.103"
 
     var token: String? = null
     var currentUserIsAdmin: Boolean = false
