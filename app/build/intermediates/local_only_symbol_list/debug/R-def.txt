@@ -11,6 +11,8 @@ color primary
 color primary_container
 color secondary
 color white
+drawable ic_launcher_background
+drawable ic_launcher_foreground
 id availableOnly
 id btnMyLocation
 id calendarView
@@ -28,6 +30,7 @@ id itemTitle
 id lieuAddress
 id lieuName
 id loginButton
+id logout_button
 id map
 id nomInput
 id objectDesc
@@ -39,6 +42,8 @@ id objectStatus
 id objectTagId
 id passwordInput
 id prenomInput
+id profile_email
+id profile_name
 id resDates
 id resObjectName
 id resStatus
@@ -54,12 +59,15 @@ layout activity_login
 layout activity_main
 layout activity_object_detail
 layout activity_object_list
+layout activity_profile
 layout activity_reservation
 layout activity_reservation_list
 layout activity_signup
 layout item_dashboard
 layout item_object
 layout item_reservation
+mipmap ic_launcher
+mipmap ic_launcher_round
 string app_name
 string available
 string confirm_reservation

@@ -46,7 +46,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.LArmoireCommune" >
+        android:theme="@style/Theme.LArmoireCommune"
+        android:usesCleartextTraffic="true" >
         <activity
             android:name="fr.larmoirecommune.app.ui.auth.LoginActivity"
             android:exported="true" >
@@ -65,6 +66,7 @@
         <activity android:name="fr.larmoirecommune.app.ui.admin.AdminCreateObjectActivity" />
         <activity android:name="fr.larmoirecommune.app.ui.admin.AdminCreateLieuActivity" />
         <activity android:name="fr.larmoirecommune.app.ui.admin.AdminReservationsActivity" />
+        <activity android:name="fr.larmoirecommune.app.ui.profile.ProfileActivity" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"
