@@ -6,8 +6,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import fr.larmoirecommune.app.databinding.ActivityAdminCreateLieuBinding
+import android.Manifest
+import android.content.pm.PackageManager
 import android.text.Editable
 import android.text.TextWatcher
+import androidx.core.app.ActivityCompat
 import fr.larmoirecommune.app.repository.AdminRepository
 import fr.larmoirecommune.app.utils.GeoUtils
 import kotlinx.coroutines.Job
@@ -19,6 +22,8 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 class AdminCreateLieuActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAdminCreateLieuBinding
@@ -26,6 +31,7 @@ class AdminCreateLieuActivity : AppCompatActivity() {
     private var selectedPoint: GeoPoint? = null
     private var searchJob: Job? = null
     private var isUpdatingAddress = false
+    private lateinit var locationOverlay: MyLocationNewOverlay
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +42,10 @@ class AdminCreateLieuActivity : AppCompatActivity() {
 
         setupMap()
         setupAddressSearch()
+
+        binding.btnMyLocation.setOnClickListener {
+            checkLocationPermission()
+        }
 
         binding.validateButton.setOnClickListener {
             val nom = binding.lieuName.text.toString()
@@ -92,6 +102,48 @@ class AdminCreateLieuActivity : AppCompatActivity() {
             }
         })
         binding.map.overlays.add(0, mapEventsOverlay)
+
+        // Setup Location Overlay
+        locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), binding.map)
+        locationOverlay.enableMyLocation()
+        binding.map.overlays.add(locationOverlay)
+    }
+
+    private fun checkLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+        } else {
+            zoomToMyLocation()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 1 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            zoomToMyLocation()
+        }
+    }
+
+    private fun zoomToMyLocation() {
+        val location = locationOverlay.myLocation
+        if (location != null) {
+            binding.map.controller.animateTo(location)
+            binding.map.controller.setZoom(18.0)
+            // Auto select this point
+            selectedPoint = location
+            updateMarker(location)
+            // Reverse geocode
+            lifecycleScope.launch {
+                val address = GeoUtils.reverseGeocode(location.latitude, location.longitude)
+                if (address != null) {
+                    isUpdatingAddress = true
+                    binding.lieuAddress.setText(address)
+                    isUpdatingAddress = false
+                }
+            }
+        } else {
+            Toast.makeText(this, "Localisation en cours...", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun setupAddressSearch() {
