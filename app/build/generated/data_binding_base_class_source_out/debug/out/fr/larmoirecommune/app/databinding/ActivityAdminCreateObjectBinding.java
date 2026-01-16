@@ -5,12 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.material.textfield.TextInputEditText;
 import fr.larmoirecommune.app.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -24,20 +24,21 @@ public final class ActivityAdminCreateObjectBinding implements ViewBinding {
   public final Button createButton;
 
   @NonNull
-  public final EditText objectDesc;
+  public final TextInputEditText objectDesc;
 
   @NonNull
-  public final EditText objectName;
+  public final TextInputEditText objectName;
 
   @NonNull
-  public final EditText objectQty;
+  public final TextInputEditText objectQty;
 
   @NonNull
-  public final EditText objectTagId;
+  public final TextInputEditText objectTagId;
 
   private ActivityAdminCreateObjectBinding(@NonNull LinearLayout rootView,
-      @NonNull Button createButton, @NonNull EditText objectDesc, @NonNull EditText objectName,
-      @NonNull EditText objectQty, @NonNull EditText objectTagId) {
+      @NonNull Button createButton, @NonNull TextInputEditText objectDesc,
+      @NonNull TextInputEditText objectName, @NonNull TextInputEditText objectQty,
+      @NonNull TextInputEditText objectTagId) {
     this.rootView = rootView;
     this.createButton = createButton;
     this.objectDesc = objectDesc;
@@ -80,25 +81,25 @@ public final class ActivityAdminCreateObjectBinding implements ViewBinding {
       }
 
       id = R.id.objectDesc;
-      EditText objectDesc = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText objectDesc = ViewBindings.findChildViewById(rootView, id);
       if (objectDesc == null) {
         break missingId;
       }
 
       id = R.id.objectName;
-      EditText objectName = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText objectName = ViewBindings.findChildViewById(rootView, id);
       if (objectName == null) {
         break missingId;
       }
 
       id = R.id.objectQty;
-      EditText objectQty = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText objectQty = ViewBindings.findChildViewById(rootView, id);
       if (objectQty == null) {
         break missingId;
       }
 
       id = R.id.objectTagId;
-      EditText objectTagId = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText objectTagId = ViewBindings.findChildViewById(rootView, id);
       if (objectTagId == null) {
         break missingId;
       }

@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import fr.larmoirecommune.app.databinding.ActivityAdminReservationsBinding
 import fr.larmoirecommune.app.databinding.ItemReservationBinding
-import fr.larmoirecommune.app.model.Reservation
 import fr.larmoirecommune.app.repository.AdminRepository
 import kotlinx.coroutines.launch
 

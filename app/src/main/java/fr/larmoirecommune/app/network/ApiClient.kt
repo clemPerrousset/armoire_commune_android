@@ -2,25 +2,25 @@ package fr.larmoirecommune.app.network
 
 import android.util.Base64
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import org.json.JSONObject
 
 object ApiClient {
-    private const val BASE_URL = "http://51.83.99.103"
+    private const val BASE_URL = "http://51.83.99.103/"
 
     var token: String? = null
     var currentUserIsAdmin: Boolean = false
     var currentUserEmail: String? = null
 
-    val client = HttpClient(CIO) {
+    val client = HttpClient(OkHttp) {
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
@@ -28,9 +28,11 @@ object ApiClient {
                 isLenient = true
             })
         }
+
         install(Logging) {
             level = LogLevel.ALL
         }
+
         install(Auth) {
             bearer {
                 loadTokens {
@@ -44,29 +46,31 @@ object ApiClient {
     }
 
     fun getUrl(path: String): String {
-        return "$BASE_URL$path"
+        val cleanPath = if (path.startsWith("/")) path.substring(1) else path
+        return "$BASE_URL$cleanPath"
     }
 
+    // VOICI LA FONCTION RESTAURÉE
+    // Elle décode le token immédiatement (utile pour l'affichage rapide)
+    // Mais l'appel /users/me dans MainActivity viendra confirmer/écraser ces valeurs ensuite (sécurité)
     fun setTokenAndParse(newToken: String) {
         token = newToken
         try {
+            // Le token JWT est en 3 parties séparées par des points
             val parts = newToken.split(".")
             if (parts.size == 3) {
-                // Base64.decode depends on Android SDK, mocking/robolectric works,
-                // but strictly speaking Base64 is android.util.Base64
-                // We use Base64.URL_SAFE usually for JWT but DEFAULT works often if padding correct.
-                val payload = String(Base64.decode(parts[1], Base64.URL_SAFE)) // JWT usually URL_SAFE
+                // On décode la partie centrale (payload)
+                val payload = String(Base64.decode(parts[1], Base64.URL_SAFE))
                 val json = JSONObject(payload)
+
+                // On lit les infos
                 currentUserIsAdmin = json.optBoolean("is_admin") || json.optString("role") == "admin"
                 currentUserEmail = json.optString("sub")
-            } else {
-                currentUserIsAdmin = false
-                currentUserEmail = null
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            currentUserIsAdmin = false
-            currentUserEmail = null
+            // En cas d'erreur de parsing, on laisse par défaut,
+            // l'appel API /users/me corrigera ça plus tard.
         }
     }
 }

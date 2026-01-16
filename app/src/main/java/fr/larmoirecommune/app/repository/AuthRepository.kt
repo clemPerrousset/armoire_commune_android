@@ -1,6 +1,7 @@
 package fr.larmoirecommune.app.repository
 
 import fr.larmoirecommune.app.model.AuthResponse
+import fr.larmoirecommune.app.model.SignupRequest
 import fr.larmoirecommune.app.network.ApiClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
@@ -11,8 +12,10 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
 class AuthRepository {
+
     suspend fun login(email: String, password: String): Boolean {
         try {
+            // Login utilise souvent x-www-form-urlencoded, on garde submitForm c'est correct
             val response: AuthResponse = ApiClient.client.submitForm(
                 url = ApiClient.getUrl("/auth/login"),
                 formParameters = Parameters.build {
@@ -31,14 +34,16 @@ class AuthRepository {
 
     suspend fun signup(nom: String, prenom: String, email: String, password: String): Boolean {
         try {
+            val request = SignupRequest(
+                nom = nom,
+                prenom = prenom,
+                email = email,
+                password = password
+            )
+
             ApiClient.client.post(ApiClient.getUrl("/auth/signup")) {
                 contentType(ContentType.Application.Json)
-                setBody(mapOf(
-                    "nom" to nom,
-                    "prenom" to prenom,
-                    "email" to email,
-                    "password" to password
-                ))
+                setBody(request)
             }
             return true
         } catch (e: Exception) {

@@ -5,12 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.material.textfield.TextInputEditText;
 import fr.larmoirecommune.app.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -25,10 +25,10 @@ public final class ActivityAdminCreateLieuBinding implements ViewBinding {
   public final Button btnMyLocation;
 
   @NonNull
-  public final EditText lieuAddress;
+  public final TextInputEditText lieuAddress;
 
   @NonNull
-  public final EditText lieuName;
+  public final TextInputEditText lieuName;
 
   @NonNull
   public final MapView map;
@@ -37,8 +37,8 @@ public final class ActivityAdminCreateLieuBinding implements ViewBinding {
   public final Button validateButton;
 
   private ActivityAdminCreateLieuBinding(@NonNull LinearLayout rootView,
-      @NonNull Button btnMyLocation, @NonNull EditText lieuAddress, @NonNull EditText lieuName,
-      @NonNull MapView map, @NonNull Button validateButton) {
+      @NonNull Button btnMyLocation, @NonNull TextInputEditText lieuAddress,
+      @NonNull TextInputEditText lieuName, @NonNull MapView map, @NonNull Button validateButton) {
     this.rootView = rootView;
     this.btnMyLocation = btnMyLocation;
     this.lieuAddress = lieuAddress;
@@ -81,13 +81,13 @@ public final class ActivityAdminCreateLieuBinding implements ViewBinding {
       }
 
       id = R.id.lieuAddress;
-      EditText lieuAddress = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText lieuAddress = ViewBindings.findChildViewById(rootView, id);
       if (lieuAddress == null) {
         break missingId;
       }
 
       id = R.id.lieuName;
-      EditText lieuName = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText lieuName = ViewBindings.findChildViewById(rootView, id);
       if (lieuName == null) {
         break missingId;
       }
