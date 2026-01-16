@@ -5,13 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.material.textfield.TextInputEditText;
 import fr.larmoirecommune.app.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -22,7 +22,7 @@ public final class ActivityLoginBinding implements ViewBinding {
   private final LinearLayout rootView;
 
   @NonNull
-  public final EditText emailInput;
+  public final TextInputEditText emailInput;
 
   @NonNull
   public final TextView goToSignup;
@@ -31,10 +31,11 @@ public final class ActivityLoginBinding implements ViewBinding {
   public final Button loginButton;
 
   @NonNull
-  public final EditText passwordInput;
+  public final TextInputEditText passwordInput;
 
-  private ActivityLoginBinding(@NonNull LinearLayout rootView, @NonNull EditText emailInput,
-      @NonNull TextView goToSignup, @NonNull Button loginButton, @NonNull EditText passwordInput) {
+  private ActivityLoginBinding(@NonNull LinearLayout rootView,
+      @NonNull TextInputEditText emailInput, @NonNull TextView goToSignup,
+      @NonNull Button loginButton, @NonNull TextInputEditText passwordInput) {
     this.rootView = rootView;
     this.emailInput = emailInput;
     this.goToSignup = goToSignup;
@@ -70,7 +71,7 @@ public final class ActivityLoginBinding implements ViewBinding {
     int id;
     missingId: {
       id = R.id.emailInput;
-      EditText emailInput = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText emailInput = ViewBindings.findChildViewById(rootView, id);
       if (emailInput == null) {
         break missingId;
       }
@@ -88,7 +89,7 @@ public final class ActivityLoginBinding implements ViewBinding {
       }
 
       id = R.id.passwordInput;
-      EditText passwordInput = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText passwordInput = ViewBindings.findChildViewById(rootView, id);
       if (passwordInput == null) {
         break missingId;
       }

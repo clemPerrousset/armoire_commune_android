@@ -5,13 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.material.textfield.TextInputEditText;
 import fr.larmoirecommune.app.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -22,26 +22,27 @@ public final class ActivitySignupBinding implements ViewBinding {
   private final LinearLayout rootView;
 
   @NonNull
-  public final EditText emailInput;
+  public final TextInputEditText emailInput;
 
   @NonNull
   public final TextView goToLogin;
 
   @NonNull
-  public final EditText nomInput;
+  public final TextInputEditText nomInput;
 
   @NonNull
-  public final EditText passwordInput;
+  public final TextInputEditText passwordInput;
 
   @NonNull
-  public final EditText prenomInput;
+  public final TextInputEditText prenomInput;
 
   @NonNull
   public final Button signupButton;
 
-  private ActivitySignupBinding(@NonNull LinearLayout rootView, @NonNull EditText emailInput,
-      @NonNull TextView goToLogin, @NonNull EditText nomInput, @NonNull EditText passwordInput,
-      @NonNull EditText prenomInput, @NonNull Button signupButton) {
+  private ActivitySignupBinding(@NonNull LinearLayout rootView,
+      @NonNull TextInputEditText emailInput, @NonNull TextView goToLogin,
+      @NonNull TextInputEditText nomInput, @NonNull TextInputEditText passwordInput,
+      @NonNull TextInputEditText prenomInput, @NonNull Button signupButton) {
     this.rootView = rootView;
     this.emailInput = emailInput;
     this.goToLogin = goToLogin;
@@ -79,7 +80,7 @@ public final class ActivitySignupBinding implements ViewBinding {
     int id;
     missingId: {
       id = R.id.emailInput;
-      EditText emailInput = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText emailInput = ViewBindings.findChildViewById(rootView, id);
       if (emailInput == null) {
         break missingId;
       }
@@ -91,19 +92,19 @@ public final class ActivitySignupBinding implements ViewBinding {
       }
 
       id = R.id.nomInput;
-      EditText nomInput = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText nomInput = ViewBindings.findChildViewById(rootView, id);
       if (nomInput == null) {
         break missingId;
       }
 
       id = R.id.passwordInput;
-      EditText passwordInput = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText passwordInput = ViewBindings.findChildViewById(rootView, id);
       if (passwordInput == null) {
         break missingId;
       }
 
       id = R.id.prenomInput;
-      EditText prenomInput = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText prenomInput = ViewBindings.findChildViewById(rootView, id);
       if (prenomInput == null) {
         break missingId;
       }

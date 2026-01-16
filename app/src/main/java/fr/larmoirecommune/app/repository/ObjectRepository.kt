@@ -21,6 +21,7 @@ class ObjectRepository {
             if (!available) cachedObjects = list // On met en cache la liste complète
             list
         } catch (e: Exception) {
+            e.printStackTrace()
             emptyList()
         }
     }
@@ -34,7 +35,6 @@ class ObjectRepository {
 
     // --- GESTION DES RÉSERVATIONS ---
 
-    // Ajout d'un cache pour éviter de rappeler l'API quand on clique sur le détail
     private var cachedReservations: List<Reservation> = emptyList()
 
     suspend fun getMyReservations(): List<Reservation> {
@@ -43,11 +43,11 @@ class ObjectRepository {
             cachedReservations = list // Mise à jour du cache
             list
         } catch (e: Exception) {
+            e.printStackTrace()
             emptyList()
         }
     }
 
-    // Nouvelle méthode pour le détail (similaire à getObject)
     suspend fun getReservation(id: Int): Reservation? {
         // 1. On cherche dans le cache actuel
         cachedReservations.find { it.id == id }?.let { return it }
@@ -61,18 +61,22 @@ class ObjectRepository {
 
     suspend fun createReservation(objetId: Int, lieuId: Int, dateDebut: String): Boolean {
         return try {
+            val request = CreateReservationRequest(
+                objetId = objetId,
+                lieuId = lieuId,
+                dateDebut = dateDebut
+            )
+
             ApiClient.client.post(ApiClient.getUrl("/reservations")) {
                 contentType(ContentType.Application.Json)
-                setBody(mapOf(
-                    "objet_id" to objetId,
-                    "lieu_id" to lieuId,
-                    "date_debut" to dateDebut
-                ))
+                setBody(request)
             }
-            // On vide le cache car une nouvelle réservation existe peut-être
+
+            // On vide le cache car une nouvelle réservation a été créée
             cachedReservations = emptyList()
             true
         } catch (e: Exception) {
+            e.printStackTrace()
             false
         }
     }

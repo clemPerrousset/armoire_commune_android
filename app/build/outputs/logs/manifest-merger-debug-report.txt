@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:2:1-46:12
-INJECTED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:2:1-46:12
-INJECTED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:2:1-46:12
-INJECTED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:2:1-46:12
+ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:2:1-45:12
+INJECTED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:2:1-45:12
+INJECTED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:2:1-45:12
+INJECTED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:2:1-45:12
 MERGED from [androidx.databinding:viewbinding:8.2.0] C:\Users\cleme\.gradle\caches\8.8\transforms\3988f0273628b7464dbca85d3d080f59\transformed\viewbinding-8.2.0\AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.android.material:material:1.11.0] C:\Users\cleme\.gradle\caches\8.8\transforms\3cdc9f34142b2a79eb086b8b47b7668d\transformed\material-1.11.0\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\cleme\.gradle\caches\8.8\transforms\00b660d1477ffdd5aa60fe4c4938027b\transformed\constraintlayout-2.1.4\AndroidManifest.xml:2:1-11:12
@@ -84,8 +84,8 @@ ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidMani
 	android:name
 		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:8:22-76
 application
-ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:10:5-44:19
-INJECTED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:10:5-44:19
+ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:10:5-43:19
+INJECTED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:10:5-43:19
 MERGED from [com.google.android.material:material:1.11.0] C:\Users\cleme\.gradle\caches\8.8\transforms\3cdc9f34142b2a79eb086b8b47b7668d\transformed\material-1.11.0\AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.11.0] C:\Users\cleme\.gradle\caches\8.8\transforms\3cdc9f34142b2a79eb086b8b47b7668d\transformed\material-1.11.0\AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\cleme\.gradle\caches\8.8\transforms\00b660d1477ffdd5aa60fe4c4938027b\transformed\constraintlayout-2.1.4\AndroidManifest.xml:9:5-20
@@ -149,41 +149,41 @@ ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidMani
 	android:name
 		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:30:19-55
 activity#fr.larmoirecommune.app.ui.objects.ObjectListActivity
-ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:32:9-67
+ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:31:9-67
 	android:name
-		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:32:19-64
+		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:31:19-64
 activity#fr.larmoirecommune.app.ui.objects.ObjectDetailActivity
-ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:33:9-69
+ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:32:9-69
 	android:name
-		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:33:19-66
+		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:32:19-66
 activity#fr.larmoirecommune.app.ui.objects.ReservationActivity
-ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:34:9-68
+ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:33:9-68
 	android:name
-		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:34:19-65
+		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:33:19-65
 activity#fr.larmoirecommune.app.ui.objects.ReservationListActivity
-ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:35:9-72
+ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:34:9-72
 	android:name
-		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:35:19-69
+		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:34:19-69
 activity#fr.larmoirecommune.app.ui.objects.ReservationDetailActivity
-ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:36:9-74
+ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:35:9-74
 	android:name
-		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:36:19-71
+		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:35:19-71
 activity#fr.larmoirecommune.app.ui.admin.AdminCreateObjectActivity
-ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:38:9-72
+ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:37:9-72
 	android:name
-		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:38:19-69
+		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:37:19-69
 activity#fr.larmoirecommune.app.ui.admin.AdminCreateLieuActivity
-ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:39:9-70
+ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:38:9-70
 	android:name
-		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:39:19-67
+		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:38:19-67
 activity#fr.larmoirecommune.app.ui.admin.AdminReservationsActivity
-ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:40:9-72
+ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:39:9-72
 	android:name
-		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:40:19-69
+		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:39:19-69
 activity#fr.larmoirecommune.app.ui.profile.ProfileActivity
-ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:42:9-64
+ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:41:9-64
 	android:name
-		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:42:19-61
+		ADDED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml:41:19-61
 uses-sdk
 INJECTED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from D:\D\Armoire commune\armoire_commune_android\app\src\main\AndroidManifest.xml

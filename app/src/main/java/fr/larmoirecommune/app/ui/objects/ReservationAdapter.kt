@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import fr.larmoirecommune.app.databinding.ItemReservationBinding
-import fr.larmoirecommune.app.model.Reservation
 
 class ReservationAdapter(
     private val onItemClick: (Reservation) -> Unit
