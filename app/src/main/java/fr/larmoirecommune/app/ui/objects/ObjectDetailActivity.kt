@@ -24,7 +24,7 @@ class ObjectDetailActivity : AppCompatActivity() {
              if (obj != null) {
                 binding.detailName.text = obj.nom
                 binding.detailDesc.text = obj.description
-                binding.reserveButton.isEnabled = obj.disponibilite_globale
+                binding.reserveButton.isEnabled = obj.disponibiliteGlobale
             }
         }
 
