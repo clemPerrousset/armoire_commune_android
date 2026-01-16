@@ -62,8 +62,8 @@ class AdminReservationAdapter(private val onReturnClick: (Reservation) -> Unit) 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = list[position]
-        holder.binding.resObjectName.text = item.objet?.nom ?: "Objet #${item.objet_id}"
-        holder.binding.resDates.text = "Du ${item.date_debut} au ${item.date_fin}"
+        holder.binding.resObjectName.text = item.objet?.nom ?: "Objet #${item.objetId}"
+        holder.binding.resDates.text = "Du ${item.dateDebut} au ${item.dateFin}"
         holder.binding.resStatus.text = item.status
 
         holder.itemView.setOnClickListener {

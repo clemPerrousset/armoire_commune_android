@@ -37,7 +37,7 @@ class ObjectAdapter(
 
         holder.binding.objectName.text = item.nom
         holder.binding.objectDesc.text = item.description
-        holder.binding.objectStatus.text = if (item.disponibilite_globale) "Disponible" else "Indisponible"
+        holder.binding.objectStatus.text = if (item.disponibiliteGlobale) "Disponible" else "Indisponible"
 
         holder.itemView.setOnClickListener {
             onItemClick(item)

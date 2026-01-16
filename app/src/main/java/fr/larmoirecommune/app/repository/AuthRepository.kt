@@ -24,7 +24,7 @@ class AuthRepository {
                 }
             ).body()
 
-            ApiClient.setTokenAndParse(response.access_token)
+            ApiClient.setTokenAndParse(response.accessToken)
             return true
         } catch (e: Exception) {
             e.printStackTrace()

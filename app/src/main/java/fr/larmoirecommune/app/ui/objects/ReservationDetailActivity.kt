@@ -34,10 +34,10 @@ class ReservationDetailActivity : AppCompatActivity() {
                 binding.resStatus.text = "Statut : ${res.status}"
 
                 // Dates
-                binding.resDates.text = "Du ${res.date_debut}\nau ${res.date_fin}"
+                binding.resDates.text = "Du ${res.dateDebut}\nau ${res.dateFin}"
 
                 // Infos de l'objet (Relation imbriquée)
-                binding.resObjectName.text = res.objet?.nom ?: "Objet inconnu (ID: ${res.objet_id})"
+                binding.resObjectName.text = res.objet?.nom ?: "Objet inconnu (ID: ${res.objetId})"
 
                 // Infos du lieu (Relation imbriquée)
                 binding.resLocation.text = res.lieu?.nom ?: "Lieu non précisé"
