@@ -28,11 +28,11 @@
 
         <activity android:name=".ui.auth.SignupActivity" />
         <activity android:name=".ui.home.MainActivity" />
-
         <activity android:name=".ui.objects.ObjectListActivity" />
         <activity android:name=".ui.objects.ObjectDetailActivity" />
         <activity android:name=".ui.objects.ReservationActivity" />
         <activity android:name=".ui.objects.ReservationListActivity" />
+        <activity android:name=".ui.objects.ReservationDetailActivity" />
 
         <activity android:name=".ui.admin.AdminCreateObjectActivity" />
         <activity android:name=".ui.admin.AdminCreateLieuActivity" />
