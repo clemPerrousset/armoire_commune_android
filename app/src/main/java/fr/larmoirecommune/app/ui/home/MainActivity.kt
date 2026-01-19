@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import fr.larmoirecommune.app.R
 import fr.larmoirecommune.app.databinding.ActivityMainBinding
+import fr.larmoirecommune.app.model.User
 import fr.larmoirecommune.app.network.ApiClient
 import fr.larmoirecommune.app.ui.admin.AdminCreateLieuActivity
 import fr.larmoirecommune.app.ui.admin.AdminCreateObjectActivity
@@ -42,7 +43,7 @@ class MainActivity : AppCompatActivity() {
                 val user: User = ApiClient.client.get(ApiClient.getUrl("users/me")).body()
 
                 // 2. Mise à jour des infos dans le singleton ApiClient
-                ApiClient.currentUserIsAdmin = user.is_admin
+                ApiClient.currentUserIsAdmin = user.isAdmin
                 ApiClient.currentUserEmail = user.email
 
             } catch (e: Exception) {

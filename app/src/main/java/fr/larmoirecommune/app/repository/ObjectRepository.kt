@@ -1,5 +1,6 @@
 package fr.larmoirecommune.app.repository
 
+import fr.larmoirecommune.app.model.CreateReservationRequest
 import fr.larmoirecommune.app.model.Objet
 import fr.larmoirecommune.app.model.Reservation
 import fr.larmoirecommune.app.network.ApiClient

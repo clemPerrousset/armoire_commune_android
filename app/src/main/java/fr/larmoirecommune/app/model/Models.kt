@@ -6,6 +6,39 @@ import kotlinx.serialization.Serializable
 // --- AUTHENTIFICATION ---
 
 @Serializable
+data class SignupRequest(
+    val nom: String,
+    val prenom: String,
+    val email: String,
+    val password: String
+)
+
+@Serializable
+data class CreateReservationRequest(
+    @SerialName("objet_id") val objetId: Int,
+    @SerialName("lieu_id") val lieuId: Int,
+    @SerialName("date_debut") val dateDebut: String
+)
+
+@Serializable
+data class CreateLieuRequest(
+    val nom: String,
+    val lat: Double,
+    val long: Double,
+    val adresse: String
+)
+
+@Serializable
+data class CreateObjectRequest(
+    val nom: String,
+    val description: String,
+    val quantite: Int,
+    @SerialName("tag_id") val tagId: Int,
+    @SerialName("consommable_ids") val consommableIds: List<Int>,
+    @SerialName("disponibilite_globale") val disponibiliteGlobale: Boolean = true
+)
+
+@Serializable
 data class AuthResponse(
     @SerialName("access_token") val accessToken: String,
     @SerialName("token_type") val tokenType: String

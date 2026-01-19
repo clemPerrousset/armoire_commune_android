@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter // Import this
 import androidx.recyclerview.widget.RecyclerView
 import fr.larmoirecommune.app.databinding.ItemObjectBinding
+import fr.larmoirecommune.app.model.Objet
 
 class ObjectAdapter(
     private val onItemClick: (Objet) -> Unit
