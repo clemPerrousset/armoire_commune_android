@@ -4,6 +4,7 @@ package fr.larmoirecommune.app.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,10 +21,15 @@ public final class ItemDashboardBinding implements ViewBinding {
   private final MaterialCardView rootView;
 
   @NonNull
+  public final ImageView itemIcon;
+
+  @NonNull
   public final TextView itemTitle;
 
-  private ItemDashboardBinding(@NonNull MaterialCardView rootView, @NonNull TextView itemTitle) {
+  private ItemDashboardBinding(@NonNull MaterialCardView rootView, @NonNull ImageView itemIcon,
+      @NonNull TextView itemTitle) {
     this.rootView = rootView;
+    this.itemIcon = itemIcon;
     this.itemTitle = itemTitle;
   }
 
@@ -54,13 +60,19 @@ public final class ItemDashboardBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.itemIcon;
+      ImageView itemIcon = ViewBindings.findChildViewById(rootView, id);
+      if (itemIcon == null) {
+        break missingId;
+      }
+
       id = R.id.itemTitle;
       TextView itemTitle = ViewBindings.findChildViewById(rootView, id);
       if (itemTitle == null) {
         break missingId;
       }
 
-      return new ItemDashboardBinding((MaterialCardView) rootView, itemTitle);
+      return new ItemDashboardBinding((MaterialCardView) rootView, itemIcon, itemTitle);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

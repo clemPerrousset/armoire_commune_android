@@ -3,15 +3,31 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="brand_yellow">#E6A92F</color>
-    <color name="brand_green">#90A538</color>
-    <color name="brand_blue">#006370</color>
+    <!-- New Design System Colors -->
+    <color name="mint_primary">#10B981</color>      <!-- Bright Mint for buttons -->
+    <color name="mint_dark">#065F46</color>         <!-- Dark Forest for headers -->
+    <color name="mint_light">#ECFDF5</color>        <!-- Very light mint for backgrounds -->
 
-    <color name="primary">@color/brand_blue</color>
+    <color name="background_page">#F3F4F6</color>   <!-- Light Grey Background -->
+    <color name="surface_card">#FFFFFF</color>      <!-- White Cards -->
+
+    <color name="text_primary">#1F2937</color>      <!-- Dark Grey for main text -->
+    <color name="text_secondary">#6B7280</color>    <!-- Lighter Grey for subtitles -->
+
+    <color name="status_available">#10B981</color>
+    <color name="status_reserved">#F59E0B</color>   <!-- Amber -->
+    <color name="status_unavailable">#EF4444</color> <!-- Red -->
+
+    <!-- Maintaining legacy names map to new system or keep as fallbacks -->
+    <color name="brand_yellow">#F59E0B</color>
+    <color name="brand_green">@color/mint_primary</color>
+    <color name="brand_blue">@color/mint_dark</color>
+
+    <color name="primary">@color/mint_primary</color>
     <color name="on_primary">@color/white</color>
-    <color name="primary_container">@color/brand_yellow</color>
-    <color name="on_primary_container">@color/black</color>
+    <color name="primary_container">@color/mint_light</color>
+    <color name="on_primary_container">@color/mint_dark</color>
 
-    <color name="secondary">@color/brand_green</color>
+    <color name="secondary">@color/mint_dark</color>
     <color name="on_secondary">@color/white</color>
 </resources>

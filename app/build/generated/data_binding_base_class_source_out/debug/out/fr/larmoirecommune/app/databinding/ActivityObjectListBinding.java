@@ -4,14 +4,16 @@ package fr.larmoirecommune.app.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.material.textfield.TextInputEditText;
 import fr.larmoirecommune.app.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -19,28 +21,46 @@ import java.lang.String;
 
 public final class ActivityObjectListBinding implements ViewBinding {
   @NonNull
-  private final LinearLayout rootView;
+  private final ConstraintLayout rootView;
 
   @NonNull
-  public final CheckBox availableOnly;
+  public final ImageView btnBack;
+
+  @NonNull
+  public final TextView chipAll;
+
+  @NonNull
+  public final TextView chipAvailable;
+
+  @NonNull
+  public final LinearLayout filterArea;
+
+  @NonNull
+  public final ConstraintLayout header;
 
   @NonNull
   public final RecyclerView objectRecycler;
 
   @NonNull
-  public final EditText searchParams;
+  public final TextInputEditText searchParams;
 
-  private ActivityObjectListBinding(@NonNull LinearLayout rootView, @NonNull CheckBox availableOnly,
-      @NonNull RecyclerView objectRecycler, @NonNull EditText searchParams) {
+  private ActivityObjectListBinding(@NonNull ConstraintLayout rootView, @NonNull ImageView btnBack,
+      @NonNull TextView chipAll, @NonNull TextView chipAvailable, @NonNull LinearLayout filterArea,
+      @NonNull ConstraintLayout header, @NonNull RecyclerView objectRecycler,
+      @NonNull TextInputEditText searchParams) {
     this.rootView = rootView;
-    this.availableOnly = availableOnly;
+    this.btnBack = btnBack;
+    this.chipAll = chipAll;
+    this.chipAvailable = chipAvailable;
+    this.filterArea = filterArea;
+    this.header = header;
     this.objectRecycler = objectRecycler;
     this.searchParams = searchParams;
   }
 
   @Override
   @NonNull
-  public LinearLayout getRoot() {
+  public ConstraintLayout getRoot() {
     return rootView;
   }
 
@@ -65,9 +85,33 @@ public final class ActivityObjectListBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
-      id = R.id.availableOnly;
-      CheckBox availableOnly = ViewBindings.findChildViewById(rootView, id);
-      if (availableOnly == null) {
+      id = R.id.btnBack;
+      ImageView btnBack = ViewBindings.findChildViewById(rootView, id);
+      if (btnBack == null) {
+        break missingId;
+      }
+
+      id = R.id.chipAll;
+      TextView chipAll = ViewBindings.findChildViewById(rootView, id);
+      if (chipAll == null) {
+        break missingId;
+      }
+
+      id = R.id.chipAvailable;
+      TextView chipAvailable = ViewBindings.findChildViewById(rootView, id);
+      if (chipAvailable == null) {
+        break missingId;
+      }
+
+      id = R.id.filterArea;
+      LinearLayout filterArea = ViewBindings.findChildViewById(rootView, id);
+      if (filterArea == null) {
+        break missingId;
+      }
+
+      id = R.id.header;
+      ConstraintLayout header = ViewBindings.findChildViewById(rootView, id);
+      if (header == null) {
         break missingId;
       }
 
@@ -78,13 +122,13 @@ public final class ActivityObjectListBinding implements ViewBinding {
       }
 
       id = R.id.searchParams;
-      EditText searchParams = ViewBindings.findChildViewById(rootView, id);
+      TextInputEditText searchParams = ViewBindings.findChildViewById(rootView, id);
       if (searchParams == null) {
         break missingId;
       }
 
-      return new ActivityObjectListBinding((LinearLayout) rootView, availableOnly, objectRecycler,
-          searchParams);
+      return new ActivityObjectListBinding((ConstraintLayout) rootView, btnBack, chipAll,
+          chipAvailable, filterArea, header, objectRecycler, searchParams);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

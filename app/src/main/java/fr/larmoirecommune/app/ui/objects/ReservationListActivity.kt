@@ -1,6 +1,6 @@
 package fr.larmoirecommune.app.ui.objects
 
-import android.content.Intent // Nécessaire pour la navigation
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -13,12 +13,8 @@ class ReservationListActivity : AppCompatActivity() {
     private val viewModel: ReservationListViewModel by viewModels()
 
     private val adapter = ReservationAdapter { reservation ->
-        // Création de l'intention pour aller vers la page de détail
         val intent = Intent(this, ReservationDetailActivity::class.java)
-
-        // On passe l'ID de la réservation pour que la page suivante sache quoi charger
         intent.putExtra("RESERVATION_ID", reservation.id)
-
         startActivity(intent)
     }
 
@@ -26,6 +22,8 @@ class ReservationListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityReservationListBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.btnBack.setOnClickListener { finish() }
 
         binding.reservationRecycler.layoutManager = LinearLayoutManager(this)
         binding.reservationRecycler.adapter = adapter
