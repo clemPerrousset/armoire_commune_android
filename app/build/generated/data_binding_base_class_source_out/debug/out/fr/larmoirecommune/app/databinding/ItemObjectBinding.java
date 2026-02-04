@@ -4,6 +4,8 @@ package fr.larmoirecommune.app.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,7 +22,13 @@ public final class ItemObjectBinding implements ViewBinding {
   private final MaterialCardView rootView;
 
   @NonNull
+  public final Button btnView;
+
+  @NonNull
   public final TextView objectDesc;
+
+  @NonNull
+  public final ImageView objectImage;
 
   @NonNull
   public final TextView objectName;
@@ -28,10 +36,13 @@ public final class ItemObjectBinding implements ViewBinding {
   @NonNull
   public final TextView objectStatus;
 
-  private ItemObjectBinding(@NonNull MaterialCardView rootView, @NonNull TextView objectDesc,
-      @NonNull TextView objectName, @NonNull TextView objectStatus) {
+  private ItemObjectBinding(@NonNull MaterialCardView rootView, @NonNull Button btnView,
+      @NonNull TextView objectDesc, @NonNull ImageView objectImage, @NonNull TextView objectName,
+      @NonNull TextView objectStatus) {
     this.rootView = rootView;
+    this.btnView = btnView;
     this.objectDesc = objectDesc;
+    this.objectImage = objectImage;
     this.objectName = objectName;
     this.objectStatus = objectStatus;
   }
@@ -63,9 +74,21 @@ public final class ItemObjectBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btnView;
+      Button btnView = ViewBindings.findChildViewById(rootView, id);
+      if (btnView == null) {
+        break missingId;
+      }
+
       id = R.id.objectDesc;
       TextView objectDesc = ViewBindings.findChildViewById(rootView, id);
       if (objectDesc == null) {
+        break missingId;
+      }
+
+      id = R.id.objectImage;
+      ImageView objectImage = ViewBindings.findChildViewById(rootView, id);
+      if (objectImage == null) {
         break missingId;
       }
 
@@ -81,8 +104,8 @@ public final class ItemObjectBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ItemObjectBinding((MaterialCardView) rootView, objectDesc, objectName,
-          objectStatus);
+      return new ItemObjectBinding((MaterialCardView) rootView, btnView, objectDesc, objectImage,
+          objectName, objectStatus);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

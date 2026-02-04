@@ -4,9 +4,11 @@ package fr.larmoirecommune.app.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
@@ -21,16 +23,43 @@ public final class ActivityMainBinding implements ViewBinding {
   private final ConstraintLayout rootView;
 
   @NonNull
+  public final TextView appTitle;
+
+  @NonNull
   public final RecyclerView dashboardRecycler;
 
   @NonNull
-  public final TextView homeTitle;
+  public final ConstraintLayout headerContainer;
 
-  private ActivityMainBinding(@NonNull ConstraintLayout rootView,
-      @NonNull RecyclerView dashboardRecycler, @NonNull TextView homeTitle) {
+  @NonNull
+  public final ImageView menuButton;
+
+  @NonNull
+  public final ImageView profileButton;
+
+  @NonNull
+  public final CardView searchContainer;
+
+  @NonNull
+  public final TextView subtitleText;
+
+  @NonNull
+  public final TextView welcomeText;
+
+  private ActivityMainBinding(@NonNull ConstraintLayout rootView, @NonNull TextView appTitle,
+      @NonNull RecyclerView dashboardRecycler, @NonNull ConstraintLayout headerContainer,
+      @NonNull ImageView menuButton, @NonNull ImageView profileButton,
+      @NonNull CardView searchContainer, @NonNull TextView subtitleText,
+      @NonNull TextView welcomeText) {
     this.rootView = rootView;
+    this.appTitle = appTitle;
     this.dashboardRecycler = dashboardRecycler;
-    this.homeTitle = homeTitle;
+    this.headerContainer = headerContainer;
+    this.menuButton = menuButton;
+    this.profileButton = profileButton;
+    this.searchContainer = searchContainer;
+    this.subtitleText = subtitleText;
+    this.welcomeText = welcomeText;
   }
 
   @Override
@@ -60,19 +89,56 @@ public final class ActivityMainBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.appTitle;
+      TextView appTitle = ViewBindings.findChildViewById(rootView, id);
+      if (appTitle == null) {
+        break missingId;
+      }
+
       id = R.id.dashboardRecycler;
       RecyclerView dashboardRecycler = ViewBindings.findChildViewById(rootView, id);
       if (dashboardRecycler == null) {
         break missingId;
       }
 
-      id = R.id.homeTitle;
-      TextView homeTitle = ViewBindings.findChildViewById(rootView, id);
-      if (homeTitle == null) {
+      id = R.id.headerContainer;
+      ConstraintLayout headerContainer = ViewBindings.findChildViewById(rootView, id);
+      if (headerContainer == null) {
         break missingId;
       }
 
-      return new ActivityMainBinding((ConstraintLayout) rootView, dashboardRecycler, homeTitle);
+      id = R.id.menuButton;
+      ImageView menuButton = ViewBindings.findChildViewById(rootView, id);
+      if (menuButton == null) {
+        break missingId;
+      }
+
+      id = R.id.profileButton;
+      ImageView profileButton = ViewBindings.findChildViewById(rootView, id);
+      if (profileButton == null) {
+        break missingId;
+      }
+
+      id = R.id.searchContainer;
+      CardView searchContainer = ViewBindings.findChildViewById(rootView, id);
+      if (searchContainer == null) {
+        break missingId;
+      }
+
+      id = R.id.subtitleText;
+      TextView subtitleText = ViewBindings.findChildViewById(rootView, id);
+      if (subtitleText == null) {
+        break missingId;
+      }
+
+      id = R.id.welcomeText;
+      TextView welcomeText = ViewBindings.findChildViewById(rootView, id);
+      if (welcomeText == null) {
+        break missingId;
+      }
+
+      return new ActivityMainBinding((ConstraintLayout) rootView, appTitle, dashboardRecycler,
+          headerContainer, menuButton, profileButton, searchContainer, subtitleText, welcomeText);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

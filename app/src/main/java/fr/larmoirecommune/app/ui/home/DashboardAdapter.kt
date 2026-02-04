@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import fr.larmoirecommune.app.databinding.ItemDashboardBinding
 
-data class DashboardItem(val title: String, val action: () -> Unit)
+data class DashboardItem(val title: String, val iconRes: Int, val action: () -> Unit)
 
 class DashboardAdapter(private val items: List<DashboardItem>) : RecyclerView.Adapter<DashboardAdapter.ViewHolder>() {
 
@@ -19,6 +19,7 @@ class DashboardAdapter(private val items: List<DashboardItem>) : RecyclerView.Ad
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
         holder.binding.itemTitle.text = item.title
+        holder.binding.itemIcon.setImageResource(item.iconRes)
         holder.itemView.setOnClickListener { item.action() }
     }
 

@@ -5,10 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import fr.larmoirecommune.app.R;
@@ -18,7 +19,28 @@ import java.lang.String;
 
 public final class ActivityProfileBinding implements ViewBinding {
   @NonNull
-  private final LinearLayout rootView;
+  private final ConstraintLayout rootView;
+
+  @NonNull
+  public final ImageView avatar;
+
+  @NonNull
+  public final ImageView btnBack;
+
+  @NonNull
+  public final ItemProfileOptionBinding btnFaq;
+
+  @NonNull
+  public final ItemProfileOptionBinding btnFavorites;
+
+  @NonNull
+  public final ItemProfileOptionBinding btnHistory;
+
+  @NonNull
+  public final ItemProfileOptionBinding btnMyReservations;
+
+  @NonNull
+  public final ItemProfileOptionBinding btnPrivacy;
 
   @NonNull
   public final Button logoutButton;
@@ -29,17 +51,33 @@ public final class ActivityProfileBinding implements ViewBinding {
   @NonNull
   public final TextView profileName;
 
-  private ActivityProfileBinding(@NonNull LinearLayout rootView, @NonNull Button logoutButton,
-      @NonNull TextView profileEmail, @NonNull TextView profileName) {
+  @NonNull
+  public final ConstraintLayout toolbar;
+
+  private ActivityProfileBinding(@NonNull ConstraintLayout rootView, @NonNull ImageView avatar,
+      @NonNull ImageView btnBack, @NonNull ItemProfileOptionBinding btnFaq,
+      @NonNull ItemProfileOptionBinding btnFavorites, @NonNull ItemProfileOptionBinding btnHistory,
+      @NonNull ItemProfileOptionBinding btnMyReservations,
+      @NonNull ItemProfileOptionBinding btnPrivacy, @NonNull Button logoutButton,
+      @NonNull TextView profileEmail, @NonNull TextView profileName,
+      @NonNull ConstraintLayout toolbar) {
     this.rootView = rootView;
+    this.avatar = avatar;
+    this.btnBack = btnBack;
+    this.btnFaq = btnFaq;
+    this.btnFavorites = btnFavorites;
+    this.btnHistory = btnHistory;
+    this.btnMyReservations = btnMyReservations;
+    this.btnPrivacy = btnPrivacy;
     this.logoutButton = logoutButton;
     this.profileEmail = profileEmail;
     this.profileName = profileName;
+    this.toolbar = toolbar;
   }
 
   @Override
   @NonNull
-  public LinearLayout getRoot() {
+  public ConstraintLayout getRoot() {
     return rootView;
   }
 
@@ -64,26 +102,80 @@ public final class ActivityProfileBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
-      id = R.id.logout_button;
+      id = R.id.avatar;
+      ImageView avatar = ViewBindings.findChildViewById(rootView, id);
+      if (avatar == null) {
+        break missingId;
+      }
+
+      id = R.id.btnBack;
+      ImageView btnBack = ViewBindings.findChildViewById(rootView, id);
+      if (btnBack == null) {
+        break missingId;
+      }
+
+      id = R.id.btnFaq;
+      View btnFaq = ViewBindings.findChildViewById(rootView, id);
+      if (btnFaq == null) {
+        break missingId;
+      }
+      ItemProfileOptionBinding binding_btnFaq = ItemProfileOptionBinding.bind(btnFaq);
+
+      id = R.id.btnFavorites;
+      View btnFavorites = ViewBindings.findChildViewById(rootView, id);
+      if (btnFavorites == null) {
+        break missingId;
+      }
+      ItemProfileOptionBinding binding_btnFavorites = ItemProfileOptionBinding.bind(btnFavorites);
+
+      id = R.id.btnHistory;
+      View btnHistory = ViewBindings.findChildViewById(rootView, id);
+      if (btnHistory == null) {
+        break missingId;
+      }
+      ItemProfileOptionBinding binding_btnHistory = ItemProfileOptionBinding.bind(btnHistory);
+
+      id = R.id.btnMyReservations;
+      View btnMyReservations = ViewBindings.findChildViewById(rootView, id);
+      if (btnMyReservations == null) {
+        break missingId;
+      }
+      ItemProfileOptionBinding binding_btnMyReservations = ItemProfileOptionBinding.bind(btnMyReservations);
+
+      id = R.id.btnPrivacy;
+      View btnPrivacy = ViewBindings.findChildViewById(rootView, id);
+      if (btnPrivacy == null) {
+        break missingId;
+      }
+      ItemProfileOptionBinding binding_btnPrivacy = ItemProfileOptionBinding.bind(btnPrivacy);
+
+      id = R.id.logoutButton;
       Button logoutButton = ViewBindings.findChildViewById(rootView, id);
       if (logoutButton == null) {
         break missingId;
       }
 
-      id = R.id.profile_email;
+      id = R.id.profileEmail;
       TextView profileEmail = ViewBindings.findChildViewById(rootView, id);
       if (profileEmail == null) {
         break missingId;
       }
 
-      id = R.id.profile_name;
+      id = R.id.profileName;
       TextView profileName = ViewBindings.findChildViewById(rootView, id);
       if (profileName == null) {
         break missingId;
       }
 
-      return new ActivityProfileBinding((LinearLayout) rootView, logoutButton, profileEmail,
-          profileName);
+      id = R.id.toolbar;
+      ConstraintLayout toolbar = ViewBindings.findChildViewById(rootView, id);
+      if (toolbar == null) {
+        break missingId;
+      }
+
+      return new ActivityProfileBinding((ConstraintLayout) rootView, avatar, btnBack,
+          binding_btnFaq, binding_btnFavorites, binding_btnHistory, binding_btnMyReservations,
+          binding_btnPrivacy, logoutButton, profileEmail, profileName, toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
