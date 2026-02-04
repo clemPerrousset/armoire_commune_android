@@ -40,6 +40,8 @@ class AdminCreateLieuActivity : AppCompatActivity() {
         binding = ActivityAdminCreateLieuBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.btnBack.setOnClickListener { finish() }
+
         setupMap()
         setupAddressSearch()
 
@@ -76,7 +78,6 @@ class AdminCreateLieuActivity : AppCompatActivity() {
 
         val mapEventsOverlay = MapEventsOverlay(object : MapEventsReceiver {
             override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
-                // Just move marker, don't reverse geocode on single tap (UX choice)
                 p?.let {
                     selectedPoint = it
                     updateMarker(it)
@@ -88,7 +89,6 @@ class AdminCreateLieuActivity : AppCompatActivity() {
                 p?.let {
                     selectedPoint = it
                     updateMarker(it)
-                    // Reverse Geocode
                     lifecycleScope.launch {
                         val address = GeoUtils.reverseGeocode(it.latitude, it.longitude)
                         if (address != null) {
@@ -103,7 +103,6 @@ class AdminCreateLieuActivity : AppCompatActivity() {
         })
         binding.map.overlays.add(0, mapEventsOverlay)
 
-        // Setup Location Overlay
         locationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(this), binding.map)
         locationOverlay.enableMyLocation()
         binding.map.overlays.add(locationOverlay)
@@ -129,10 +128,8 @@ class AdminCreateLieuActivity : AppCompatActivity() {
         if (location != null) {
             binding.map.controller.animateTo(location)
             binding.map.controller.setZoom(18.0)
-            // Auto select this point
             selectedPoint = location
             updateMarker(location)
-            // Reverse geocode
             lifecycleScope.launch {
                 val address = GeoUtils.reverseGeocode(location.latitude, location.longitude)
                 if (address != null) {
@@ -157,7 +154,7 @@ class AdminCreateLieuActivity : AppCompatActivity() {
                 if (query.length > 5) {
                     searchJob?.cancel()
                     searchJob = lifecycleScope.launch {
-                        delay(1000) // Debounce
+                        delay(1000)
                         val point = GeoUtils.searchAddress(query)
                         if (point != null) {
                             selectedPoint = point
@@ -171,9 +168,7 @@ class AdminCreateLieuActivity : AppCompatActivity() {
     }
 
     private fun updateMarker(p: GeoPoint) {
-        // Remove previous markers
         binding.map.overlays.removeAll { it is Marker }
-
         val marker = Marker(binding.map)
         marker.position = p
         marker.title = "Nouveau Lieu"

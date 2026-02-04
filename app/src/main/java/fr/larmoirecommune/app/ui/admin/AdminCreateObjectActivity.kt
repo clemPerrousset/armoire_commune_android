@@ -17,6 +17,8 @@ class AdminCreateObjectActivity : AppCompatActivity() {
         binding = ActivityAdminCreateObjectBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.btnBack.setOnClickListener { finish() }
+
         binding.createButton.setOnClickListener {
             val nom = binding.objectName.text.toString()
             val desc = binding.objectDesc.text.toString()

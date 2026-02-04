@@ -5,9 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.textfield.TextInputEditText;
@@ -19,10 +21,19 @@ import org.osmdroid.views.MapView;
 
 public final class ActivityAdminCreateLieuBinding implements ViewBinding {
   @NonNull
-  private final LinearLayout rootView;
+  private final ConstraintLayout rootView;
+
+  @NonNull
+  public final ImageView btnBack;
 
   @NonNull
   public final Button btnMyLocation;
+
+  @NonNull
+  public final LinearLayout contentArea;
+
+  @NonNull
+  public final ConstraintLayout header;
 
   @NonNull
   public final TextInputEditText lieuAddress;
@@ -36,11 +47,15 @@ public final class ActivityAdminCreateLieuBinding implements ViewBinding {
   @NonNull
   public final Button validateButton;
 
-  private ActivityAdminCreateLieuBinding(@NonNull LinearLayout rootView,
-      @NonNull Button btnMyLocation, @NonNull TextInputEditText lieuAddress,
+  private ActivityAdminCreateLieuBinding(@NonNull ConstraintLayout rootView,
+      @NonNull ImageView btnBack, @NonNull Button btnMyLocation, @NonNull LinearLayout contentArea,
+      @NonNull ConstraintLayout header, @NonNull TextInputEditText lieuAddress,
       @NonNull TextInputEditText lieuName, @NonNull MapView map, @NonNull Button validateButton) {
     this.rootView = rootView;
+    this.btnBack = btnBack;
     this.btnMyLocation = btnMyLocation;
+    this.contentArea = contentArea;
+    this.header = header;
     this.lieuAddress = lieuAddress;
     this.lieuName = lieuName;
     this.map = map;
@@ -49,7 +64,7 @@ public final class ActivityAdminCreateLieuBinding implements ViewBinding {
 
   @Override
   @NonNull
-  public LinearLayout getRoot() {
+  public ConstraintLayout getRoot() {
     return rootView;
   }
 
@@ -74,9 +89,27 @@ public final class ActivityAdminCreateLieuBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btnBack;
+      ImageView btnBack = ViewBindings.findChildViewById(rootView, id);
+      if (btnBack == null) {
+        break missingId;
+      }
+
       id = R.id.btnMyLocation;
       Button btnMyLocation = ViewBindings.findChildViewById(rootView, id);
       if (btnMyLocation == null) {
+        break missingId;
+      }
+
+      id = R.id.contentArea;
+      LinearLayout contentArea = ViewBindings.findChildViewById(rootView, id);
+      if (contentArea == null) {
+        break missingId;
+      }
+
+      id = R.id.header;
+      ConstraintLayout header = ViewBindings.findChildViewById(rootView, id);
+      if (header == null) {
         break missingId;
       }
 
@@ -104,8 +137,8 @@ public final class ActivityAdminCreateLieuBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityAdminCreateLieuBinding((LinearLayout) rootView, btnMyLocation, lieuAddress,
-          lieuName, map, validateButton);
+      return new ActivityAdminCreateLieuBinding((ConstraintLayout) rootView, btnBack, btnMyLocation,
+          contentArea, header, lieuAddress, lieuName, map, validateButton);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "fr.larmoirecommune.app-mergeDebugResources-38:/values-v25/values-v25.xml",
+            "outputFile": "fr.larmoirecommune.app-mergeDebugResources-2:/values-v25/values-v25.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\cleme\\.gradle\\caches\\8.8\\transforms\\36282515ea847a88da1ac0ad108482b6\\transformed\\appcompat-1.6.1\\res\\values-v25\\values-v25.xml",
+                    "source": "/home/jules/.gradle/caches/8.8/transforms/36282515ea847a88da1ac0ad108482b6/transformed/appcompat-1.6.1/res/values-v25/values-v25.xml",
                     "from": {
                         "startLines": "2,3,4,6",
                         "startColumns": "4,4,4,4",

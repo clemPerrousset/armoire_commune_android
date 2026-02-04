@@ -4,6 +4,7 @@ package fr.larmoirecommune.app.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +21,9 @@ public final class ItemReservationBinding implements ViewBinding {
   private final MaterialCardView rootView;
 
   @NonNull
+  public final ImageView icon;
+
+  @NonNull
   public final TextView resDates;
 
   @NonNull
@@ -28,9 +32,10 @@ public final class ItemReservationBinding implements ViewBinding {
   @NonNull
   public final TextView resStatus;
 
-  private ItemReservationBinding(@NonNull MaterialCardView rootView, @NonNull TextView resDates,
-      @NonNull TextView resObjectName, @NonNull TextView resStatus) {
+  private ItemReservationBinding(@NonNull MaterialCardView rootView, @NonNull ImageView icon,
+      @NonNull TextView resDates, @NonNull TextView resObjectName, @NonNull TextView resStatus) {
     this.rootView = rootView;
+    this.icon = icon;
     this.resDates = resDates;
     this.resObjectName = resObjectName;
     this.resStatus = resStatus;
@@ -63,6 +68,12 @@ public final class ItemReservationBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.icon;
+      ImageView icon = ViewBindings.findChildViewById(rootView, id);
+      if (icon == null) {
+        break missingId;
+      }
+
       id = R.id.resDates;
       TextView resDates = ViewBindings.findChildViewById(rootView, id);
       if (resDates == null) {
@@ -81,7 +92,7 @@ public final class ItemReservationBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ItemReservationBinding((MaterialCardView) rootView, resDates, resObjectName,
+      return new ItemReservationBinding((MaterialCardView) rootView, icon, resDates, resObjectName,
           resStatus);
     }
     String missingId = rootView.getResources().getResourceName(id);

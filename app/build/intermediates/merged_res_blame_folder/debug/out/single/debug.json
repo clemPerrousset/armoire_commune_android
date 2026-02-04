@@ -1,86 +1,150 @@
 [
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/layout_activity_reservation.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/layout/activity_reservation.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_item_reservation.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/item_reservation.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/layout_activity_signup.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/layout/activity_signup.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/mipmap-anydpi-v26/ic_launcher_round.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/layout_activity_admin_reservations.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/layout/activity_admin_reservations.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/mipmap-anydpi_ic_launcher_round.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/mipmap-anydpi/ic_launcher_round.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/layout_activity_reservation_list.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/layout/activity_reservation_list.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_activity_login.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/activity_login.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/layout_item_object.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/layout/item_object.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/mipmap-anydpi_ic_launcher.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/mipmap-anydpi/ic_launcher.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/layout_activity_reservation_detail.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/layout/activity_reservation_detail.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_activity_admin_reservations.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/activity_admin_reservations.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/mipmap-anydpi-v26/ic_launcher.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/drawable_ic_admin.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/drawable/ic_admin.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/layout_activity_admin_create_object.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/layout/activity_admin_create_object.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/drawable/ic_launcher_foreground.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/layout_activity_profile.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/layout/activity_profile.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/anim_item_animation_fall_down.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/anim/item_animation_fall_down.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/layout_item_reservation.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/layout/item_reservation.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/drawable_ic_profile.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/drawable/ic_profile.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/layout_activity_main.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/layout/activity_main.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_activity_reservation_detail.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/activity_reservation_detail.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/drawable_ic_launcher_background.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/drawable/ic_launcher_background.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_activity_profile.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/activity_profile.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/mipmap-anydpi_ic_launcher.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/mipmap-anydpi/ic_launcher.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/drawable_ic_arrow_back.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/drawable/ic_arrow_back.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/layout_activity_object_detail.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/layout/activity_object_detail.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_activity_admin_create_object.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/activity_admin_create_object.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/layout_activity_login.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/layout/activity_login.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_activity_reservation.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/activity_reservation.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/layout_activity_admin_create_lieu.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/layout/activity_admin_create_lieu.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/drawable_ic_heart.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/drawable/ic_heart.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/mipmap-anydpi-v26/ic_launcher_round.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/drawable_ic_chevron_right.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/drawable/ic_chevron_right.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/layout_item_dashboard.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/layout/item_dashboard.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/drawable_ic_help.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/drawable/ic_help.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/drawable_ic_launcher_foreground.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/drawable/ic_launcher_foreground.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/anim_layout_animation_fall_down.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/anim/layout_animation_fall_down.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/layout_activity_object_list.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/layout/activity_object_list.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/drawable_ic_launcher_background.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/drawable/ic_launcher_background.xml"
     },
     {
-        "merged": "fr.larmoirecommune.app-merged_res-40:/mipmap-anydpi_ic_launcher_round.xml.flat",
-        "source": "fr.larmoirecommune.app-main-42:/mipmap-anydpi/ic_launcher_round.xml"
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_activity_object_detail.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/activity_object_detail.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_activity_object_list.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/activity_object_list.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/drawable_ic_objects.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/drawable/ic_objects.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_item_profile_option.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/item_profile_option.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/drawable_ic_logout.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/drawable/ic_logout.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_activity_signup.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/activity_signup.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/drawable_ic_menu.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/drawable/ic_menu.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/drawable_bg_pill_light.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/drawable/bg_pill_light.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_activity_admin_create_lieu.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/activity_admin_create_lieu.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_item_dashboard.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/item_dashboard.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/drawable_ic_reservations.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/drawable/ic_reservations.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_activity_main.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/activity_main.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/drawable_ic_search.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/drawable/ic_search.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/drawable_ic_history.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/drawable/ic_history.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_item_object.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/item_object.xml"
+    },
+    {
+        "merged": "fr.larmoirecommune.app-merged_res-4:/layout_activity_reservation_list.xml.flat",
+        "source": "fr.larmoirecommune.app-main-6:/layout/activity_reservation_list.xml"
     }
 ]
