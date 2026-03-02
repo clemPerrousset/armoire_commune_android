@@ -52,6 +52,10 @@
         "source": "fr.larmoirecommune.app-main-6:/layout/activity_admin_create_object.xml"
     },
     {
+        "merged": "fr.larmoirecommune.app-mergeDebugResources-3:/layout/item_tag.xml",
+        "source": "fr.larmoirecommune.app-main-6:/layout/item_tag.xml"
+    },
+    {
         "merged": "fr.larmoirecommune.app-mergeDebugResources-3:/layout/activity_reservation.xml",
         "source": "fr.larmoirecommune.app-main-6:/layout/activity_reservation.xml"
     },
