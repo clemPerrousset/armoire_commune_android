@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import fr.larmoirecommune.app.R
 import fr.larmoirecommune.app.databinding.ActivityProfileBinding
 import fr.larmoirecommune.app.network.ApiClient
-import fr.larmoirecommune.app.ui.auth.LoginActivity
+import fr.larmoirecommune.app.ui.home.MainActivity
 import fr.larmoirecommune.app.ui.objects.ReservationListActivity
 
 class ProfileActivity : AppCompatActivity() {
@@ -74,7 +74,7 @@ class ProfileActivity : AppCompatActivity() {
         ApiClient.currentUserIsAdmin = false
         ApiClient.currentUserEmail = null
 
-        val intent = Intent(this, LoginActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
