@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import fr.larmoirecommune.app.databinding.ActivityObjectDetailBinding
+import fr.larmoirecommune.app.network.ApiClient
+import fr.larmoirecommune.app.ui.auth.LoginActivity
 import fr.larmoirecommune.app.viewmodel.ObjectDetailViewModel
 
 class ObjectDetailActivity : AppCompatActivity() {
@@ -31,9 +33,15 @@ class ObjectDetailActivity : AppCompatActivity() {
         viewModel.loadObject(objectId)
 
         binding.reserveButton.setOnClickListener {
-            val intent = Intent(this, ReservationActivity::class.java)
-            intent.putExtra("OBJECT_ID", objectId)
-            startActivity(intent)
+            if (ApiClient.token == null) {
+                val loginIntent = Intent(this, LoginActivity::class.java)
+                loginIntent.putExtra("FINISH_ONLY", true)
+                startActivity(loginIntent)
+            } else {
+                val intent = Intent(this, ReservationActivity::class.java)
+                intent.putExtra("OBJECT_ID", objectId)
+                startActivity(intent)
+            }
         }
     }
 }

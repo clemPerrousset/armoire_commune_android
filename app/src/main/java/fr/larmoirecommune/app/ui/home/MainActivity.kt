@@ -13,6 +13,7 @@ import fr.larmoirecommune.app.network.ApiClient
 import fr.larmoirecommune.app.ui.admin.AdminCreateLieuActivity
 import fr.larmoirecommune.app.ui.admin.AdminCreateObjectActivity
 import fr.larmoirecommune.app.ui.admin.AdminReservationsActivity
+import fr.larmoirecommune.app.ui.auth.LoginActivity
 import fr.larmoirecommune.app.ui.objects.ObjectListActivity
 import fr.larmoirecommune.app.ui.objects.ReservationListActivity
 import fr.larmoirecommune.app.ui.profile.ProfileActivity
@@ -30,7 +31,12 @@ class MainActivity : AppCompatActivity() {
 
         // Setup Header Actions
         binding.profileButton.setOnClickListener {
-            startActivity(Intent(this, ProfileActivity::class.java))
+            if (ApiClient.token == null) {
+                val loginIntent = Intent(this, LoginActivity::class.java)
+                startActivity(loginIntent)
+            } else {
+                startActivity(Intent(this, ProfileActivity::class.java))
+            }
         }
 
         binding.searchContainer.setOnClickListener {
@@ -39,14 +45,24 @@ class MainActivity : AppCompatActivity() {
 
         // Configuration du LayoutManager pour la grille
         binding.dashboardRecycler.layoutManager = GridLayoutManager(this, 2)
+    }
 
-        // Appel API pour récupérer les droits utilisateur
+    override fun onResume() {
+        super.onResume()
+        // Appel API pour récupérer les droits utilisateur (et rafraîchir après login/logout)
         fetchUserAndSetupDashboard()
     }
 
     private fun fetchUserAndSetupDashboard() {
         lifecycleScope.launch {
             try {
+                if (ApiClient.token == null) {
+                    ApiClient.currentUserIsAdmin = false
+                    ApiClient.currentUserEmail = null
+                    setupDashboardItems()
+                    return@launch
+                }
+
                 // 1. Appel réseau vers /users/me
                 val user: User = ApiClient.client.get(ApiClient.getUrl("users/me")).body()
 
@@ -77,10 +93,20 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this, ObjectListActivity::class.java))
             },
             DashboardItem(getString(R.string.menu_my_reservations), R.drawable.ic_reservations) {
-                startActivity(Intent(this, ReservationListActivity::class.java))
+                if (ApiClient.token == null) {
+                    val loginIntent = Intent(this, LoginActivity::class.java)
+                    startActivity(loginIntent)
+                } else {
+                    startActivity(Intent(this, ReservationListActivity::class.java))
+                }
             },
             DashboardItem(getString(R.string.menu_profile), R.drawable.ic_profile) {
-                startActivity(Intent(this, ProfileActivity::class.java))
+                if (ApiClient.token == null) {
+                    val loginIntent = Intent(this, LoginActivity::class.java)
+                    startActivity(loginIntent)
+                } else {
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                }
             }
         )
 
