@@ -90,3 +90,38 @@ data class Reservation(
     val objet: Objet? = null,
     val lieu: Lieu? = null
 )
+
+// --- REQUÊTES ---
+
+@Serializable
+data class CreateLieuRequest(
+    val nom: String,
+    val lat: Double,
+    val long: Double,
+    val adresse: String
+)
+
+@Serializable
+data class CreateObjectRequest(
+    val nom: String,
+    val description: String,
+    val quantite: Int,
+    @SerialName("tag_id") val tagId: Int,
+    @SerialName("consommable_ids") val consommableIds: List<Int>,
+    @SerialName("disponibilite_globale") val disponibiliteGlobale: Boolean
+)
+
+@Serializable
+data class CreateReservationRequest(
+    @SerialName("objet_id") val objetId: Int,
+    @SerialName("lieu_id") val lieuId: Int,
+    @SerialName("date_debut") val dateDebut: String
+)
+
+@Serializable
+data class SignupRequest(
+    val nom: String,
+    val prenom: String,
+    val email: String,
+    @SerialName("mot_de_passe") val password: String
+)

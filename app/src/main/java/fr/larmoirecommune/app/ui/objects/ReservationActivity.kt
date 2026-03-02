@@ -10,7 +10,9 @@ import fr.larmoirecommune.app.viewmodel.ReservationViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.overlay.Marker
+import fr.larmoirecommune.app.model.Lieu
 
 class ReservationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityReservationBinding
@@ -28,6 +30,11 @@ class ReservationActivity : AppCompatActivity() {
         objectId = intent.getIntExtra("OBJECT_ID", -1)
 
         setupMap()
+
+        viewModel.lieux.observe(this) { lieux ->
+            updateMapMarkers(lieux)
+        }
+        viewModel.loadLieux()
 
         viewModel.reservationResult.observe(this) { success ->
             if (success) {
@@ -50,19 +57,58 @@ class ReservationActivity : AppCompatActivity() {
 
     private fun setupMap() {
         binding.map.setTileSource(TileSourceFactory.MAPNIK)
+        binding.map.setMultiTouchControls(true)
         binding.map.controller.setZoom(15.0)
+        // Default center until we load points
         val startPoint = GeoPoint(47.3220, 5.0415)
         binding.map.controller.setCenter(startPoint)
+    }
 
-        val marker = Marker(binding.map)
-        marker.position = startPoint
-        marker.title = "La Ressourcerie"
-        marker.setOnMarkerClickListener { m, _ ->
-            selectedLieuId = 1
-            Toast.makeText(this, "Lieu sélectionné: ${m.title}", Toast.LENGTH_SHORT).show()
-            true
+    private fun updateMapMarkers(lieux: List<Lieu>) {
+        binding.map.overlays.clear()
+
+        if (lieux.isEmpty()) return
+
+        var minLat = Double.MAX_VALUE
+        var maxLat = -Double.MAX_VALUE
+        var minLon = Double.MAX_VALUE
+        var maxLon = -Double.MAX_VALUE
+
+        for (lieu in lieux) {
+            val point = GeoPoint(lieu.lat, lieu.long)
+
+            if (lieu.lat < minLat) minLat = lieu.lat
+            if (lieu.lat > maxLat) maxLat = lieu.lat
+            if (lieu.long < minLon) minLon = lieu.long
+            if (lieu.long > maxLon) maxLon = lieu.long
+
+            val marker = Marker(binding.map)
+            marker.position = point
+            marker.title = lieu.nom
+            marker.subDescription = lieu.adresse
+
+            marker.setOnMarkerClickListener { m, _ ->
+                lieu.id?.let { id -> selectedLieuId = id }
+                m.showInfoWindow()
+                Toast.makeText(this@ReservationActivity, "Lieu sélectionné: ${lieu.nom}", Toast.LENGTH_SHORT).show()
+                true
+            }
+            binding.map.overlays.add(marker)
         }
-        binding.map.overlays.add(marker)
+
+        binding.map.invalidate()
+
+        // Center map to show all markers
+        if (lieux.size > 1) {
+            val boundingBox = BoundingBox(maxLat, maxLon, minLat, minLon)
+            // Add slight padding to the bounding box if needed, osmdroid handles it
+            binding.map.post {
+                binding.map.zoomToBoundingBox(boundingBox, true)
+            }
+        } else if (lieux.size == 1) {
+            binding.map.controller.setCenter(GeoPoint(lieux[0].lat, lieux[0].long))
+            binding.map.controller.setZoom(15.0)
+        }
     }
 
     override fun onResume() {

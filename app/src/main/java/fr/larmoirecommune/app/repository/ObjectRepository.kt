@@ -9,10 +9,22 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import fr.larmoirecommune.app.model.CreateReservationRequest
 
 class ObjectRepository {
     // --- GESTION DES OBJETS ---
     private var cachedObjects: List<Objet> = emptyList()
+
+    // --- GESTION DES LIEUX ---
+
+    suspend fun getLieux(): List<fr.larmoirecommune.app.model.Lieu> {
+        return try {
+            ApiClient.client.get(ApiClient.getUrl("/admin_meta/lieux")).body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
 
     suspend fun getObjects(available: Boolean = false): List<Objet> {
         return try {
