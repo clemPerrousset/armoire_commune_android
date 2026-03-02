@@ -44,10 +44,13 @@ public final class ActivityObjectListBinding implements ViewBinding {
   @NonNull
   public final TextInputEditText searchParams;
 
+  @NonNull
+  public final RecyclerView tagRecycler;
+
   private ActivityObjectListBinding(@NonNull ConstraintLayout rootView, @NonNull ImageView btnBack,
       @NonNull TextView chipAll, @NonNull TextView chipAvailable, @NonNull LinearLayout filterArea,
       @NonNull ConstraintLayout header, @NonNull RecyclerView objectRecycler,
-      @NonNull TextInputEditText searchParams) {
+      @NonNull TextInputEditText searchParams, @NonNull RecyclerView tagRecycler) {
     this.rootView = rootView;
     this.btnBack = btnBack;
     this.chipAll = chipAll;
@@ -56,6 +59,7 @@ public final class ActivityObjectListBinding implements ViewBinding {
     this.header = header;
     this.objectRecycler = objectRecycler;
     this.searchParams = searchParams;
+    this.tagRecycler = tagRecycler;
   }
 
   @Override
@@ -127,8 +131,14 @@ public final class ActivityObjectListBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tagRecycler;
+      RecyclerView tagRecycler = ViewBindings.findChildViewById(rootView, id);
+      if (tagRecycler == null) {
+        break missingId;
+      }
+
       return new ActivityObjectListBinding((ConstraintLayout) rootView, btnBack, chipAll,
-          chipAvailable, filterArea, header, objectRecycler, searchParams);
+          chipAvailable, filterArea, header, objectRecycler, searchParams, tagRecycler);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
