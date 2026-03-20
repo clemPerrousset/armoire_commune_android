@@ -1,5 +1,6 @@
 package fr.larmoirecommune.app.viewmodel
 
+import fr.larmoirecommune.app.model.Objet
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.MutableLiveData
@@ -13,10 +14,19 @@ class ObjectListViewModel : ViewModel() {
     private val _objects = MutableLiveData<List<Objet>>()
     val objects: LiveData<List<Objet>> = _objects
 
-    fun loadObjects(available: Boolean) {
+    private val _tags = MutableLiveData<List<fr.larmoirecommune.app.model.Tag>>()
+    val tags: LiveData<List<fr.larmoirecommune.app.model.Tag>> = _tags
+
+    fun loadObjects(available: Boolean, nom: String? = null, tagId: Int? = null) {
         viewModelScope.launch {
-            val list = repository.getObjects(available)
+            val list = repository.getObjects(available, nom, tagId)
             _objects.value = list
+        }
+    }
+
+    fun loadTags() {
+        viewModelScope.launch {
+            _tags.value = repository.getTags()
         }
     }
 }

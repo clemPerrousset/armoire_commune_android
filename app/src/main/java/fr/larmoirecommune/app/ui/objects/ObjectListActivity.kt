@@ -10,10 +10,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import fr.larmoirecommune.app.R
 import fr.larmoirecommune.app.databinding.ActivityObjectListBinding
 import fr.larmoirecommune.app.viewmodel.ObjectListViewModel
+import android.text.Editable
+import android.text.TextWatcher
+
 
 class ObjectListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityObjectListBinding
     private val viewModel: ObjectListViewModel by viewModels()
+
+    private var isAvailableOnly = false
+    private var currentSearchQuery: String? = null
+    private var selectedTagId: Int? = null
+    private lateinit var tagAdapter: TagAdapter
+
     private val adapter = ObjectAdapter { objet ->
         val intent = Intent(this, ObjectDetailActivity::class.java)
         intent.putExtra("OBJECT_ID", objet.id)
@@ -37,17 +46,43 @@ class ObjectListActivity : AppCompatActivity() {
             adapter.submitList(list)
         }
 
+
+        // Tags Recycler
+        tagAdapter = TagAdapter { tag ->
+            selectedTagId = tag?.id
+            loadObjects(isAvailableOnly)
+        }
+        binding.tagRecycler.adapter = tagAdapter
+
+        viewModel.tags.observe(this) { tags ->
+            tagAdapter.submitList(tags)
+        }
+        viewModel.loadTags()
+
+        // Search
+        binding.searchParams.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                currentSearchQuery = s?.toString()?.takeIf { it.isNotBlank() }
+                loadObjects(isAvailableOnly)
+            }
+        })
+
         // Initial Load
+        isAvailableOnly = false
         loadObjects(false)
 
         // Chips Logic
         binding.chipAll.setOnClickListener {
             updateChips(true)
+            isAvailableOnly = false
             loadObjects(false)
         }
 
         binding.chipAvailable.setOnClickListener {
             updateChips(false)
+            isAvailableOnly = true
             loadObjects(true)
         }
     }
@@ -73,6 +108,6 @@ class ObjectListActivity : AppCompatActivity() {
     }
 
     private fun loadObjects(availableOnly: Boolean) {
-        viewModel.loadObjects(availableOnly)
+        viewModel.loadObjects(availableOnly, currentSearchQuery, selectedTagId)
     }
 }

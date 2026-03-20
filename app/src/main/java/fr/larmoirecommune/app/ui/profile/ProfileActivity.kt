@@ -1,11 +1,14 @@
 package fr.larmoirecommune.app.ui.profile
 
+import fr.larmoirecommune.app.model.Reservation
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import fr.larmoirecommune.app.R
 import fr.larmoirecommune.app.databinding.ActivityProfileBinding
 import fr.larmoirecommune.app.network.ApiClient
+import fr.larmoirecommune.app.ui.profile.FavoriteListActivity
+import fr.larmoirecommune.app.ui.profile.HistoryListActivity
 import fr.larmoirecommune.app.ui.home.MainActivity
 import fr.larmoirecommune.app.ui.objects.ReservationListActivity
 
@@ -43,12 +46,18 @@ class ProfileActivity : AppCompatActivity() {
         with(binding.btnHistory) {
             optionIcon.setImageResource(R.drawable.ic_history)
             optionTitle.text = "Historique"
+            root.setOnClickListener {
+                startActivity(Intent(this@ProfileActivity, HistoryListActivity::class.java))
+            }
         }
 
         // Favoris (Mock)
         with(binding.btnFavorites) {
             optionIcon.setImageResource(R.drawable.ic_heart)
             optionTitle.text = "Favoris"
+            root.setOnClickListener {
+                startActivity(Intent(this@ProfileActivity, FavoriteListActivity::class.java))
+            }
         }
 
         // FAQ (Mock)

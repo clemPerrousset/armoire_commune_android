@@ -1,5 +1,6 @@
 package fr.larmoirecommune.app.ui.objects
 
+import fr.larmoirecommune.app.model.Reservation
 import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
@@ -13,6 +14,8 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.views.overlay.Marker
 import fr.larmoirecommune.app.model.Lieu
+import android.app.AlertDialog
+import java.util.Calendar
 
 class ReservationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityReservationBinding
@@ -30,6 +33,10 @@ class ReservationActivity : AppCompatActivity() {
         objectId = intent.getIntExtra("OBJECT_ID", -1)
 
         setupMap()
+
+        setupDatePicker()
+        showInfoPopup()
+
 
         viewModel.lieux.observe(this) { lieux ->
             updateMapMarkers(lieux)
@@ -53,6 +60,32 @@ class ReservationActivity : AppCompatActivity() {
 
             viewModel.createReservation(objectId, selectedLieuId, dateStr)
         }
+    }
+
+
+    private fun setupDatePicker() {
+        // La réservation commence toujours le prochain Mercredi
+        val calendar = Calendar.getInstance()
+
+        // Si on est déjà mercredi, mais on veut peut-être le mercredi suivant selon l'heure
+        // Pour faire simple, on trouve le prochain mercredi
+        while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.WEDNESDAY) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
+        }
+
+        // Fixer le minDate au prochain mercredi
+        binding.datePicker.minDate = calendar.timeInMillis
+
+        // Pré-selectionner cette date
+        binding.datePicker.updateDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+    }
+
+    private fun showInfoPopup() {
+        AlertDialog.Builder(this)
+            .setTitle("Information sur la réservation")
+            .setMessage("Les réservations fonctionnent par cycle d'une semaine :\n\n• Les retraits s'effectuent le mercredi soir (lors de notre tournée).\n• Les retours doivent être effectués au plus tard le mardi soir de la semaine suivante.\n\nLa date de début sélectionnée correspond au prochain mercredi disponible.")
+            .setPositiveButton("J'ai compris", null)
+            .show()
     }
 
     private fun setupMap() {
