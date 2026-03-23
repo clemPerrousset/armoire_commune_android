@@ -9,6 +9,8 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import fr.larmoirecommune.app.model.Reservation
+import fr.larmoirecommune.app.model.Tag
 
 class AdminRepository {
 
@@ -66,6 +68,30 @@ class AdminRepository {
     suspend fun returnObject(reservationId: Int): Boolean {
         return try {
             ApiClient.client.post(ApiClient.getUrl("/admin/reservations/$reservationId/return"))
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun createTag(nom: String): Boolean {
+        return try {
+            val request = mapOf("nom" to nom)
+            ApiClient.client.post(ApiClient.getUrl("/admin_meta/tags")) {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun clearAlert(objetId: Int): Boolean {
+        return try {
+            ApiClient.client.post(ApiClient.getUrl("/admin/objets/$objetId/clear-alert"))
             true
         } catch (e: Exception) {
             e.printStackTrace()

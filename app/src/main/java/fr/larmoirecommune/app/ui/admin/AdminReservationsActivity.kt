@@ -1,5 +1,6 @@
 package fr.larmoirecommune.app.ui.admin
 
+import fr.larmoirecommune.app.model.Objet
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity

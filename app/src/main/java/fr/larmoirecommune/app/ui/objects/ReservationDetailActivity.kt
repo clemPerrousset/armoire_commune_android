@@ -1,7 +1,11 @@
 package fr.larmoirecommune.app.ui.objects
 
+import fr.larmoirecommune.app.model.Objet
+import fr.larmoirecommune.app.model.Reservation
 import android.os.Bundle
 import android.widget.Toast
+import android.view.View
+import java.util.Calendar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import fr.larmoirecommune.app.databinding.ActivityReservationDetailBinding
@@ -44,6 +48,18 @@ class ReservationDetailActivity : AppCompatActivity() {
 
                 // Gestion du bouton Annuler selon le statut
                 binding.cancelButton.isEnabled = (res.status == "active" || res.status == "confirmee")
+
+
+                // Gestion du bouton de renouvellement (affiché uniquement le lundi si actif)
+                val calendar = Calendar.getInstance()
+                val isMonday = calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
+
+                if ((res.status == "active" || res.status == "en_cours") && isMonday) {
+                    binding.renewButton.visibility = View.VISIBLE
+                } else {
+                    binding.renewButton.visibility = View.GONE
+                }
+
             }
         }
 
@@ -51,6 +67,19 @@ class ReservationDetailActivity : AppCompatActivity() {
         viewModel.loadReservation(reservationId)
 
         // 4. Action du bouton
+
+        binding.renewButton.setOnClickListener {
+            viewModel.renewReservation(reservationId)
+        }
+
+        viewModel.renewResult.observe(this) { success ->
+            if (success) {
+                Toast.makeText(this, "Réservation renouvelée (+1 semaine)", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Impossible de renouveler (déjà réservé ou limite atteinte)", Toast.LENGTH_LONG).show()
+            }
+        }
+
         binding.cancelButton.setOnClickListener {
             // Logique d'annulation (appel API via ViewModel)
             // viewModel.cancelReservation(reservationId)

@@ -1,5 +1,7 @@
 package fr.larmoirecommune.app.ui.objects
 
+import fr.larmoirecommune.app.model.Objet
+import fr.larmoirecommune.app.model.Reservation
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
