@@ -20,8 +20,15 @@ class LoginActivity : AppCompatActivity() {
 
         viewModel.loginResult.observe(this) { success ->
             if (success) {
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
+                val finishOnly = intent.getBooleanExtra("FINISH_ONLY", false)
+                if (finishOnly) {
+                    finish()
+                } else {
+                    val mainIntent = Intent(this, MainActivity::class.java)
+                    mainIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(mainIntent)
+                    finish()
+                }
             } else {
                 Toast.makeText(this, "Erreur de connexion", Toast.LENGTH_SHORT).show()
             }

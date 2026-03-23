@@ -1,5 +1,6 @@
 package fr.larmoirecommune.app.ui.objects
 
+import fr.larmoirecommune.app.model.Reservation
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels

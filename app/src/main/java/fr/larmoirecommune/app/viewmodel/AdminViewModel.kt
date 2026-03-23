@@ -1,5 +1,6 @@
 package fr.larmoirecommune.app.viewmodel
 
+import fr.larmoirecommune.app.model.Reservation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.MutableLiveData

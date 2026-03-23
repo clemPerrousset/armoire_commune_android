@@ -1,16 +1,25 @@
 package fr.larmoirecommune.app.ui.objects
 
+import fr.larmoirecommune.app.model.Reservation
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import fr.larmoirecommune.app.databinding.ActivityObjectDetailBinding
+import fr.larmoirecommune.app.network.ApiClient
+import fr.larmoirecommune.app.ui.auth.LoginActivity
 import fr.larmoirecommune.app.viewmodel.ObjectDetailViewModel
+import fr.larmoirecommune.app.repository.UserRepository
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import android.widget.Toast
 
 class ObjectDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityObjectDetailBinding
     private val viewModel: ObjectDetailViewModel by viewModels()
     private var objectId: Int = -1
+    private val userRepository = UserRepository()
+    private var isFavorite = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,12 +37,43 @@ class ObjectDetailActivity : AppCompatActivity() {
             }
         }
 
+
+        binding.btnFavorite.setOnClickListener {
+            if (ApiClient.token == null) {
+                Toast.makeText(this, "Connectez-vous pour ajouter aux favoris", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            lifecycleScope.launch {
+                if (isFavorite) {
+                    val success = userRepository.removeFavori(objectId)
+                    if (success) {
+                        isFavorite = false
+                        binding.btnFavorite.alpha = 0.5f
+                        Toast.makeText(this@ObjectDetailActivity, "Retiré des favoris", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    val success = userRepository.addFavori(objectId)
+                    if (success) {
+                        isFavorite = true
+                        binding.btnFavorite.alpha = 1.0f
+                        Toast.makeText(this@ObjectDetailActivity, "Ajouté aux favoris", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+
         viewModel.loadObject(objectId)
 
         binding.reserveButton.setOnClickListener {
-            val intent = Intent(this, ReservationActivity::class.java)
-            intent.putExtra("OBJECT_ID", objectId)
-            startActivity(intent)
+            if (ApiClient.token == null) {
+                val loginIntent = Intent(this, LoginActivity::class.java)
+                loginIntent.putExtra("FINISH_ONLY", true)
+                startActivity(loginIntent)
+            } else {
+                val intent = Intent(this, ReservationActivity::class.java)
+                intent.putExtra("OBJECT_ID", objectId)
+                startActivity(intent)
+            }
         }
     }
 }

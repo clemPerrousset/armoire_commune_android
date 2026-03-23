@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Text Styles -->
-    <style name="TextAppearance.App.Title" parent="TextAppearance.Material3.HeadlineMedium">
+    <style name="TextAppearance.App.Title" parent="TextAppearance.AppCompat.Headline">
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textStyle">bold</item>
         <item name="fontFamily">sans-serif-medium</item>
     </style>
 
-    <style name="TextAppearance.App.Subtitle" parent="TextAppearance.Material3.TitleMedium">
+    <style name="TextAppearance.App.Subtitle" parent="TextAppearance.AppCompat.Title">
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="TextAppearance.App.Body" parent="TextAppearance.Material3.BodyMedium">
+    <style name="TextAppearance.App.Body" parent="TextAppearance.AppCompat.Body1">
         <item name="android:textColor">@color/text_secondary</item>
     </style>
-    
+
     <!-- Card Style -->
     <style name="Widget.App.Card" parent="Widget.Material3.CardView.Filled">
         <item name="cardBackgroundColor">@color/surface_card</item>

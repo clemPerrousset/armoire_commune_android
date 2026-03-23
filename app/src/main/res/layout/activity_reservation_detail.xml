@@ -75,6 +75,15 @@
             android:layout_marginTop="4dp"/>
 
         <Button
+            android:id="@+id/renewButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Renouveler (+1 semaine)"
+            android:backgroundTint="@color/mint_primary"
+            android:visibility="gone"
+            android:layout_marginTop="32dp"/>
+
+        <Button
             android:id="@+id/cancelButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

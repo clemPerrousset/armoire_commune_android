@@ -1,5 +1,6 @@
 package fr.larmoirecommune.app.ui.home
 
+import fr.larmoirecommune.app.model.Reservation
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -11,17 +12,67 @@ import fr.larmoirecommune.app.databinding.ActivityMainBinding
 import fr.larmoirecommune.app.model.User
 import fr.larmoirecommune.app.network.ApiClient
 import fr.larmoirecommune.app.ui.admin.AdminCreateLieuActivity
+import fr.larmoirecommune.app.ui.admin.AdminCreateTagActivity
+import fr.larmoirecommune.app.ui.admin.AdminAlertObjectsActivity
+
+
 import fr.larmoirecommune.app.ui.admin.AdminCreateObjectActivity
 import fr.larmoirecommune.app.ui.admin.AdminReservationsActivity
+import fr.larmoirecommune.app.ui.auth.LoginActivity
 import fr.larmoirecommune.app.ui.objects.ObjectListActivity
 import fr.larmoirecommune.app.ui.objects.ReservationListActivity
 import fr.larmoirecommune.app.ui.profile.ProfileActivity
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import fr.larmoirecommune.app.worker.ReminderWorker
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import java.util.concurrent.TimeUnit
+
+import fr.larmoirecommune.app.ui.home.LieuMapActivity
+
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (!isGranted) {
+            // L'utilisateur a refusé la permission, on peut l'informer
+            // Toast.makeText(this, "Les notifications sont désactivées", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+
+
+    private fun setupWorker() {
+        val workRequest = PeriodicWorkRequestBuilder<ReminderWorker>(1, TimeUnit.DAYS)
+            .build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            "ReminderWorker",
+            androidx.work.ExistingPeriodicWorkPolicy.KEEP,
+            workRequest
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +81,12 @@ class MainActivity : AppCompatActivity() {
 
         // Setup Header Actions
         binding.profileButton.setOnClickListener {
-            startActivity(Intent(this, ProfileActivity::class.java))
+            if (ApiClient.token == null) {
+                val loginIntent = Intent(this, LoginActivity::class.java)
+                startActivity(loginIntent)
+            } else {
+                startActivity(Intent(this, ProfileActivity::class.java))
+            }
         }
 
         binding.searchContainer.setOnClickListener {
@@ -40,13 +96,26 @@ class MainActivity : AppCompatActivity() {
         // Configuration du LayoutManager pour la grille
         binding.dashboardRecycler.layoutManager = GridLayoutManager(this, 2)
 
-        // Appel API pour récupérer les droits utilisateur
+        setupWorker()
+        checkNotificationPermission()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Appel API pour récupérer les droits utilisateur (et rafraîchir après login/logout)
         fetchUserAndSetupDashboard()
     }
 
     private fun fetchUserAndSetupDashboard() {
         lifecycleScope.launch {
             try {
+                if (ApiClient.token == null) {
+                    ApiClient.currentUserIsAdmin = false
+                    ApiClient.currentUserEmail = null
+                    setupDashboardItems()
+                    return@launch
+                }
+
                 // 1. Appel réseau vers /users/me
                 val user: User = ApiClient.client.get(ApiClient.getUrl("users/me")).body()
 
@@ -73,14 +142,28 @@ class MainActivity : AppCompatActivity() {
     private fun setupDashboardItems() {
         // Liste des éléments accessibles à tous
         val items = mutableListOf(
+            DashboardItem(getString(R.string.menu_lieux), R.drawable.ic_admin) {
+                startActivity(Intent(this, LieuMapActivity::class.java))
+            },
+
             DashboardItem(getString(R.string.menu_library), R.drawable.ic_objects) {
                 startActivity(Intent(this, ObjectListActivity::class.java))
             },
             DashboardItem(getString(R.string.menu_my_reservations), R.drawable.ic_reservations) {
-                startActivity(Intent(this, ReservationListActivity::class.java))
+                if (ApiClient.token == null) {
+                    val loginIntent = Intent(this, LoginActivity::class.java)
+                    startActivity(loginIntent)
+                } else {
+                    startActivity(Intent(this, ReservationListActivity::class.java))
+                }
             },
             DashboardItem(getString(R.string.menu_profile), R.drawable.ic_profile) {
-                startActivity(Intent(this, ProfileActivity::class.java))
+                if (ApiClient.token == null) {
+                    val loginIntent = Intent(this, LoginActivity::class.java)
+                    startActivity(loginIntent)
+                } else {
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                }
             }
         )
 
@@ -91,6 +174,12 @@ class MainActivity : AppCompatActivity() {
             })
             items.add(DashboardItem(getString(R.string.menu_admin_create_lieu), R.drawable.ic_admin) {
                 startActivity(Intent(this, AdminCreateLieuActivity::class.java))
+            })
+            items.add(DashboardItem(getString(R.string.menu_admin_create_tag), R.drawable.ic_admin) {
+                startActivity(Intent(this, AdminCreateTagActivity::class.java))
+            })
+            items.add(DashboardItem("Objets en alerte", R.drawable.ic_admin) {
+                startActivity(Intent(this, AdminAlertObjectsActivity::class.java))
             })
             items.add(DashboardItem(getString(R.string.menu_admin_reservations), R.drawable.ic_admin) {
                 startActivity(Intent(this, AdminReservationsActivity::class.java))
