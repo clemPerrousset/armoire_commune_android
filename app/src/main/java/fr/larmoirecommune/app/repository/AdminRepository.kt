@@ -11,7 +11,6 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import fr.larmoirecommune.app.model.Reservation
 import fr.larmoirecommune.app.model.Tag
 
 class AdminRepository {
