@@ -30,7 +30,7 @@ class SignupActivity : AppCompatActivity() {
             val prenom = binding.prenomInput.text.toString()
             val email = binding.emailInput.text.toString()
             val password = binding.passwordInput.text.toString()
-            viewModel.signup(nom, prenom, email, password)
+            viewModel.signup(nom, prenom, email, password, 1)
         }
 
         binding.goToLogin.setOnClickListener {

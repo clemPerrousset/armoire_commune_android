@@ -3,9 +3,15 @@ package fr.larmoirecommune.app.ui.home
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import fr.larmoirecommune.app.R
 import fr.larmoirecommune.app.databinding.ItemDashboardBinding
 
-data class DashboardItem(val title: String, val iconRes: Int, val action: () -> Unit)
+data class DashboardItem(
+    val title: String,
+    val iconRes: Int,
+    val gradientRes: Int = R.drawable.bg_gradient_green,
+    val action: () -> Unit
+)
 
 class DashboardAdapter(private val items: List<DashboardItem>) : RecyclerView.Adapter<DashboardAdapter.ViewHolder>() {
 
@@ -20,6 +26,7 @@ class DashboardAdapter(private val items: List<DashboardItem>) : RecyclerView.Ad
         val item = items[position]
         holder.binding.itemTitle.text = item.title
         holder.binding.itemIcon.setImageResource(item.iconRes)
+        holder.binding.cardContent.setBackgroundResource(item.gradientRes)
         holder.itemView.setOnClickListener { item.action() }
     }
 

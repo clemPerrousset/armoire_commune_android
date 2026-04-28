@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_page">
+    android:background="@color/background_page"
+    android:fitsSystemWindows="true">
 
-    <!-- Header Toolbar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -49,7 +49,6 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Profile Header Card -->
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.App.Card"
                 android:layout_width="match_parent"
@@ -60,52 +59,81 @@
                     android:layout_height="wrap_content"
                     android:padding="16dp">
 
-                    <ImageView
-                        android:id="@+id/avatar"
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
-                        android:src="@drawable/ic_profile"
-                        android:background="@drawable/ic_profile"
-                        android:backgroundTint="@color/mint_light"
-                        app:tint="@color/mint_dark"
+                    <FrameLayout
+                        android:id="@+id/avatarContainer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
+                        app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
-                        android:id="@+id/profileName"
-                        style="@style/TextAppearance.App.Title"
-                        android:layout_width="wrap_content"
+                        <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/avatar"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/ic_profile"
+                            android:background="@color/mint_light"
+                            android:padding="4dp"
+                            app:strokeColor="@color/mint_primary"
+                            app:strokeWidth="2dp"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+                            app:tint="@color/mint_dark" />
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="bottom|end"
+                            android:background="@drawable/bg_pill_light"
+                            android:backgroundTint="@color/mint_primary"
+                            android:padding="6dp"
+                            android:src="@drawable/ic_edit"
+                            app:tint="@color/white" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:id="@+id/nameContainer"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
-                        android:text="Utilisateur"
-                        app:layout_constraintStart_toEndOf="@id/avatar"
-                        app:layout_constraintTop_toTopOf="@id/avatar"/>
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/avatarContainer"
+                        app:layout_constraintTop_toTopOf="@id/avatarContainer"
+                        app:layout_constraintBottom_toBottomOf="@id/avatarContainer">
 
-                    <TextView
-                        android:id="@+id/profileEmail"
-                        style="@style/TextAppearance.App.Body"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text="Membre"
-                        app:layout_constraintStart_toEndOf="@id/avatar"
-                        app:layout_constraintTop_toBottomOf="@id/profileName"/>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="4dp"
-                        android:text="Modifier le profil"
-                        android:textColor="@color/mint_primary"
-                        android:textStyle="bold"
-                        app:layout_constraintStart_toEndOf="@id/avatar"
-                        app:layout_constraintTop_toBottomOf="@id/profileEmail"/>
+                            <TextView
+                                android:id="@+id/profileName"
+                                style="@style/TextAppearance.App.Title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Entrez votre nom"
+                                android:textSize="20sp" />
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_marginStart="8dp"
+                                android:src="@drawable/ic_edit"
+                                app:tint="@color/mint_primary" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/profileEmail"
+                            style="@style/TextAppearance.App.Body"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Membre" />
+                    </LinearLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Membership Card -->
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.App.Card"
                 android:layout_width="match_parent"
@@ -119,16 +147,22 @@
                     android:padding="16dp">
 
                     <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="Adhésion"
                         android:textSize="12sp"
                         android:textColor="@color/mint_primary"/>
 
                     <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="Adhérent Actif"
                         style="@style/TextAppearance.App.Subtitle"
                         android:layout_marginTop="4dp"/>
 
                     <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="Expire le : 12/12/2024"
                         android:textSize="12sp"
                         android:textColor="@color/text_secondary"
@@ -136,8 +170,9 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Mon Activité -->
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="MON ACTIVITÉ"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -155,17 +190,34 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <include android:id="@+id/btnMyReservations" layout="@layout/item_profile_option"/>
+                    <include
+                        android:id="@+id/btnMyReservations"
+                        layout="@layout/item_profile_option"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/background_page"/>
-                    <include android:id="@+id/btnHistory" layout="@layout/item_profile_option"/>
+
+                    <include
+                        android:id="@+id/btnHistory"
+                        layout="@layout/item_profile_option"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/background_page"/>
-                    <include android:id="@+id/btnFavorites" layout="@layout/item_profile_option"/>
+
+                    <include
+                        android:id="@+id/btnFavorites"
+                        layout="@layout/item_profile_option"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Aide et Infos -->
             <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="AIDE ET INFORMATIONS"
                 android:textSize="12sp"
                 android:textStyle="bold"
@@ -183,14 +235,23 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <include android:id="@+id/btnFaq" layout="@layout/item_profile_option"/>
+                    <include
+                        android:id="@+id/btnFaq"
+                        layout="@layout/item_profile_option"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
                     <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/background_page"/>
-                    <include android:id="@+id/btnPrivacy" layout="@layout/item_profile_option"/>
+
+                    <include
+                        android:id="@+id/btnPrivacy"
+                        layout="@layout/item_profile_option"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Logout -->
             <Button
                 android:id="@+id/logoutButton"
                 style="@style/Widget.Material3.Button.TonalButton"
@@ -199,9 +260,7 @@
                 android:layout_marginTop="32dp"
                 android:text="Déconnexion"
                 android:textColor="@color/status_unavailable"
-                android:backgroundTint="#FEE2E2"/> <!-- Light Red -->
-
-        </LinearLayout>
+                android:backgroundTint="#FEE2E2"/> </LinearLayout>
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

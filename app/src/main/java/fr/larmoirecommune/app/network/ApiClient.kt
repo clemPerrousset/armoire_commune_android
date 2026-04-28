@@ -20,6 +20,7 @@ object ApiClient {
 
     var token: String? = null
     var currentUserIsAdmin: Boolean = false
+    var currentUserIsPointRelais: Boolean = false
     var currentUserEmail: String? = null
 
     val client = HttpClient(OkHttp) {
@@ -68,6 +69,7 @@ object ApiClient {
 
                 // On lit les infos
                 currentUserIsAdmin = json.optBoolean("is_admin") || json.optString("role") == "admin"
+                currentUserIsPointRelais = json.optBoolean("is_point_relais") || json.optString("role") == "point_relais"
                 currentUserEmail = json.optString("sub")
             }
         } catch (e: Exception) {

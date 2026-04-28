@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.activity.enableEdgeToEdge
 import fr.larmoirecommune.app.databinding.ActivityAdminReservationsBinding
 import fr.larmoirecommune.app.databinding.ItemReservationBinding
 import fr.larmoirecommune.app.model.Reservation
@@ -29,6 +30,7 @@ class AdminReservationsActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityAdminReservationsBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -37,7 +39,6 @@ class AdminReservationsActivity : AppCompatActivity() {
 
         binding.reservationRecycler.layoutManager = LinearLayoutManager(this)
         binding.reservationRecycler.adapter = adapter
-
         loadReservations()
     }
 

@@ -127,4 +127,30 @@ class ObjectRepository {
             false
         }
     }
+
+    suspend fun retirerObjet(objectId: Int): Result<Unit> {
+        return try {
+            val response = ApiClient.client.post(ApiClient.getUrl("/objets/$objectId/retirer"))
+            if (response.status.value in 200..299) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Erreur retrait: ${response.status}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun retournerObjet(objectId: Int, lieuId: Int): Result<Unit> {
+        return try {
+            val response = ApiClient.client.post(ApiClient.getUrl("/objets/$objectId/retourner?lieu_id=$lieuId"))
+            if (response.status.value in 200..299) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Erreur retour: ${response.status}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

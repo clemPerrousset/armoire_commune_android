@@ -13,6 +13,11 @@ import fr.larmoirecommune.app.repository.UserRepository
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import android.widget.Toast
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.zxing.BarcodeFormat
+import com.journeyapps.barcodescanner.BarcodeEncoder
+import android.widget.ImageView
+import android.widget.TextView
 
 class ObjectDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityObjectDetailBinding
@@ -64,6 +69,10 @@ class ObjectDetailActivity : AppCompatActivity() {
 
         viewModel.loadObject(objectId)
 
+        binding.btnQrCode.setOnClickListener {
+            showQrCodeBottomSheet()
+        }
+
         binding.reserveButton.setOnClickListener {
             if (ApiClient.token == null) {
                 val loginIntent = Intent(this, LoginActivity::class.java)
@@ -75,5 +84,30 @@ class ObjectDetailActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+    }
+
+    private fun showQrCodeBottomSheet() {
+        val obj = viewModel.objectDetail.value ?: return
+        val dialog = BottomSheetDialog(this)
+        val view = layoutInflater.inflate(fr.larmoirecommune.app.R.layout.layout_qr_code_bottom_sheet, null)
+
+        val qrImage = view.findViewById<ImageView>(fr.larmoirecommune.app.R.id.qrImage)
+        val qrObjectName = view.findViewById<TextView>(fr.larmoirecommune.app.R.id.qrObjectName)
+
+        qrObjectName.text = obj.nom
+
+        try {
+            val barcodeEncoder = BarcodeEncoder()
+            // Format: armoirecommune://objet/{id}
+            val content = "armoirecommune://objet/${obj.id}"
+            val bitmap = barcodeEncoder.encodeBitmap(content, BarcodeFormat.QR_CODE, 512, 512)
+            qrImage.setImageBitmap(bitmap)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Erreur lors de la génération du QR Code", Toast.LENGTH_SHORT).show()
+        }
+
+        dialog.setContentView(view)
+        dialog.show()
     }
 }

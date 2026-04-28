@@ -28,6 +28,7 @@ import fr.larmoirecommune.app.worker.ReminderWorker
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import java.util.concurrent.TimeUnit
@@ -50,6 +51,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val requestCameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            startActivity(Intent(this, ScannerActivity::class.java))
+        } else {
+            Toast.makeText(this, "La permission caméra est nécessaire pour scanner des QR codes", Toast.LENGTH_LONG).show()
+        }
+    }
+
     private fun checkNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
@@ -58,6 +69,20 @@ class MainActivity : AppCompatActivity() {
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    private fun checkCameraPermissionAndScan() {
+        when {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                startActivity(Intent(this, ScannerActivity::class.java))
+            }
+            else -> {
+                requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
             }
         }
     }
@@ -75,6 +100,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -111,6 +137,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 if (ApiClient.token == null) {
                     ApiClient.currentUserIsAdmin = false
+                    ApiClient.currentUserIsPointRelais = false
                     ApiClient.currentUserEmail = null
                     setupDashboardItems()
                     return@launch
@@ -121,6 +148,7 @@ class MainActivity : AppCompatActivity() {
 
                 // 2. Mise à jour des infos dans le singleton ApiClient
                 ApiClient.currentUserIsAdmin = user.isAdmin
+                ApiClient.currentUserIsPointRelais = user.isPointRelais
                 ApiClient.currentUserEmail = user.email
 
                 // Update welcome text if user has a name (assuming User has prenom/nom)
@@ -130,6 +158,7 @@ class MainActivity : AppCompatActivity() {
                 e.printStackTrace()
                 // En cas d'erreur (ex: pas de réseau), on met les valeurs par défaut (non-admin)
                 ApiClient.currentUserIsAdmin = false
+                ApiClient.currentUserIsPointRelais = false
                 ApiClient.currentUserEmail = null
                 // Toast.makeText(this@MainActivity, "Mode hors ligne", Toast.LENGTH_SHORT).show()
             } finally {
@@ -142,14 +171,14 @@ class MainActivity : AppCompatActivity() {
     private fun setupDashboardItems() {
         // Liste des éléments accessibles à tous
         val items = mutableListOf(
-            DashboardItem(getString(R.string.menu_lieux), R.drawable.ic_admin) {
+            DashboardItem(getString(R.string.menu_lieux), R.drawable.ic_admin, R.drawable.bg_gradient_indigo) {
                 startActivity(Intent(this, LieuMapActivity::class.java))
             },
 
-            DashboardItem(getString(R.string.menu_library), R.drawable.ic_objects) {
+            DashboardItem(getString(R.string.menu_library), R.drawable.ic_objects, R.drawable.bg_gradient_green) {
                 startActivity(Intent(this, ObjectListActivity::class.java))
             },
-            DashboardItem(getString(R.string.menu_my_reservations), R.drawable.ic_reservations) {
+            DashboardItem(getString(R.string.menu_my_reservations), R.drawable.ic_reservations, R.drawable.bg_gradient_orange) {
                 if (ApiClient.token == null) {
                     val loginIntent = Intent(this, LoginActivity::class.java)
                     startActivity(loginIntent)
@@ -157,7 +186,7 @@ class MainActivity : AppCompatActivity() {
                     startActivity(Intent(this, ReservationListActivity::class.java))
                 }
             },
-            DashboardItem(getString(R.string.menu_profile), R.drawable.ic_profile) {
+            DashboardItem(getString(R.string.menu_profile), R.drawable.ic_profile, R.drawable.bg_gradient_blue) {
                 if (ApiClient.token == null) {
                     val loginIntent = Intent(this, LoginActivity::class.java)
                     startActivity(loginIntent)
@@ -167,21 +196,28 @@ class MainActivity : AppCompatActivity() {
             }
         )
 
+        // Ajout du scanner pour Admin ou Point Relais
+        if (ApiClient.currentUserIsAdmin || ApiClient.currentUserIsPointRelais) {
+            items.add(0, DashboardItem("Scanner QR Code", R.drawable.ic_scan, R.drawable.bg_gradient_indigo) {
+                checkCameraPermissionAndScan()
+            })
+        }
+
         // Ajout des éléments Admin SI l'utilisateur est admin
         if (ApiClient.currentUserIsAdmin) {
-            items.add(DashboardItem(getString(R.string.menu_admin_create_object), R.drawable.ic_admin) {
+            items.add(DashboardItem(getString(R.string.menu_admin_create_object), R.drawable.ic_admin, R.drawable.bg_gradient_purple) {
                 startActivity(Intent(this, AdminCreateObjectActivity::class.java))
             })
-            items.add(DashboardItem(getString(R.string.menu_admin_create_lieu), R.drawable.ic_admin) {
+            items.add(DashboardItem(getString(R.string.menu_admin_create_lieu), R.drawable.ic_admin, R.drawable.bg_gradient_indigo) {
                 startActivity(Intent(this, AdminCreateLieuActivity::class.java))
             })
-            items.add(DashboardItem(getString(R.string.menu_admin_create_tag), R.drawable.ic_admin) {
+            items.add(DashboardItem(getString(R.string.menu_admin_create_tag), R.drawable.ic_admin, R.drawable.bg_gradient_blue) {
                 startActivity(Intent(this, AdminCreateTagActivity::class.java))
             })
-            items.add(DashboardItem("Objets en alerte", R.drawable.ic_admin) {
+            items.add(DashboardItem("Objets en alerte", R.drawable.ic_admin, R.drawable.bg_gradient_red) {
                 startActivity(Intent(this, AdminAlertObjectsActivity::class.java))
             })
-            items.add(DashboardItem(getString(R.string.menu_admin_reservations), R.drawable.ic_admin) {
+            items.add(DashboardItem(getString(R.string.menu_admin_reservations), R.drawable.ic_admin, R.drawable.bg_gradient_orange) {
                 startActivity(Intent(this, AdminReservationsActivity::class.java))
             })
         }

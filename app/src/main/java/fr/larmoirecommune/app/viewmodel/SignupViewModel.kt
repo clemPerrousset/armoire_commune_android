@@ -13,9 +13,9 @@ class SignupViewModel : ViewModel() {
     private val _signupResult = MutableLiveData<Boolean>()
     val signupResult: LiveData<Boolean> = _signupResult
 
-    fun signup(nom: String, prenom: String, email: String, pass: String) {
+    fun signup(nom: String, prenom: String, email: String, pass: String, associationId: Int) {
         viewModelScope.launch {
-            val success = repository.signup(nom, prenom, email, pass)
+            val success = repository.signup(nom, prenom, email, pass, associationId)
             _signupResult.value = success
         }
     }

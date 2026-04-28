@@ -17,5 +17,8 @@
         <!-- Status Bar -->
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor">@color/background_page</item>
+
+        <!-- Safe Zone Padding -->
+        <item name="android:fitsSystemWindows">true</item>
     </style>
 </resources>

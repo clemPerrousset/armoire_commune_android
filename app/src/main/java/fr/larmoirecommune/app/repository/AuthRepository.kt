@@ -32,13 +32,14 @@ class AuthRepository {
         }
     }
 
-    suspend fun signup(nom: String, prenom: String, email: String, password: String): Boolean {
+    suspend fun signup(nom: String, prenom: String, email: String, password: String, associationId: Int): Boolean {
         try {
             val request = SignupRequest(
                 nom = nom,
                 prenom = prenom,
                 email = email,
-                password = password
+                password = password,
+                associationId = associationId
             )
 
             ApiClient.client.post(ApiClient.getUrl("/auth/signup")) {

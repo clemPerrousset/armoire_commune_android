@@ -17,7 +17,8 @@ data class User(
     val nom: String,
     val prenom: String,
     val email: String,
-    @SerialName("is_admin") val isAdmin: Boolean = false
+    @SerialName("is_admin") val isAdmin: Boolean = false,
+    @SerialName("is_point_relais") val isPointRelais: Boolean = false
 )
 
 // --- ENTITÉS DE BASE ---
@@ -123,5 +124,6 @@ data class SignupRequest(
     val nom: String,
     val prenom: String,
     val email: String,
-    @SerialName("mot_de_passe") val password: String
+    @SerialName("password") val password: String,
+    @SerialName("association_id") val associationId: Int
 )
