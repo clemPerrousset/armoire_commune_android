@@ -20,14 +20,11 @@ class ObjectAdapter(
         override fun areItemsTheSame(oldItem: Objet, newItem: Objet): Boolean = oldItem.id == newItem.id
         override fun areContentsTheSame(oldItem: Objet, newItem: Objet): Boolean = oldItem == newItem
     }
-
     inner class ObjectViewHolder(val binding: ItemObjectBinding) : RecyclerView.ViewHolder(binding.root)
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ObjectViewHolder {
         val binding = ItemObjectBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ObjectViewHolder(binding)
     }
-
     override fun onBindViewHolder(holder: ObjectViewHolder, position: Int) {
         val item = getItem(position)
         val context = holder.itemView.context

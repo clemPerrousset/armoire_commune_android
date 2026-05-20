@@ -26,11 +26,9 @@
         <activity android:name=".ui.objects.ReservationActivity" />
         <activity android:name=".ui.objects.ReservationListActivity" />
         <activity android:name=".ui.objects.ReservationDetailActivity" />
-
         <activity android:name=".ui.admin.AdminCreateObjectActivity" />
         <activity android:name=".ui.admin.AdminCreateLieuActivity" />
         <activity android:name=".ui.admin.AdminReservationsActivity" />
-
         <activity android:name=".ui.profile.ProfileActivity" />
 
         <provider

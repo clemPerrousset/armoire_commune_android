@@ -42,5 +42,6 @@
     <string name="location_address_hint">Adresse</string>
     <string name="use_my_location">Ma position</string>
     <string name="validate">Valider</string>
-<string name="menu_lieux">Points de retrait</string>
-    </resources>
+    <string name="menu_lieux">Points de retrait</string>
+    <string name="scanner_un_objet">Scanner un objet</string>
+</resources>
