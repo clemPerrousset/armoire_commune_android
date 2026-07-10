@@ -23,6 +23,7 @@ object ApiClient {
     var currentUserIsPointRelais: Boolean = false
     var currentUserEmail: String? = null
 
+    // Client pour les requêtes authentifiées (avec Bearer token)
     val client = HttpClient(OkHttp) {
         install(ContentNegotiation) {
             json(Json {
@@ -31,21 +32,35 @@ object ApiClient {
                 isLenient = true
             })
         }
-
         install(Logging) {
             logger = Logger.ANDROID
             level = LogLevel.ALL
         }
-
         install(Auth) {
             bearer {
                 loadTokens {
                     token?.let { BearerTokens(it, "") }
                 }
-                refreshTokens {
-                    token?.let { BearerTokens(it, "") }
-                }
+                // sendWithoutRequest évite que le plugin appelle refreshTokens
+                // sur les réponses 401 avec un token null (levait une exception en Ktor 3.x)
+                sendWithoutRequest { true }
             }
+        }
+    }
+
+    // Client sans Auth pour login et signup
+    // Le plugin bearer de Ktor 3.x interfère avec les requêtes sans token
+    val unauthenticatedClient = HttpClient(OkHttp) {
+        install(ContentNegotiation) {
+            json(Json {
+                ignoreUnknownKeys = true
+                prettyPrint = true
+                isLenient = true
+            })
+        }
+        install(Logging) {
+            logger = Logger.ANDROID
+            level = LogLevel.ALL
         }
     }
 

@@ -1,5 +1,6 @@
 package fr.larmoirecommune.app.repository
 
+import android.util.Log
 import fr.larmoirecommune.app.model.AuthResponse
 import fr.larmoirecommune.app.model.SignupRequest
 import fr.larmoirecommune.app.network.ApiClient
@@ -7,16 +8,17 @@ import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.forms.submitForm
-import io.ktor.http.Parameters
 import io.ktor.http.ContentType
+import io.ktor.http.Parameters
 import io.ktor.http.contentType
 
 class AuthRepository {
 
     suspend fun login(email: String, password: String): Boolean {
-        try {
-            // Login utilise souvent x-www-form-urlencoded, on garde submitForm c'est correct
-            val response: AuthResponse = ApiClient.client.submitForm(
+        return try {
+            // Utilise le client sans Auth — le plugin bearer de Ktor 3.x interfère
+            // avec les requêtes qui n'ont pas encore de token
+            val response: AuthResponse = ApiClient.unauthenticatedClient.submitForm(
                 url = ApiClient.getUrl("/auth/login"),
                 formParameters = Parameters.build {
                     append("username", email)
@@ -25,15 +27,21 @@ class AuthRepository {
             ).body()
 
             ApiClient.setTokenAndParse(response.accessToken)
-            return true
+            true
         } catch (e: Exception) {
-            e.printStackTrace()
-            return false
+            Log.e("AuthRepository", "Login failed: ${e::class.simpleName} — ${e.message}", e)
+            false
         }
     }
 
-    suspend fun signup(nom: String, prenom: String, email: String, password: String, associationId: Int): Boolean {
-        try {
+    suspend fun signup(
+        nom: String,
+        prenom: String,
+        email: String,
+        password: String,
+        associationId: Int
+    ): Boolean {
+        return try {
             val request = SignupRequest(
                 nom = nom,
                 prenom = prenom,
@@ -41,15 +49,14 @@ class AuthRepository {
                 password = password,
                 associationId = associationId
             )
-
-            ApiClient.client.post(ApiClient.getUrl("/auth/signup")) {
+            ApiClient.unauthenticatedClient.post(ApiClient.getUrl("/auth/signup")) {
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }
-            return true
+            true
         } catch (e: Exception) {
-            e.printStackTrace()
-            return false
+            Log.e("AuthRepository", "Signup failed: ${e::class.simpleName} — ${e.message}", e)
+            false
         }
     }
 }
