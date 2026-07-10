@@ -2,6 +2,7 @@ package fr.larmoirecommune.app.ui.objects
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -39,10 +40,14 @@ class ObjectDetailActivity : AppCompatActivity() {
             binding.reserveButton.isEnabled = obj.disponibiliteGlobale
 
             if (!obj.image.isNullOrBlank()) {
-                binding.objectImage.load(ApiClient.getUrl(obj.image)) {
+                val imageUrl = ApiClient.getUrl(obj.image)
+                Log.d("ObjectDetail", "Loading image: $imageUrl")
+                binding.objectImage.load(imageUrl) {
                     crossfade(true)
                     error(android.R.drawable.ic_menu_gallery)
                 }
+            } else {
+                Log.d("ObjectDetail", "No image for object ${obj.id}")
             }
         }
 

@@ -47,7 +47,7 @@ class ObjectRepository {
             if (tagId != null) params.add("tag_id=$tagId")
 
             val query = if (params.isNotEmpty()) "?${params.joinToString("&")}" else ""
-            val list: List<Objet> = ApiClient.client.get(ApiClient.getUrl("/objets$query")).body()
+            val list: List<Objet> = ApiClient.unauthenticatedClient.get(ApiClient.getUrl("/objets$query")).body()
 
             if (!available && nom.isNullOrBlank() && tagId == null) cachedObjects = list
             list
@@ -59,7 +59,7 @@ class ObjectRepository {
 
     suspend fun getObject(id: Int): Objet? {
         return try {
-            ApiClient.client.get(ApiClient.getUrl("/objets/$id")).body()
+            ApiClient.unauthenticatedClient.get(ApiClient.getUrl("/objets/$id")).body()
         } catch (e: Exception) {
             Log.e("ObjectRepository", "getObject($id) failed: ${e::class.simpleName} — ${e.message}", e)
             cachedObjects.find { it.id == id }
