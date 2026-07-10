@@ -1,5 +1,6 @@
 package fr.larmoirecommune.app.repository
 
+import android.util.Log
 import fr.larmoirecommune.app.model.CreateReservationRequest
 import fr.larmoirecommune.app.model.Objet
 import fr.larmoirecommune.app.model.Reservation
@@ -60,6 +61,7 @@ class ObjectRepository {
         return try {
             ApiClient.client.get(ApiClient.getUrl("/objets/$id")).body()
         } catch (e: Exception) {
+            Log.e("ObjectRepository", "getObject($id) failed: ${e::class.simpleName} — ${e.message}", e)
             cachedObjects.find { it.id == id }
         }
     }
