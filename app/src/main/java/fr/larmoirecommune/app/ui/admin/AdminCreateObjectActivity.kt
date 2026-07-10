@@ -3,6 +3,7 @@ package fr.larmoirecommune.app.ui.admin
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -10,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import coil.load
@@ -27,16 +29,18 @@ class AdminCreateObjectActivity : AppCompatActivity() {
     private val objectRepository = ObjectRepository()
     private var availableTags: List<Tag> = emptyList()
     private var selectedTagId: Int? = null
-
-    // Image sélectionnée (URI local)
     private var selectedImageUri: Uri? = null
     private var tempCameraUri: Uri? = null
 
-    private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+    // Constantes pour les demandes de permission
+    private val RC_CAMERA = 42
+    private val RC_GALLERY = 43
+
+    private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let { setSelectedImage(it) }
     }
 
-    private val takePhoto = registerForActivityResult(ActivityResultContracts.TakePicture()) { success: Boolean ->
+    private val takePhoto = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success) tempCameraUri?.let { setSelectedImage(it) }
     }
 
@@ -47,7 +51,6 @@ class AdminCreateObjectActivity : AppCompatActivity() {
 
         binding.btnBack.setOnClickListener { finish() }
 
-        // Chargement des tags
         lifecycleScope.launch {
             availableTags = objectRepository.getTags()
         }
@@ -55,9 +58,7 @@ class AdminCreateObjectActivity : AppCompatActivity() {
         binding.objectTagId.setOnClickListener { showTagPicker() }
         binding.objectTagId.isFocusable = false
 
-        // Bouton photo
         binding.btnPickImage.setOnClickListener { showImageSourceDialog() }
-
         binding.createButton.setOnClickListener { createObject() }
     }
 
@@ -85,25 +86,35 @@ class AdminCreateObjectActivity : AppCompatActivity() {
             .setTitle("Ajouter une photo")
             .setItems(arrayOf("Galerie", "Appareil photo")) { _, which ->
                 when (which) {
-                    0 -> pickImage.launch("image/*")
-                    1 -> startCamera()
+                    0 -> requestGalleryPermissionAndOpen()
+                    1 -> requestCameraPermissionAndOpen()
                 }
             }
             .show()
     }
 
-    private fun startCamera() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 42)
-            return
+    // --- Galerie ---
+
+    private fun requestGalleryPermissionAndOpen() {
+        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            Manifest.permission.READ_MEDIA_IMAGES
+        else
+            Manifest.permission.READ_EXTERNAL_STORAGE
+
+        if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
+            pickImage.launch("image/*")
+        } else {
+            ActivityCompat.requestPermissions(this, arrayOf(permission), RC_GALLERY)
         }
-        launchCamera()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 42 && grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
+    // --- Caméra ---
+
+    private fun requestCameraPermissionAndOpen() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             launchCamera()
+        } else {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), RC_CAMERA)
         }
     }
 
@@ -115,14 +126,31 @@ class AdminCreateObjectActivity : AppCompatActivity() {
         takePhoto.launch(uri)
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        val granted = grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED
+        when (requestCode) {
+            RC_CAMERA -> {
+                if (granted) launchCamera()
+                else Toast.makeText(this, "Permission caméra refusée", Toast.LENGTH_SHORT).show()
+            }
+            RC_GALLERY -> {
+                if (granted) pickImage.launch("image/*")
+                else Toast.makeText(this, "Permission galerie refusée", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // --- Image sélectionnée ---
+
     private fun setSelectedImage(uri: Uri) {
         selectedImageUri = uri
         binding.imagePreview.visibility = View.VISIBLE
-        binding.imagePreview.load(uri) {
-            crossfade(true)
-        }
+        binding.imagePreview.load(uri) { crossfade(true) }
         binding.btnPickImage.text = "Changer la photo"
     }
+
+    // --- Création ---
 
     private fun createObject() {
         val nom = binding.objectName.text.toString().trim()
@@ -137,12 +165,7 @@ class AdminCreateObjectActivity : AppCompatActivity() {
         binding.progressBar.visibility = View.VISIBLE
 
         lifecycleScope.launch {
-            val objet = repository.createObject(
-                nom = nom,
-                description = desc,
-                tagId = selectedTagId,
-                consommableIds = emptyList()
-            )
+            val objet = repository.createObject(nom, desc, tagId = selectedTagId)
 
             if (objet == null) {
                 binding.createButton.isEnabled = true
@@ -151,28 +174,16 @@ class AdminCreateObjectActivity : AppCompatActivity() {
                 return@launch
             }
 
-            // Upload de l'image si sélectionnée
             val imageUri = selectedImageUri
             if (imageUri != null && objet.id != null) {
-                val bytes = readImageBytes(imageUri)
+                val bytes = contentResolver.openInputStream(imageUri)?.use { it.readBytes() }
                 val mime = contentResolver.getType(imageUri) ?: "image/jpeg"
-                if (bytes != null) {
-                    repository.uploadObjetImage(objet.id, bytes, mime)
-                }
+                if (bytes != null) repository.uploadObjetImage(objet.id, bytes, mime)
             }
 
             binding.progressBar.visibility = View.GONE
             Toast.makeText(this@AdminCreateObjectActivity, "Objet créé", Toast.LENGTH_SHORT).show()
             finish()
-        }
-    }
-
-    private fun readImageBytes(uri: Uri): ByteArray? {
-        return try {
-            contentResolver.openInputStream(uri)?.use { it.readBytes() }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
         }
     }
 }
