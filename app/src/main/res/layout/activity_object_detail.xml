@@ -68,11 +68,15 @@
             android:textStyle="bold"
             android:layout_marginTop="24dp"/>
 
-        <CalendarView
-            android:id="@+id/calendarView"
+        <TextView
+            android:id="@+id/tvCalendar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:padding="12dp"
+            android:background="#F0F4F0"
+            android:text="Chargement..."
+            android:textSize="14sp"/>
 
         <Button
             android:id="@+id/reserveButton"

@@ -12,10 +12,11 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
 class ObjectRepository {
-    // --- GESTION DES OBJETS ---
-    private var cachedObjects: List<Objet> = emptyList()
 
-    // --- GESTION DES LIEUX ---
+    private var cachedObjects: List<Objet> = emptyList()
+    private var cachedReservations: List<Reservation> = emptyList()
+
+    // --- LIEUX & TAGS ---
 
     suspend fun getLieux(): List<fr.larmoirecommune.app.model.Lieu> {
         return try {
@@ -35,6 +36,8 @@ class ObjectRepository {
         }
     }
 
+    // --- OBJETS ---
+
     suspend fun getObjects(available: Boolean = false, nom: String? = null, tagId: Int? = null): List<Objet> {
         return try {
             val params = mutableListOf<String>()
@@ -43,10 +46,9 @@ class ObjectRepository {
             if (tagId != null) params.add("tag_id=$tagId")
 
             val query = if (params.isNotEmpty()) "?${params.joinToString("&")}" else ""
-            val url = "/objets$query"
+            val list: List<Objet> = ApiClient.client.get(ApiClient.getUrl("/objets$query")).body()
 
-            val list: List<Objet> = ApiClient.client.get(ApiClient.getUrl(url)).body()
-            if (!available && nom.isNullOrBlank() && tagId == null) cachedObjects = list // On met en cache la liste complète
+            if (!available && nom.isNullOrBlank() && tagId == null) cachedObjects = list
             list
         } catch (e: Exception) {
             e.printStackTrace()
@@ -55,20 +57,19 @@ class ObjectRepository {
     }
 
     suspend fun getObject(id: Int): Objet? {
-        cachedObjects.find { it.id == id }?.let { return it }
-        // Si pas trouvé, on recharge
-        getObjects(false)
-        return cachedObjects.find { it.id == id }
+        return try {
+            ApiClient.client.get(ApiClient.getUrl("/objets/$id")).body()
+        } catch (e: Exception) {
+            cachedObjects.find { it.id == id }
+        }
     }
 
-    // --- GESTION DES RÉSERVATIONS ---
-
-    private var cachedReservations: List<Reservation> = emptyList()
+    // --- RÉSERVATIONS ---
 
     suspend fun getMyReservations(): List<Reservation> {
         return try {
             val list: List<Reservation> = ApiClient.client.get(ApiClient.getUrl("/reservations/me")).body()
-            cachedReservations = list // Mise à jour du cache
+            cachedReservations = list
             list
         } catch (e: Exception) {
             e.printStackTrace()
@@ -76,29 +77,45 @@ class ObjectRepository {
         }
     }
 
+    /** Réservations terminées de l'utilisateur — pour l'onglet Historique */
+    suspend fun getReservationHistorique(): List<Reservation> {
+        return try {
+            ApiClient.client.get(ApiClient.getUrl("/reservations/historique")).body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    /** Réservations actives/en_cours sur un objet — pour griser le calendrier */
+    suspend fun getReservationsForObjet(objetId: Int): List<Reservation> {
+        return try {
+            ApiClient.client.get(ApiClient.getUrl("/reservations/objet/$objetId")).body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
     suspend fun getReservation(id: Int): Reservation? {
-        // 1. On cherche dans le cache actuel
         cachedReservations.find { it.id == id }?.let { return it }
-
-        // 2. Si pas trouvé, on recharge la liste depuis l'API
         getMyReservations()
-
-        // 3. On re-cherche
         return cachedReservations.find { it.id == id }
     }
 
-    suspend fun renewReservation(reservationId: Int): Boolean {
+    suspend fun createReservation(objetId: Int, lieuId: Int, dateDebut: String, nbSemaines: Int = 1): Boolean {
         return try {
-            // Note: Since this is an admin logic on the back according to README,
-            // but requirements asked for a "renew button on reservation", we assume there's an endpoint for the user.
-            // If not, we call a generic endpoint or simulate it.
-            // In real app: ApiClient.client.post(ApiClient.getUrl("/reservations/$reservationId/renew"))
-
-            // We use the admin endpoint as fallback or a mock if it doesn't exist
-            // ApiClient.client.post(ApiClient.getUrl("/reservations/$reservationId/renew"))
-
-            // Assuming we just send a post request to a renew route
-            // For now, let's pretend it exists or it returns true
+            val request = CreateReservationRequest(
+                objetId = objetId,
+                lieuId = lieuId,
+                dateDebut = dateDebut,
+                nbSemaines = nbSemaines
+            )
+            ApiClient.client.post(ApiClient.getUrl("/reservations")) {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+            cachedReservations = emptyList()
             true
         } catch (e: Exception) {
             e.printStackTrace()
@@ -106,22 +123,13 @@ class ObjectRepository {
         }
     }
 
-    suspend fun createReservation(objetId: Int, lieuId: Int, dateDebut: String): Boolean {
+    suspend fun cancelReservation(reservationId: Int): Boolean {
         return try {
-            val request = CreateReservationRequest(
-                objetId = objetId,
-                lieuId = lieuId,
-                dateDebut = dateDebut
-            )
-
-            ApiClient.client.post(ApiClient.getUrl("/reservations")) {
-                contentType(ContentType.Application.Json)
-                setBody(request)
-            }
-
-            // On vide le cache car une nouvelle réservation a été créée
-            cachedReservations = emptyList()
-            true
+            val response = ApiClient.client.post(ApiClient.getUrl("/reservations/$reservationId/cancel"))
+            if (response.status.value in 200..299) {
+                cachedReservations = emptyList()
+                true
+            } else false
         } catch (e: Exception) {
             e.printStackTrace()
             false
@@ -131,11 +139,8 @@ class ObjectRepository {
     suspend fun retirerObjet(objectId: Int): Result<Unit> {
         return try {
             val response = ApiClient.client.post(ApiClient.getUrl("/objets/$objectId/retirer"))
-            if (response.status.value in 200..299) {
-                Result.success(Unit)
-            } else {
-                Result.failure(Exception("Erreur retrait: ${response.status}"))
-            }
+            if (response.status.value in 200..299) Result.success(Unit)
+            else Result.failure(Exception("Erreur retrait: ${response.status}"))
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -144,11 +149,8 @@ class ObjectRepository {
     suspend fun retournerObjet(objectId: Int, lieuId: Int): Result<Unit> {
         return try {
             val response = ApiClient.client.post(ApiClient.getUrl("/objets/$objectId/retourner?lieu_id=$lieuId"))
-            if (response.status.value in 200..299) {
-                Result.success(Unit)
-            } else {
-                Result.failure(Exception("Erreur retour: ${response.status}"))
-            }
+            if (response.status.value in 200..299) Result.success(Unit)
+            else Result.failure(Exception("Erreur retour: ${response.status}"))
         } catch (e: Exception) {
             Result.failure(e)
         }

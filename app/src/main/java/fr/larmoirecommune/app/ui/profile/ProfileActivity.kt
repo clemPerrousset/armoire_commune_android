@@ -167,7 +167,7 @@ class ProfileActivity : AppCompatActivity() {
         // Mes Emprunts
         with(binding.btnMyReservations) {
             optionIcon.setImageResource(R.drawable.ic_reservations)
-            optionTitle.text = "Mes emprunts"
+            optionTitle.text = "Mes réservations"
             root.setOnClickListener {
                 startActivity(Intent(this@ProfileActivity, ReservationListActivity::class.java))
             }

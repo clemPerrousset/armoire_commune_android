@@ -1,20 +1,15 @@
 package fr.larmoirecommune.app.ui.objects
 
-import fr.larmoirecommune.app.model.Objet
-import fr.larmoirecommune.app.model.Reservation
 import android.os.Bundle
 import android.widget.Toast
-import android.view.View
-import java.util.Calendar
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import fr.larmoirecommune.app.databinding.ActivityReservationDetailBinding
 import fr.larmoirecommune.app.viewmodel.ReservationDetailViewModel
 
 class ReservationDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityReservationDetailBinding
-
-    // On suppose l'existence d'un ViewModel dédié ou partagé
     private val viewModel: ReservationDetailViewModel by viewModels()
     private var reservationId: Int = -1
 
@@ -23,67 +18,63 @@ class ReservationDetailActivity : AppCompatActivity() {
         binding = ActivityReservationDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 1. Récupération de l'ID passé par l'intent
         reservationId = intent.getIntExtra("RESERVATION_ID", -1)
         if (reservationId == -1) {
-            Toast.makeText(this, "Erreur: Réservation introuvable", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Réservation introuvable", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
-        // 2. Observer les données
         viewModel.reservation.observe(this) { res ->
-            if (res != null) {
-                // Statut
-                binding.resStatus.text = "Statut : ${res.status}"
+            if (res == null) return@observe
 
-                // Dates
-                binding.resDates.text = "Du ${res.dateDebut}\nau ${res.dateFin}"
+            binding.resStatus.text = "Statut : ${statusLabel(res.status)}"
+            binding.resDates.text = "Du ${formatDate(res.dateDebut)}\nau ${formatDate(res.dateFin)}"
+            binding.resObjectName.text = res.objet?.nom ?: "Objet #${res.objetId}"
+            binding.resLocation.text = res.lieu?.let { "${it.nom} — ${it.adresse}" } ?: "Lieu non précisé"
 
-                // Infos de l'objet (Relation imbriquée)
-                binding.resObjectName.text = res.objet?.nom ?: "Objet inconnu (ID: ${res.objetId})"
+            // Le bouton annuler n'est actif que si la réservation est encore "active"
+            val canCancel = res.status == "active"
+            binding.cancelButton.isEnabled = canCancel
+            binding.cancelButton.alpha = if (canCancel) 1f else 0.4f
+        }
 
-                // Infos du lieu (Relation imbriquée)
-                binding.resLocation.text = res.lieu?.nom ?: "Lieu non précisé"
-
-                // Gestion du bouton Annuler selon le statut
-                binding.cancelButton.isEnabled = (res.status == "active" || res.status == "confirmee")
-
-
-                // Gestion du bouton de renouvellement (affiché uniquement le lundi si actif)
-                val calendar = Calendar.getInstance()
-                val isMonday = calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
-
-                if ((res.status == "active" || res.status == "en_cours") && isMonday) {
-                    binding.renewButton.visibility = View.VISIBLE
-                } else {
-                    binding.renewButton.visibility = View.GONE
+        viewModel.cancelResult.observe(this) { success ->
+            when (success) {
+                true  -> {
+                    Toast.makeText(this, "Réservation annulée", Toast.LENGTH_SHORT).show()
+                    finish()
                 }
-
+                false -> Toast.makeText(this, "Impossible d'annuler", Toast.LENGTH_SHORT).show()
+                null  -> Unit
             }
         }
 
-        // 3. Charger les données
         viewModel.loadReservation(reservationId)
 
-        // 4. Action du bouton
-
-        binding.renewButton.setOnClickListener {
-            viewModel.renewReservation(reservationId)
-        }
-
-        viewModel.renewResult.observe(this) { success ->
-            if (success) {
-                Toast.makeText(this, "Réservation renouvelée (+1 semaine)", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Impossible de renouveler (déjà réservé ou limite atteinte)", Toast.LENGTH_LONG).show()
-            }
-        }
-
         binding.cancelButton.setOnClickListener {
-            // Logique d'annulation (appel API via ViewModel)
-            // viewModel.cancelReservation(reservationId)
-            Toast.makeText(this, "Fonctionnalité d'annulation à venir", Toast.LENGTH_SHORT).show()
+            AlertDialog.Builder(this)
+                .setTitle("Annuler la réservation")
+                .setMessage("Voulez-vous vraiment annuler cette réservation ?")
+                .setPositiveButton("Oui") { _, _ -> viewModel.cancelReservation(reservationId) }
+                .setNegativeButton("Non", null)
+                .show()
         }
+    }
+
+    private fun formatDate(iso: String): String {
+        return try {
+            val date = iso.substringBefore("T")
+            val parts = date.split("-")
+            "${parts[2]}/${parts[1]}/${parts[0]}"
+        } catch (e: Exception) { iso }
+    }
+
+    private fun statusLabel(status: String) = when (status) {
+        "active"   -> "En attente de retrait"
+        "en_cours" -> "En cours"
+        "terminee" -> "Terminée"
+        "annulee"  -> "Annulée"
+        else       -> status
     }
 }

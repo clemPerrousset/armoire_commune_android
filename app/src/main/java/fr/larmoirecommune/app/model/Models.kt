@@ -35,7 +35,8 @@ data class Lieu(
     val nom: String,
     val lat: Double,
     val long: Double,
-    val adresse: String
+    val adresse: String,
+    val description: String? = null   // horaires d'ouverture
 )
 
 @Serializable
@@ -55,10 +56,12 @@ data class Objet(
     val nom: String,
     val description: String,
     val image: String? = null,
-    val quantite: Int = 1,
+    // quantite supprimée : 1 fiche = 1 calendrier
 
     @SerialName("disponibilite_globale")
     val disponibiliteGlobale: Boolean = true,
+
+    val alert: Boolean = false,
 
     @SerialName("tag_id")
     val tagId: Int? = null,
@@ -78,6 +81,9 @@ data class Reservation(
     val dateFin: String,
 
     val status: String = "active",
+
+    @SerialName("nb_semaines")
+    val nbSemaines: Int = 1,
 
     @SerialName("user_id")
     val userId: Int? = null,
@@ -99,24 +105,26 @@ data class CreateLieuRequest(
     val nom: String,
     val lat: Double,
     val long: Double,
-    val adresse: String
+    val adresse: String,
+    val description: String? = null
 )
 
 @Serializable
 data class CreateObjectRequest(
     val nom: String,
     val description: String,
-    val quantite: Int,
-    @SerialName("tag_id") val tagId: Int,
+    // quantite supprimée
+    @SerialName("tag_id") val tagId: Int? = null,
     @SerialName("consommable_ids") val consommableIds: List<Int>,
-    @SerialName("disponibilite_globale") val disponibiliteGlobale: Boolean
+    @SerialName("disponibilite_globale") val disponibiliteGlobale: Boolean = true
 )
 
 @Serializable
 data class CreateReservationRequest(
     @SerialName("objet_id") val objetId: Int,
     @SerialName("lieu_id") val lieuId: Int,
-    @SerialName("date_debut") val dateDebut: String
+    @SerialName("date_debut") val dateDebut: String,
+    @SerialName("nb_semaines") val nbSemaines: Int = 1
 )
 
 @Serializable

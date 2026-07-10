@@ -1,10 +1,10 @@
 package fr.larmoirecommune.app.viewmodel
 
-import fr.larmoirecommune.app.model.Reservation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.LiveData
+import fr.larmoirecommune.app.model.Lieu
 import fr.larmoirecommune.app.repository.ObjectRepository
 import kotlinx.coroutines.launch
 
@@ -14,8 +14,8 @@ class ReservationViewModel : ViewModel() {
     private val _reservationResult = MutableLiveData<Boolean>()
     val reservationResult: LiveData<Boolean> = _reservationResult
 
-    private val _lieux = MutableLiveData<List<fr.larmoirecommune.app.model.Lieu>>()
-    val lieux: LiveData<List<fr.larmoirecommune.app.model.Lieu>> = _lieux
+    private val _lieux = MutableLiveData<List<Lieu>>()
+    val lieux: LiveData<List<Lieu>> = _lieux
 
     fun loadLieux() {
         viewModelScope.launch {
@@ -23,9 +23,9 @@ class ReservationViewModel : ViewModel() {
         }
     }
 
-    fun createReservation(objetId: Int, lieuId: Int, date: String) {
+    fun createReservation(objetId: Int, lieuId: Int, date: String, nbSemaines: Int = 1) {
         viewModelScope.launch {
-            val success = repository.createReservation(objetId, lieuId, date)
+            val success = repository.createReservation(objetId, lieuId, date, nbSemaines)
             _reservationResult.value = success
         }
     }

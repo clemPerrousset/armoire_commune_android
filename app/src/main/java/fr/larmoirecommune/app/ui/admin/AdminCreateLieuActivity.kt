@@ -52,6 +52,7 @@ class AdminCreateLieuActivity : AppCompatActivity() {
         binding.validateButton.setOnClickListener {
             val nom = binding.lieuName.text.toString()
             val adresse = binding.lieuAddress.text.toString()
+            val description = binding.lieuDescription.text.toString().trim().ifBlank { null }
 
             if (selectedPoint == null) {
                 Toast.makeText(this, "Sélectionnez un point sur la carte", Toast.LENGTH_SHORT).show()
@@ -59,7 +60,7 @@ class AdminCreateLieuActivity : AppCompatActivity() {
             }
 
             lifecycleScope.launch {
-                val success = repository.createLieu(nom, selectedPoint!!.latitude, selectedPoint!!.longitude, adresse)
+                val success = repository.createLieu(nom, selectedPoint!!.latitude, selectedPoint!!.longitude, adresse, description)
                 if (success) {
                     Toast.makeText(this@AdminCreateLieuActivity, "Lieu créé", Toast.LENGTH_SHORT).show()
                     finish()

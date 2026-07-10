@@ -27,19 +27,54 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/date_start"/>
+            android:text="Nombre de semaines"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
 
-        <DatePicker
-            android:id="@+id/datePicker"
+        <RadioGroup
+            android:id="@+id/rgWeeks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:calendarViewShown="false"
-            android:datePickerMode="spinner"/>
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rb1week"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="1 sem."
+                android:checked="true"/>
+
+            <RadioButton
+                android:id="@+id/rb2weeks"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="2 sem."/>
+
+            <RadioButton
+                android:id="@+id/rb3weeks"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="3 sem."/>
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tvDateSummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:padding="12dp"
+            android:background="#F0F4F0"
+            android:textSize="14sp"/>
 
         <Button
             android:id="@+id/confirmButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:text="@string/confirm_reservation"/>
 
     </LinearLayout>

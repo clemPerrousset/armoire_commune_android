@@ -78,28 +78,41 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 style="@style/Widget.App.TextInputLayout"
-                android:hint="Quantité">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/objectQty"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                style="@style/Widget.App.TextInputLayout"
-                android:hint="Tag ID (ex: 1)">
+                android:hint="Catégorie (optionnel)">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/objectTagId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"/>
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:cursorVisible="false"/>
             </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Photo de l'objet -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Photo (optionnel)"
+                android:textStyle="bold"/>
+
+            <ImageView
+                android:id="@+id/imagePreview"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="8dp"
+                android:scaleType="centerCrop"
+                android:background="#EEE"
+                android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/btnPickImage"
+                style="@style/Widget.App.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Ajouter une photo"/>
 
             <Button
                 android:id="@+id/createButton"
@@ -108,6 +121,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Créer"/>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"/>
 
         </LinearLayout>
     </ScrollView>

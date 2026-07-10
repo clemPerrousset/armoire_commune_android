@@ -1,29 +1,27 @@
 package fr.larmoirecommune.app.ui.objects
 
-import fr.larmoirecommune.app.model.Reservation
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import coil.load
 import fr.larmoirecommune.app.databinding.ActivityObjectDetailBinding
 import fr.larmoirecommune.app.network.ApiClient
+import fr.larmoirecommune.app.repository.ObjectRepository
+import fr.larmoirecommune.app.repository.UserRepository
 import fr.larmoirecommune.app.ui.auth.LoginActivity
 import fr.larmoirecommune.app.viewmodel.ObjectDetailViewModel
-import fr.larmoirecommune.app.repository.UserRepository
-import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import android.widget.Toast
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.zxing.BarcodeFormat
-import com.journeyapps.barcodescanner.BarcodeEncoder
-import android.widget.ImageView
-import android.widget.TextView
 
 class ObjectDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityObjectDetailBinding
     private val viewModel: ObjectDetailViewModel by viewModels()
     private var objectId: Int = -1
     private val userRepository = UserRepository()
+    private val objectRepository = ObjectRepository()
     private var isFavorite = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,16 +30,34 @@ class ObjectDetailActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         objectId = intent.getIntExtra("OBJECT_ID", -1)
-        if (objectId == -1) finish()
+        if (objectId == -1) { finish(); return }
 
         viewModel.objectDetail.observe(this) { obj ->
-             if (obj != null) {
-                binding.detailName.text = obj.nom
-                binding.detailDesc.text = obj.description
-                binding.reserveButton.isEnabled = obj.disponibiliteGlobale
+            if (obj == null) return@observe
+            binding.detailName.text = obj.nom
+            binding.detailDesc.text = obj.description
+            binding.reserveButton.isEnabled = obj.disponibiliteGlobale
+
+            if (!obj.image.isNullOrBlank()) {
+                binding.objectImage.load(ApiClient.getUrl(obj.image)) {
+                    crossfade(true)
+                    error(android.R.drawable.ic_menu_gallery)
+                }
             }
         }
 
+        viewModel.loadObject(objectId)
+
+        // Masquer le bouton QR code (inutile côté utilisateur)
+        binding.btnQrCode.visibility = View.GONE
+
+        // Initialiser l'état du bouton favoris avant tout clic
+        if (ApiClient.token != null) {
+            lifecycleScope.launch { initFavoriteState() }
+        } else {
+            // Non connecté : bouton favoris vide (non rempli)
+            binding.btnFavorite.alpha = 0.4f
+        }
 
         binding.btnFavorite.setOnClickListener {
             if (ApiClient.token == null) {
@@ -50,15 +66,13 @@ class ObjectDetailActivity : AppCompatActivity() {
             }
             lifecycleScope.launch {
                 if (isFavorite) {
-                    val success = userRepository.removeFavori(objectId)
-                    if (success) {
+                    if (userRepository.removeFavori(objectId)) {
                         isFavorite = false
-                        binding.btnFavorite.alpha = 0.5f
+                        binding.btnFavorite.alpha = 0.4f
                         Toast.makeText(this@ObjectDetailActivity, "Retiré des favoris", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    val success = userRepository.addFavori(objectId)
-                    if (success) {
+                    if (userRepository.addFavori(objectId)) {
                         isFavorite = true
                         binding.btnFavorite.alpha = 1.0f
                         Toast.makeText(this@ObjectDetailActivity, "Ajouté aux favoris", Toast.LENGTH_SHORT).show()
@@ -67,11 +81,8 @@ class ObjectDetailActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.loadObject(objectId)
-
-        binding.btnQrCode.setOnClickListener {
-            showQrCodeBottomSheet()
-        }
+        // Calendrier : affichage des semaines réservées
+        loadReservationCalendar()
 
         binding.reserveButton.setOnClickListener {
             if (ApiClient.token == null) {
@@ -79,35 +90,44 @@ class ObjectDetailActivity : AppCompatActivity() {
                 loginIntent.putExtra("FINISH_ONLY", true)
                 startActivity(loginIntent)
             } else {
-                val intent = Intent(this, ReservationActivity::class.java)
-                intent.putExtra("OBJECT_ID", objectId)
-                startActivity(intent)
+                startActivity(Intent(this, ReservationActivity::class.java).apply {
+                    putExtra("OBJECT_ID", objectId)
+                })
             }
         }
     }
 
-    private fun showQrCodeBottomSheet() {
-        val obj = viewModel.objectDetail.value ?: return
-        val dialog = BottomSheetDialog(this)
-        val view = layoutInflater.inflate(fr.larmoirecommune.app.R.layout.layout_qr_code_bottom_sheet, null)
+    private suspend fun initFavoriteState() {
+        val favoris = userRepository.getFavoris()
+        isFavorite = favoris.any { it.id == objectId }
+        binding.btnFavorite.alpha = if (isFavorite) 1.0f else 0.4f
+    }
 
-        val qrImage = view.findViewById<ImageView>(fr.larmoirecommune.app.R.id.qrImage)
-        val qrObjectName = view.findViewById<TextView>(fr.larmoirecommune.app.R.id.qrObjectName)
-
-        qrObjectName.text = obj.nom
-
-        try {
-            val barcodeEncoder = BarcodeEncoder()
-            // Format: armoirecommune://objet/{id}
-            val content = "armoirecommune://objet/${obj.id}"
-            val bitmap = barcodeEncoder.encodeBitmap(content, BarcodeFormat.QR_CODE, 512, 512)
-            qrImage.setImageBitmap(bitmap)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Erreur lors de la génération du QR Code", Toast.LENGTH_SHORT).show()
+    private fun loadReservationCalendar() {
+        lifecycleScope.launch {
+            val reservations = objectRepository.getReservationsForObjet(objectId)
+            if (reservations.isEmpty()) {
+                binding.tvCalendar.text = "Aucune réservation en cours"
+                return@launch
+            }
+            val lines = reservations.joinToString("\n") { res ->
+                "• Du ${formatDate(res.dateDebut)} au ${formatDate(res.dateFin)} (${statusLabel(res.status)})"
+            }
+            binding.tvCalendar.text = "Semaines réservées :\n$lines"
         }
+    }
 
-        dialog.setContentView(view)
-        dialog.show()
+    private fun formatDate(iso: String): String {
+        return try {
+            val date = iso.substringBefore("T")
+            val parts = date.split("-")
+            "${parts[2]}/${parts[1]}/${parts[0]}"
+        } catch (e: Exception) { iso }
+    }
+
+    private fun statusLabel(status: String) = when (status) {
+        "active"   -> "réservé"
+        "en_cours" -> "en cours d'emprunt"
+        else       -> status
     }
 }

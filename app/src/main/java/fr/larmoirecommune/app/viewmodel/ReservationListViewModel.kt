@@ -16,8 +16,7 @@ class ReservationListViewModel : ViewModel() {
 
     fun loadReservations() {
         viewModelScope.launch {
-            val list = repository.getMyReservations()
-            _reservations.value = list
+            _reservations.value = repository.getMyReservations()
         }
     }
 }
