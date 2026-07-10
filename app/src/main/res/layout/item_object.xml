@@ -22,8 +22,7 @@
             android:scaleType="centerCrop"
             android:src="@drawable/ic_objects"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/text_secondary"
-            android:padding="40dp"/> <!-- Placeholder padding/tint -->
+            android:padding="40dp"/>
 
         <TextView
             android:id="@+id/objectName"

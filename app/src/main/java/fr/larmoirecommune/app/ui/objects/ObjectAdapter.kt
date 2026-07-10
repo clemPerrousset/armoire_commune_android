@@ -8,9 +8,14 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import fr.larmoirecommune.app.R
 import fr.larmoirecommune.app.databinding.ItemObjectBinding
 import fr.larmoirecommune.app.model.Objet
+import fr.larmoirecommune.app.network.ApiClient
+
+private fun Int.dpToPx(context: android.content.Context): Int =
+    (this * context.resources.displayMetrics.density).toInt()
 
 class ObjectAdapter(
     private val onItemClick: (Objet) -> Unit
@@ -31,6 +36,21 @@ class ObjectAdapter(
 
         holder.binding.objectName.text = item.nom
         holder.binding.objectDesc.text = item.description
+
+        // Image
+        if (!item.image.isNullOrBlank()) {
+            holder.binding.objectImage.load(ApiClient.getUrl(item.image)) {
+                crossfade(true)
+                placeholder(R.drawable.ic_objects)
+                error(R.drawable.ic_objects)
+                listener(onSuccess = { _, _ ->
+                    holder.binding.objectImage.setPadding(0, 0, 0, 0)
+                })
+            }
+        } else {
+            holder.binding.objectImage.setImageResource(R.drawable.ic_objects)
+            holder.binding.objectImage.setPadding(40.dpToPx(holder.itemView.context), 40.dpToPx(holder.itemView.context), 40.dpToPx(holder.itemView.context), 40.dpToPx(holder.itemView.context))
+        }
 
         // Status Logic
         if (item.disponibiliteGlobale) {
