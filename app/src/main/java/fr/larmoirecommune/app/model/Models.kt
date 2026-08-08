@@ -18,7 +18,62 @@ data class User(
     val prenom: String,
     val email: String,
     @SerialName("is_admin") val isAdmin: Boolean = false,
-    @SerialName("is_point_relais") val isPointRelais: Boolean = false
+    @SerialName("is_point_relais") val isPointRelais: Boolean = false,
+    val credits: Int = 100
+)
+
+// Statuts de réservation
+object ReservationStatus {
+    const val EN_PREPARATION   = "en_preparation"
+    const val MIS_A_DISPOSITION = "mis_a_disposition"
+    const val RETIRE           = "retire"
+    const val RESTITUE         = "restitue"
+    const val EN_VERIFICATION  = "en_verification"
+    const val TERMINEE         = "terminee"
+    const val ANNULEE          = "annulee"
+
+    fun label(status: String) = when (status) {
+        EN_PREPARATION    -> "En préparation"
+        MIS_A_DISPOSITION -> "Mis à disposition"
+        RETIRE            -> "Retiré"
+        RESTITUE          -> "Restitué"
+        EN_VERIFICATION   -> "En vérification"
+        TERMINEE          -> "Terminée"
+        ANNULEE           -> "Annulée"
+        else              -> status
+    }
+
+    val EN_COURS = listOf(EN_PREPARATION, MIS_A_DISPOSITION, RETIRE, RESTITUE, EN_VERIFICATION)
+}
+
+@Serializable
+data class ScanResult(
+    @SerialName("objet_id") val objetId: Int,
+    @SerialName("objet_nom") val objetNom: String,
+    @SerialName("ancien_statut") val ancienStatut: String,
+    @SerialName("nouveau_statut") val nouveauStatut: String,
+    @SerialName("reservation_id") val reservationId: Int? = null,
+    @SerialName("verification_requise") val verificationRequise: Boolean = false
+)
+
+@Serializable
+data class ObjetWithReservation(
+    val id: Int? = null,
+    val nom: String,
+    val description: String,
+    val image: String? = null,
+    @SerialName("disponibilite_globale") val disponibiliteGlobale: Boolean = true,
+    val reservation: ReservationBrief? = null
+)
+
+@Serializable
+data class ReservationBrief(
+    val id: Int,
+    val status: String,
+    @SerialName("date_debut") val dateDebut: String,
+    @SerialName("date_fin") val dateFin: String,
+    @SerialName("nb_semaines") val nbSemaines: Int = 1,
+    @SerialName("user_id") val userId: Int? = null
 )
 
 // --- ENTITÉS DE BASE ---

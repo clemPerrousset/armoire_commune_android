@@ -3,10 +3,10 @@ package fr.larmoirecommune.app.ui.admin
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -32,11 +32,10 @@ class AdminCreateObjectActivity : AppCompatActivity() {
     private var selectedImageUri: Uri? = null
     private var tempCameraUri: Uri? = null
 
-    // Constantes pour les demandes de permission
+    // Constante pour la demande de permission
     private val RC_CAMERA = 42
-    private val RC_GALLERY = 43
 
-    private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+    private val pickImage = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         uri?.let { setSelectedImage(it) }
     }
 
@@ -86,26 +85,11 @@ class AdminCreateObjectActivity : AppCompatActivity() {
             .setTitle("Ajouter une photo")
             .setItems(arrayOf("Galerie", "Appareil photo")) { _, which ->
                 when (which) {
-                    0 -> requestGalleryPermissionAndOpen()
+                    0 -> pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     1 -> requestCameraPermissionAndOpen()
                 }
             }
             .show()
-    }
-
-    // --- Galerie ---
-
-    private fun requestGalleryPermissionAndOpen() {
-        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            Manifest.permission.READ_MEDIA_IMAGES
-        else
-            Manifest.permission.READ_EXTERNAL_STORAGE
-
-        if (ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED) {
-            pickImage.launch("image/*")
-        } else {
-            ActivityCompat.requestPermissions(this, arrayOf(permission), RC_GALLERY)
-        }
     }
 
     // --- Caméra ---
@@ -133,10 +117,6 @@ class AdminCreateObjectActivity : AppCompatActivity() {
             RC_CAMERA -> {
                 if (granted) launchCamera()
                 else Toast.makeText(this, "Permission caméra refusée", Toast.LENGTH_SHORT).show()
-            }
-            RC_GALLERY -> {
-                if (granted) pickImage.launch("image/*")
-                else Toast.makeText(this, "Permission galerie refusée", Toast.LENGTH_SHORT).show()
             }
         }
     }

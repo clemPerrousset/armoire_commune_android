@@ -39,17 +39,16 @@ class ObjectAdapter(
 
         // Image
         if (!item.image.isNullOrBlank()) {
+            holder.binding.objectImage.setPadding(0, 0, 0, 0)
             holder.binding.objectImage.load(ApiClient.getUrl(item.image)) {
                 crossfade(true)
                 placeholder(R.drawable.ic_objects)
                 error(R.drawable.ic_objects)
-                listener(onSuccess = { _, _ ->
-                    holder.binding.objectImage.setPadding(0, 0, 0, 0)
-                })
             }
         } else {
             holder.binding.objectImage.setImageResource(R.drawable.ic_objects)
-            holder.binding.objectImage.setPadding(40.dpToPx(holder.itemView.context), 40.dpToPx(holder.itemView.context), 40.dpToPx(holder.itemView.context), 40.dpToPx(holder.itemView.context))
+            val pad = 40.dpToPx(holder.itemView.context)
+            holder.binding.objectImage.setPadding(pad, pad, pad, pad)
         }
 
         // Status Logic

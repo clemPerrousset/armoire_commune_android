@@ -1,6 +1,7 @@
 package fr.larmoirecommune.app.ui.objects
 
 import fr.larmoirecommune.app.model.Reservation
+import fr.larmoirecommune.app.model.ReservationStatus
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -29,7 +30,7 @@ class ReservationAdapter(
 
         holder.binding.resObjectName.text = item.objet?.nom ?: "Objet #${item.objetId}"
         holder.binding.resDates.text = "Du ${formatDate(item.dateDebut)} au ${formatDate(item.dateFin)}"
-        holder.binding.resStatus.text = statusLabel(item.status)
+        holder.binding.resStatus.text = ReservationStatus.label(item.status)
 
         holder.itemView.setOnClickListener { onItemClick(item) }
     }
@@ -46,11 +47,4 @@ class ReservationAdapter(
         }
     }
 
-    private fun statusLabel(status: String) = when (status) {
-        "active"   -> "En attente de retrait"
-        "en_cours" -> "En cours"
-        "terminee" -> "Terminée"
-        "annulee"  -> "Annulée"
-        else       -> status
-    }
 }

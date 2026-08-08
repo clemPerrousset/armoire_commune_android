@@ -8,14 +8,14 @@ import androidx.lifecycle.lifecycleScope
 import com.journeyapps.barcodescanner.CaptureManager
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import fr.larmoirecommune.app.databinding.ActivityScannerBinding
-import fr.larmoirecommune.app.repository.ObjectRepository
+import fr.larmoirecommune.app.model.ReservationStatus
+import fr.larmoirecommune.app.repository.AdminRepository
 import kotlinx.coroutines.launch
-import fr.larmoirecommune.app.model.Lieu
 
 class ScannerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityScannerBinding
     private lateinit var capture: CaptureManager
-    private val repository = ObjectRepository()
+    private val repository = AdminRepository()
     private var isScanning = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +27,7 @@ class ScannerActivity : AppCompatActivity() {
 
         capture = CaptureManager(this, binding.barcodeScanner)
         capture.initializeFromIntent(intent, savedInstanceState)
-        
+
         binding.barcodeScanner.decodeContinuous { result ->
             if (isScanning) {
                 isScanning = false
@@ -37,65 +37,61 @@ class ScannerActivity : AppCompatActivity() {
     }
 
     private fun handleScanResult(text: String) {
-        // Format attendu: armoirecommune://objet/{id}
+        // Format : armoirecommune://objet/{id}
         if (text.startsWith("armoirecommune://objet/")) {
-            val objectIdStr = text.substringAfterLast("/")
-            val objectId = objectIdStr.toIntOrNull()
-
+            val objectId = text.substringAfterLast("/").toIntOrNull()
             if (objectId != null) {
-                processObjectScan(objectId)
+                processScan(objectId)
             } else {
-                showErrorDialog("Format de QR Code invalide : ID manquant.")
+                showError("Format de QR Code invalide.")
             }
         } else {
-            showErrorDialog("Ce QR Code n'est pas reconnu par L'Armoire Commune.")
+            showError("QR Code non reconnu par L'Armoire Commune.")
         }
     }
 
-    private fun processObjectScan(objectId: Int) {
+    private fun processScan(objectId: Int) {
         lifecycleScope.launch {
-            // 1. Essayer le retrait
-            val retraitResult = repository.retirerObjet(objectId)
-            if (retraitResult.isSuccess) {
-                showSuccessDialog("Objet retiré avec succès !")
+            val result = repository.scanObjet(objectId)
+            if (result == null) {
+                showError("Aucune réservation active pour cet objet, ou erreur réseau.")
+                return@launch
+            }
+
+            if (result.verificationRequise) {
+                // Statut en_verification → l'admin doit choisir
+                showVerificationDialog(objectId, result.objetNom)
             } else {
-                // 2. Si échec retrait, essayer le retour
-                // Pour le retour, on a besoin d'un lieu. On récupère les lieux et on demande ou on prend le premier.
-                val lieux = repository.getLieux()
-                if (lieux.isNotEmpty()) {
-                    showLieuSelectionDialog(objectId, lieux)
-                } else {
-                    showErrorDialog("Impossible de trouver un lieu pour le retour.")
+                val msg = "\"${result.objetNom}\"\n" +
+                    "${ReservationStatus.label(result.ancienStatut)} → ${ReservationStatus.label(result.nouveauStatut)}"
+                showSuccess(msg)
+            }
+        }
+    }
+
+    private fun showVerificationDialog(objectId: Int, nom: String) {
+        AlertDialog.Builder(this)
+            .setTitle("Vérification requise")
+            .setMessage("\"$nom\" a été retourné.\nL'objet fonctionne-t-il correctement ?")
+            .setPositiveButton("Remettre en stock") { _, _ ->
+                lifecycleScope.launch {
+                    val ok = repository.validerObjet(objectId)
+                    if (ok) showSuccess("\"$nom\" remis en stock.")
+                    else showError("Erreur lors de la validation.")
                 }
             }
-        }
-    }
-
-    private fun showLieuSelectionDialog(objectId: Int, lieux: List<Lieu>) {
-        val lieuNames = lieux.map { it.nom }.toTypedArray()
-        AlertDialog.Builder(this)
-            .setTitle("Sélectionner le lieu de retour")
-            .setItems(lieuNames) { _, which ->
-                val selectedLieu = lieux[which]
-                performRetour(objectId, selectedLieu.id ?: 1)
+            .setNegativeButton("Mettre en maintenance") { _, _ ->
+                lifecycleScope.launch {
+                    val ok = repository.mettreEnMaintenance(objectId)
+                    if (ok) showSuccess("\"$nom\" mis en maintenance.")
+                    else showError("Erreur lors de la mise en maintenance.")
+                }
             }
-            .setNegativeButton("Annuler") { _, _ -> resumeScanning() }
             .setCancelable(false)
             .show()
     }
 
-    private fun performRetour(objectId: Int, lieuId: Int) {
-        lifecycleScope.launch {
-            val retourResult = repository.retournerObjet(objectId, lieuId)
-            if (retourResult.isSuccess) {
-                showSuccessDialog("Objet retourné avec succès !")
-            } else {
-                showErrorDialog("Erreur lors du scan : ni retrait ni retour possible.\n\nDétails : ${retourResult.exceptionOrNull()?.message}")
-            }
-        }
-    }
-
-    private fun showSuccessDialog(message: String) {
+    private fun showSuccess(message: String) {
         AlertDialog.Builder(this)
             .setTitle("Succès")
             .setMessage(message)
@@ -104,7 +100,7 @@ class ScannerActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun showErrorDialog(message: String) {
+    private fun showError(message: String) {
         AlertDialog.Builder(this)
             .setTitle("Erreur")
             .setMessage(message)
@@ -113,25 +109,11 @@ class ScannerActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun resumeScanning() {
-        isScanning = true
-    }
+    private fun resumeScanning() { isScanning = true }
 
-    override fun onResume() {
-        super.onResume()
-        binding.barcodeScanner.resume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        binding.barcodeScanner.pause()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        capture.onDestroy()
-    }
-
+    override fun onResume() { super.onResume(); binding.barcodeScanner.resume() }
+    override fun onPause() { super.onPause(); binding.barcodeScanner.pause() }
+    override fun onDestroy() { super.onDestroy(); capture.onDestroy() }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         capture.onSaveInstanceState(outState)

@@ -1,15 +1,21 @@
 package fr.larmoirecommune.app.ui.objects
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import coil.load
+import com.google.zxing.BarcodeFormat
+import com.journeyapps.barcodescanner.BarcodeEncoder
 import fr.larmoirecommune.app.databinding.ActivityObjectDetailBinding
+import fr.larmoirecommune.app.model.ReservationStatus
 import fr.larmoirecommune.app.network.ApiClient
 import fr.larmoirecommune.app.repository.ObjectRepository
 import fr.larmoirecommune.app.repository.UserRepository
@@ -39,6 +45,13 @@ class ObjectDetailActivity : AppCompatActivity() {
             binding.detailDesc.text = obj.description
             binding.reserveButton.isEnabled = obj.disponibiliteGlobale
 
+            if (obj.tag != null) {
+                binding.tvTag.text = obj.tag.nom
+                binding.tvTag.visibility = View.VISIBLE
+            } else {
+                binding.tvTag.visibility = View.GONE
+            }
+
             if (!obj.image.isNullOrBlank()) {
                 val imageUrl = ApiClient.getUrl(obj.image)
                 Log.d("ObjectDetail", "Loading image: $imageUrl")
@@ -53,14 +66,11 @@ class ObjectDetailActivity : AppCompatActivity() {
 
         viewModel.loadObject(objectId)
 
-        // Masquer le bouton QR code (inutile côté utilisateur)
-        binding.btnQrCode.visibility = View.GONE
+        binding.btnQrCode.setOnClickListener { showQrDialog() }
 
-        // Initialiser l'état du bouton favoris avant tout clic
         if (ApiClient.token != null) {
             lifecycleScope.launch { initFavoriteState() }
         } else {
-            // Non connecté : bouton favoris vide (non rempli)
             binding.btnFavorite.alpha = 0.4f
         }
 
@@ -86,7 +96,6 @@ class ObjectDetailActivity : AppCompatActivity() {
             }
         }
 
-        // Calendrier : affichage des semaines réservées
         loadReservationCalendar()
 
         binding.reserveButton.setOnClickListener {
@@ -99,6 +108,26 @@ class ObjectDetailActivity : AppCompatActivity() {
                     putExtra("OBJECT_ID", objectId)
                 })
             }
+        }
+    }
+
+    private fun showQrDialog() {
+        val content = "armoirecommune://objet/$objectId"
+        try {
+            val encoder = BarcodeEncoder()
+            val bitmap: Bitmap = encoder.encodeBitmap(content, BarcodeFormat.QR_CODE, 600, 600)
+            val imageView = ImageView(this).apply {
+                setImageBitmap(bitmap)
+                val pad = (32 * resources.displayMetrics.density).toInt()
+                setPadding(pad, pad, pad, pad)
+            }
+            AlertDialog.Builder(this)
+                .setTitle("QR Code de l'objet")
+                .setView(imageView)
+                .setPositiveButton("Fermer", null)
+                .show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Impossible de générer le QR code", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -116,7 +145,7 @@ class ObjectDetailActivity : AppCompatActivity() {
                 return@launch
             }
             val lines = reservations.joinToString("\n") { res ->
-                "• Du ${formatDate(res.dateDebut)} au ${formatDate(res.dateFin)} (${statusLabel(res.status)})"
+                "• Du ${formatDate(res.dateDebut)} au ${formatDate(res.dateFin)} (${ReservationStatus.label(res.status)})"
             }
             binding.tvCalendar.text = "Semaines réservées :\n$lines"
         }
@@ -128,11 +157,5 @@ class ObjectDetailActivity : AppCompatActivity() {
             val parts = date.split("-")
             "${parts[2]}/${parts[1]}/${parts[0]}"
         } catch (e: Exception) { iso }
-    }
-
-    private fun statusLabel(status: String) = when (status) {
-        "active"   -> "réservé"
-        "en_cours" -> "en cours d'emprunt"
-        else       -> status
     }
 }

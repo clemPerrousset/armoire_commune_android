@@ -1,7 +1,7 @@
 package fr.larmoirecommune.app.ui.profile
 
-import fr.larmoirecommune.app.model.Reservation
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +16,7 @@ import fr.larmoirecommune.app.utils.ProfileManager
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
-import android.net.Uri
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -30,7 +30,7 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var profileManager: ProfileManager
     private var tempCameraUri: Uri? = null
 
-    private val pickImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+    private val pickImage = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
         uri?.let {
             saveImageLocally(it)
         }
@@ -62,6 +62,7 @@ class ProfileActivity : AppCompatActivity() {
     private fun loadProfileData() {
         binding.profileName.text = profileManager.userName ?: "Entrez votre nom"
         binding.profileEmail.text = ApiClient.currentUserEmail ?: "Membre"
+        binding.tvCredits.text = "${ApiClient.currentUserCredits} crédit(s) restant(s)"
         profileManager.avatarUri?.let {
             loadAvatar(Uri.parse(it))
         }
@@ -118,7 +119,7 @@ class ProfileActivity : AppCompatActivity() {
             .setTitle("Changer l'avatar")
             .setItems(options) { _, which ->
                 when (which) {
-                    0 -> pickImage.launch("image/*")
+                    0 -> pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     1 -> startCamera()
                 }
             }
@@ -191,16 +192,45 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
-        // FAQ (Mock)
+        // FAQ
         with(binding.btnFaq) {
             optionIcon.setImageResource(R.drawable.ic_help)
             optionTitle.text = "FAQ"
+            root.setOnClickListener {
+                startActivity(Intent(this@ProfileActivity, FaqActivity::class.java))
+            }
         }
 
-        // Privacy (Mock)
+        // Politique de confidentialité
         with(binding.btnPrivacy) {
             optionIcon.setImageResource(R.drawable.ic_admin)
             optionTitle.text = "Politique de confidentialité"
+            root.setOnClickListener {
+                val url = "http://cdn.eu.yapla.com/company/CPYVzDnOZJ20l4SKRj8uyg1I5/asset/files/Politique%20de%20Protection%20des%20Donn%C3%A9es%20Personnelles.pdf"
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }
+        }
+
+        // Support
+        with(binding.btnSupport) {
+            optionIcon.setImageResource(R.drawable.ic_help)
+            optionTitle.text = "J'ai besoin d'aide"
+            root.setOnClickListener {
+                val intent = Intent(Intent.ACTION_SENDTO).apply {
+                    data = Uri.parse("mailto:support@larmoirecommune.fr")
+                    putExtra(Intent.EXTRA_SUBJECT, "Demande d'aide - L'Armoire Commune")
+                }
+                startActivity(intent)
+            }
+        }
+
+        // Crédits
+        with(binding.btnCredits) {
+            optionIcon.setImageResource(R.drawable.ic_reservations)
+            optionTitle.text = "Mes crédits"
+            root.setOnClickListener {
+                startActivity(Intent(this@ProfileActivity, CreditsActivity::class.java))
+            }
         }
 
         // Logout

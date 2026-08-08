@@ -3,7 +3,9 @@ package fr.larmoirecommune.app.repository
 import fr.larmoirecommune.app.model.CreateLieuRequest
 import fr.larmoirecommune.app.model.CreateObjectRequest
 import fr.larmoirecommune.app.model.Objet
+import fr.larmoirecommune.app.model.ObjetWithReservation
 import fr.larmoirecommune.app.model.Reservation
+import fr.larmoirecommune.app.model.ScanResult
 import fr.larmoirecommune.app.network.ApiClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
@@ -166,6 +168,48 @@ class AdminRepository {
     suspend fun returnObject(reservationId: Int): Boolean {
         return try {
             ApiClient.client.post(ApiClient.getUrl("/admin/reservations/$reservationId/return"))
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    // --- SCAN QR ---
+
+    suspend fun scanObjet(objetId: Int): ScanResult? {
+        return try {
+            ApiClient.client.post(ApiClient.getUrl("/objets/$objetId/scan")).body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    // --- VÉRIFICATION ---
+
+    suspend fun getVerificationObjects(): List<ObjetWithReservation> {
+        return try {
+            ApiClient.client.get(ApiClient.getUrl("/admin/objets/verification")).body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    suspend fun validerObjet(objetId: Int): Boolean {
+        return try {
+            ApiClient.client.post(ApiClient.getUrl("/admin/objets/$objetId/valider"))
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun mettreEnMaintenance(objetId: Int): Boolean {
+        return try {
+            ApiClient.client.post(ApiClient.getUrl("/admin/objets/$objetId/mettre-en-maintenance"))
             true
         } catch (e: Exception) {
             e.printStackTrace()

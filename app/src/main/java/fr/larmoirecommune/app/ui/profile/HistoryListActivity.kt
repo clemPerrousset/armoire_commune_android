@@ -27,6 +27,7 @@ class HistoryListActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnBack.setOnClickListener { finish() }
+        binding.tvPageTitle.text = "Historique"
         binding.reservationRecycler.layoutManager = LinearLayoutManager(this)
         binding.reservationRecycler.adapter = adapter
 

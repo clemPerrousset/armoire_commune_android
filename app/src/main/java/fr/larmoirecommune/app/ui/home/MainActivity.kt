@@ -14,6 +14,7 @@ import fr.larmoirecommune.app.network.ApiClient
 import fr.larmoirecommune.app.ui.admin.AdminCreateLieuActivity
 import fr.larmoirecommune.app.ui.admin.AdminCreateTagActivity
 import fr.larmoirecommune.app.ui.admin.AdminAlertObjectsActivity
+import fr.larmoirecommune.app.ui.admin.AdminVerificationActivity
 
 
 import fr.larmoirecommune.app.ui.admin.AdminCreateObjectActivity
@@ -150,6 +151,7 @@ class MainActivity : AppCompatActivity() {
                 ApiClient.currentUserIsAdmin = user.isAdmin
                 ApiClient.currentUserIsPointRelais = user.isPointRelais
                 ApiClient.currentUserEmail = user.email
+                ApiClient.currentUserCredits = user.credits
 
                 // Update welcome text if user has a name (assuming User has prenom/nom)
                 // binding.welcomeText.text = "Bonjour ${user.prenom ?: ""} !"
@@ -214,8 +216,11 @@ class MainActivity : AppCompatActivity() {
             items.add(DashboardItem(getString(R.string.menu_admin_create_tag), R.drawable.ic_admin, R.drawable.bg_gradient_blue) {
                 startActivity(Intent(this, AdminCreateTagActivity::class.java))
             })
-            items.add(DashboardItem("Objets en alerte", R.drawable.ic_admin, R.drawable.bg_gradient_red) {
+            items.add(DashboardItem("Objets en retard", R.drawable.ic_admin, R.drawable.bg_gradient_red) {
                 startActivity(Intent(this, AdminAlertObjectsActivity::class.java))
+            })
+            items.add(DashboardItem("À vérifier", R.drawable.ic_admin, R.drawable.bg_gradient_purple) {
+                startActivity(Intent(this, AdminVerificationActivity::class.java))
             })
             items.add(DashboardItem(getString(R.string.menu_admin_reservations), R.drawable.ic_admin, R.drawable.bg_gradient_orange) {
                 startActivity(Intent(this, AdminReservationsActivity::class.java))

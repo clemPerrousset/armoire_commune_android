@@ -22,6 +22,7 @@ object ApiClient {
     var currentUserIsAdmin: Boolean = false
     var currentUserIsPointRelais: Boolean = false
     var currentUserEmail: String? = null
+    var currentUserCredits: Int = 100
 
     // Client pour les requêtes authentifiées (avec Bearer token)
     val client = HttpClient(OkHttp) {

@@ -51,8 +51,8 @@ class AdminReservationsActivity : AppCompatActivity() {
 
         val chips = listOf(
             binding.chipAll to null,
-            binding.chipActive to "active",
-            binding.chipEnCours to "en_cours",
+            binding.chipActive to "en_preparation",
+            binding.chipEnCours to "retire",
             binding.chipTerminee to "terminee",
             binding.chipAnnulee to "annulee"
         )
@@ -115,11 +115,5 @@ class AdminReservationAdapter(
         } catch (e: Exception) { iso }
     }
 
-    private fun statusLabel(status: String) = when (status) {
-        "active"   -> "En attente de retrait"
-        "en_cours" -> "En cours"
-        "terminee" -> "Terminée"
-        "annulee"  -> "Annulée"
-        else       -> status
-    }
+    private fun statusLabel(status: String) = fr.larmoirecommune.app.model.ReservationStatus.label(status)
 }
