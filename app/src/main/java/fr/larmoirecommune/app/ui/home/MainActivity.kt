@@ -15,6 +15,7 @@ import fr.larmoirecommune.app.ui.admin.AdminCreateLieuActivity
 import fr.larmoirecommune.app.ui.admin.AdminCreateTagActivity
 import fr.larmoirecommune.app.ui.admin.AdminAlertObjectsActivity
 import fr.larmoirecommune.app.ui.admin.AdminVerificationActivity
+import fr.larmoirecommune.app.ui.admin.AdminDeleteObjectsActivity
 
 
 import fr.larmoirecommune.app.ui.admin.AdminCreateObjectActivity
@@ -224,6 +225,9 @@ class MainActivity : AppCompatActivity() {
             })
             items.add(DashboardItem(getString(R.string.menu_admin_reservations), R.drawable.ic_admin, R.drawable.bg_gradient_orange) {
                 startActivity(Intent(this, AdminReservationsActivity::class.java))
+            })
+            items.add(DashboardItem("Supprimer un objet", R.drawable.ic_delete, R.drawable.bg_gradient_red) {
+                startActivity(Intent(this, AdminDeleteObjectsActivity::class.java))
             })
         }
 
