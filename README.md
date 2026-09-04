@@ -7,7 +7,7 @@ Application Android native pour "L'Armoire Commune", développée en Kotlin / XM
 - **Authentification** : Inscription et Connexion (JWT).
 - **Bibliothèque d'objets** : Liste des objets, filtres, disponibilité.
 - **Réservations** : Calendrier, sélection de lieu de retrait sur carte (OpenStreetMap), historique.
-- **Administration** : Création d'objets, de lieux, et gestion des retours.
+- **Administration** : Création d'objets, de lieux, gestion des retours, objets en retard, à vérifier et en maintenance (remise en service via scan QR ou bouton dédié).
 
 ## Architecture Technique
 
