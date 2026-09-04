@@ -1,5 +1,6 @@
 package fr.larmoirecommune.app.ui.admin
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -9,22 +10,30 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import fr.larmoirecommune.app.databinding.ActivityAdminAlertObjectsBinding
 import fr.larmoirecommune.app.repository.AdminRepository
 import fr.larmoirecommune.app.ui.objects.ObjectAdapter
+import fr.larmoirecommune.app.ui.objects.ObjectDetailActivity
 import kotlinx.coroutines.launch
 
 class AdminAlertObjectsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAdminAlertObjectsBinding
     private val adminRepository = AdminRepository()
 
-    private val adapter = ObjectAdapter { objet ->
-        AlertDialog.Builder(this)
-            .setTitle("Retirer l'alerte ?")
-            .setMessage("Voulez-vous retirer l'alerte sur l'objet ${objet.nom} ?")
-            .setPositiveButton("Oui") { _, _ ->
-                objet.id?.let { clearAlert(it) }
-            }
-            .setNegativeButton("Non", null)
-            .show()
-    }
+    private val adapter = ObjectAdapter(
+        onItemClick = { objet ->
+            AlertDialog.Builder(this)
+                .setTitle("Retirer l'alerte ?")
+                .setMessage("Voulez-vous retirer l'alerte sur l'objet ${objet.nom} ?")
+                .setPositiveButton("Oui") { _, _ ->
+                    objet.id?.let { clearAlert(it) }
+                }
+                .setNegativeButton("Non", null)
+                .show()
+        },
+        onViewClick = { objet ->
+            startActivity(Intent(this, ObjectDetailActivity::class.java).apply {
+                putExtra("OBJECT_ID", objet.id)
+            })
+        }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

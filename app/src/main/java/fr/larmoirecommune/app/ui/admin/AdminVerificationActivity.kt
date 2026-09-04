@@ -1,5 +1,6 @@
 package fr.larmoirecommune.app.ui.admin
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import fr.larmoirecommune.app.databinding.ItemVerificationBinding
 import fr.larmoirecommune.app.model.ObjetWithReservation
 import fr.larmoirecommune.app.network.ApiClient
 import fr.larmoirecommune.app.repository.AdminRepository
+import fr.larmoirecommune.app.ui.objects.ObjectDetailActivity
 import kotlinx.coroutines.launch
 
 class AdminVerificationActivity : AppCompatActivity() {
@@ -110,5 +112,12 @@ class VerificationAdapter(
 
         holder.binding.btnValider.setOnClickListener { onValider(item) }
         holder.binding.btnMaintenance.setOnClickListener { onMaintenance(item) }
+
+        holder.itemView.setOnClickListener {
+            val context = holder.itemView.context
+            context.startActivity(Intent(context, ObjectDetailActivity::class.java).apply {
+                putExtra("OBJECT_ID", item.id)
+            })
+        }
     }
 }

@@ -40,6 +40,10 @@ object ReservationStatus {
         EN_VERIFICATION   -> "En vérification"
         TERMINEE          -> "Terminée"
         ANNULEE           -> "Annulée"
+        // Pseudo-statuts renvoyés par /objets/{id}/scan quand un objet en maintenance
+        // (sans réservation active) est rescanné pour être remis en service.
+        "maintenance"     -> "Maintenance"
+        "disponible"      -> "Disponible"
         else              -> status
     }
 
@@ -125,6 +129,25 @@ data class Objet(
     val consommables: List<Consommable> = emptyList()
 )
 
+// Versions allégées d'Objet/Lieu telles que renvoyées par l'API dans les réservations
+// (routers/reservations.py : ObjetBrief/LieuBrief). Ne PAS utiliser Objet/Lieu ici :
+// leurs champs requis (description, lat, long...) sont absents de ce JSON et font
+// planter la désérialisation (MissingFieldException), vidant silencieusement la liste.
+@Serializable
+data class ObjetBrief(
+    val id: Int? = null,
+    val nom: String,
+    val image: String? = null
+)
+
+@Serializable
+data class LieuBrief(
+    val id: Int? = null,
+    val nom: String,
+    val adresse: String,
+    val description: String? = null
+)
+
 @Serializable
 data class Reservation(
     val id: Int? = null,
@@ -149,8 +172,8 @@ data class Reservation(
     @SerialName("lieu_id")
     val lieuId: Int? = null,
 
-    val objet: Objet? = null,
-    val lieu: Lieu? = null
+    val objet: ObjetBrief? = null,
+    val lieu: LieuBrief? = null
 )
 
 // --- REQUÊTES ---

@@ -52,6 +52,7 @@ class ReservationActivity : AppCompatActivity() {
                 Toast.makeText(this, "Réservation confirmée !", Toast.LENGTH_LONG).show()
                 finish()
             } else {
+                binding.confirmButton.isEnabled = true
                 Toast.makeText(this, "Erreur : objet déjà réservé sur cette période", Toast.LENGTH_LONG).show()
             }
         }
@@ -61,6 +62,9 @@ class ReservationActivity : AppCompatActivity() {
                 Toast.makeText(this, "Sélectionnez un point de retrait sur la carte", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            // Empêche les envois multiples si l'utilisateur tape plusieurs fois
+            // avant la réponse du serveur (voir ObjectRepository.createReservation).
+            binding.confirmButton.isEnabled = false
             val dateStr = String.format(
                 "%04d-%02d-%02dT10:00:00",
                 selectedThursday.get(Calendar.YEAR),

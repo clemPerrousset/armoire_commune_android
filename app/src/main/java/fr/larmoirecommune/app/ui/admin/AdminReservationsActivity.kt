@@ -1,9 +1,9 @@
 package fr.larmoirecommune.app.ui.admin
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,6 +12,7 @@ import fr.larmoirecommune.app.databinding.ActivityAdminReservationsBinding
 import fr.larmoirecommune.app.databinding.ItemReservationBinding
 import fr.larmoirecommune.app.model.Reservation
 import fr.larmoirecommune.app.repository.AdminRepository
+import fr.larmoirecommune.app.ui.objects.ObjectDetailActivity
 import kotlinx.coroutines.launch
 
 class AdminReservationsActivity : AppCompatActivity() {
@@ -20,15 +21,9 @@ class AdminReservationsActivity : AppCompatActivity() {
     private var activeFilter: String? = null
 
     private val adapter = AdminReservationAdapter { reservation ->
-        lifecycleScope.launch {
-            val success = repository.returnObject(reservation.id!!)
-            if (success) {
-                Toast.makeText(this@AdminReservationsActivity, "Objet retourné", Toast.LENGTH_SHORT).show()
-                loadReservations()
-            } else {
-                Toast.makeText(this@AdminReservationsActivity, "Erreur", Toast.LENGTH_SHORT).show()
-            }
-        }
+        startActivity(Intent(this, ObjectDetailActivity::class.java).apply {
+            putExtra("OBJECT_ID", reservation.objetId)
+        })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,7 +71,7 @@ class AdminReservationsActivity : AppCompatActivity() {
 }
 
 class AdminReservationAdapter(
-    private val onReturnClick: (Reservation) -> Unit
+    private val onItemClick: (Reservation) -> Unit
 ) : RecyclerView.Adapter<AdminReservationAdapter.ViewHolder>() {
     private var list: List<Reservation> = emptyList()
 
@@ -96,13 +91,11 @@ class AdminReservationAdapter(
         val item = list[position]
         holder.binding.resObjectName.text = item.objet?.nom ?: "Objet #${item.objetId}"
         holder.binding.resDates.text = "Du ${formatDate(item.dateDebut)} au ${formatDate(item.dateFin)}"
+        holder.binding.resLocation.text = item.lieu?.let { "À déposer : ${it.nom} — ${it.adresse}" }
+            ?: "Lieu non précisé"
         holder.binding.resStatus.text = statusLabel(item.status)
 
-        holder.itemView.setOnClickListener {
-            if (item.status == "active") {
-                onReturnClick(item)
-            }
-        }
+        holder.itemView.setOnClickListener { onItemClick(item) }
     }
 
     override fun getItemCount() = list.size

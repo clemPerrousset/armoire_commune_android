@@ -18,6 +18,12 @@ private fun Int.dpToPx(context: android.content.Context): Int =
     (this * context.resources.displayMetrics.density).toInt()
 
 class ObjectAdapter(
+    // Bouton "Voir" dédié à la consultation de l'objet : distinct de onItemClick
+    // pour les écrans où le tap sur la carte déclenche une autre action (ex. alertes).
+    // Placé avant onItemClick (qui doit rester le dernier paramètre : les appels
+    // existants type `ObjectAdapter { objet -> ... }` comptent sur le sucre syntaxique
+    // du lambda trainant, qui se lie toujours au DERNIER paramètre).
+    private val onViewClick: ((Objet) -> Unit)? = null,
     private val onItemClick: (Objet) -> Unit
 ) : ListAdapter<Objet, ObjectAdapter.ObjectViewHolder>(ObjectDiffCallback()) {
 
@@ -63,7 +69,7 @@ class ObjectAdapter(
         }
 
         // Setup Buttons
-        holder.binding.btnView.setOnClickListener { onItemClick(item) }
+        holder.binding.btnView.setOnClickListener { (onViewClick ?: onItemClick)(item) }
         holder.itemView.setOnClickListener { onItemClick(item) }
     }
 }

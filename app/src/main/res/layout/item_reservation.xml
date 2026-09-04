@@ -45,6 +45,19 @@
             app:layout_constraintTop_toBottomOf="@id/resObjectName"/>
 
         <TextView
+            android:id="@+id/resLocation"
+            style="@style/TextAppearance.App.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="2dp"
+            android:textStyle="bold"
+            android:text="Lieu de dépôt..."
+            app:layout_constraintStart_toEndOf="@id/icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/resDates"/>
+
+        <TextView
             android:id="@+id/resStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -59,7 +72,7 @@
             android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/icon"
-            app:layout_constraintTop_toBottomOf="@id/resDates"/>
+            app:layout_constraintTop_toBottomOf="@id/resLocation"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

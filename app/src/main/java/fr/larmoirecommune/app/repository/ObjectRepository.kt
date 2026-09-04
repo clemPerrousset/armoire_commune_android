@@ -113,12 +113,17 @@ class ObjectRepository {
                 dateDebut = dateDebut,
                 nbSemaines = nbSemaines
             )
-            ApiClient.client.post(ApiClient.getUrl("/reservations")) {
+            val response = ApiClient.client.post(ApiClient.getUrl("/reservations")) {
                 contentType(ContentType.Application.Json)
                 setBody(request)
             }
-            cachedReservations = emptyList()
-            true
+            // Ktor ne lève pas d'exception sur les statuts 4xx/5xx (expectSuccess non activé) :
+            // sans ce contrôle, un 400 (crédits insuffisants, période déjà réservée...) était
+            // silencieusement traité comme un succès.
+            if (response.status.value in 200..299) {
+                cachedReservations = emptyList()
+                true
+            } else false
         } catch (e: Exception) {
             e.printStackTrace()
             false

@@ -30,6 +30,8 @@ class ReservationAdapter(
 
         holder.binding.resObjectName.text = item.objet?.nom ?: "Objet #${item.objetId}"
         holder.binding.resDates.text = "Du ${formatDate(item.dateDebut)} au ${formatDate(item.dateFin)}"
+        holder.binding.resLocation.text = item.lieu?.let { "Retrait : ${it.nom} — ${it.adresse}" }
+            ?: "Lieu non précisé"
         holder.binding.resStatus.text = ReservationStatus.label(item.status)
 
         holder.itemView.setOnClickListener { onItemClick(item) }
