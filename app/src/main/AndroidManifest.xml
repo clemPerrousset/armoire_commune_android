@@ -44,6 +44,7 @@
     <activity android:name=".ui.home.LieuMapActivity" /><activity android:name=".ui.profile.FavoriteListActivity" /><activity android:name=".ui.profile.HistoryListActivity" /><activity android:name=".ui.admin.AdminCreateTagActivity" /><activity android:name=".ui.admin.AdminAlertObjectsActivity" />
         <activity android:name=".ui.home.ScannerActivity" />
         <activity android:name=".ui.admin.AdminVerificationActivity" />
+        <activity android:name=".ui.admin.AdminMaintenanceObjectsActivity" />
         <activity android:name=".ui.admin.AdminDeleteObjectsActivity" />
         <activity android:name=".ui.profile.FaqActivity" />
         <activity android:name=".ui.profile.CreditsActivity" />

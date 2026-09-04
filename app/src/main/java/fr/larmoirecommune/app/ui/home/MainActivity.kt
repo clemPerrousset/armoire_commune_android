@@ -15,6 +15,7 @@ import fr.larmoirecommune.app.ui.admin.AdminCreateLieuActivity
 import fr.larmoirecommune.app.ui.admin.AdminCreateTagActivity
 import fr.larmoirecommune.app.ui.admin.AdminAlertObjectsActivity
 import fr.larmoirecommune.app.ui.admin.AdminVerificationActivity
+import fr.larmoirecommune.app.ui.admin.AdminMaintenanceObjectsActivity
 import fr.larmoirecommune.app.ui.admin.AdminDeleteObjectsActivity
 
 
@@ -222,6 +223,9 @@ class MainActivity : AppCompatActivity() {
             })
             items.add(DashboardItem("À vérifier", R.drawable.ic_admin, R.drawable.bg_gradient_purple) {
                 startActivity(Intent(this, AdminVerificationActivity::class.java))
+            })
+            items.add(DashboardItem("En maintenance", R.drawable.ic_admin, R.drawable.bg_gradient_blue) {
+                startActivity(Intent(this, AdminMaintenanceObjectsActivity::class.java))
             })
             items.add(DashboardItem(getString(R.string.menu_admin_reservations), R.drawable.ic_admin, R.drawable.bg_gradient_orange) {
                 startActivity(Intent(this, AdminReservationsActivity::class.java))

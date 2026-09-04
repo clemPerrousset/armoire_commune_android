@@ -127,6 +127,15 @@ class AdminRepository {
         }
     }
 
+    suspend fun getMaintenanceObjects(): List<Objet> {
+        return try {
+            ApiClient.client.get(ApiClient.getUrl("/admin/objets/maintenance")).body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
     // --- TAGS ---
 
     suspend fun createTag(nom: String): Boolean {
