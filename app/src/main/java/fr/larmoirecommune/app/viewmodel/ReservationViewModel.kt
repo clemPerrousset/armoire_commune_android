@@ -29,7 +29,9 @@ class ReservationViewModel : ViewModel() {
     fun loadReservationsForObjet(objetId: Int) {
         viewModelScope.launch {
             val reservations = repository.getReservationsForObjet(objetId)
-            _bookedRanges.value = reservations.map { Pair(it.dateDebut, it.dateFin) }
+            val fermetures = repository.getFermetures()
+            _bookedRanges.value = reservations.map { Pair(it.dateDebut, it.dateFin) } +
+                fermetures.map { Pair(it.dateDebut, it.dateFin) }
         }
     }
 

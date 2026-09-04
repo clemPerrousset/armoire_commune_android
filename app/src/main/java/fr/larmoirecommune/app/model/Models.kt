@@ -176,6 +176,14 @@ data class Reservation(
     val lieu: LieuBrief? = null
 )
 
+// Semaine de congé admin : bloque tous les objets à la réservation.
+@Serializable
+data class Fermeture(
+    val id: Int,
+    @SerialName("date_debut") val dateDebut: String,
+    @SerialName("date_fin") val dateFin: String
+)
+
 // --- REQUÊTES ---
 
 @Serializable
@@ -203,6 +211,11 @@ data class CreateReservationRequest(
     @SerialName("lieu_id") val lieuId: Int,
     @SerialName("date_debut") val dateDebut: String,
     @SerialName("nb_semaines") val nbSemaines: Int = 1
+)
+
+@Serializable
+data class SetFermeturesRequest(
+    val semaines: List<String>
 )
 
 @Serializable

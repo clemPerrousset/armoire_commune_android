@@ -2,10 +2,12 @@ package fr.larmoirecommune.app.repository
 
 import fr.larmoirecommune.app.model.CreateLieuRequest
 import fr.larmoirecommune.app.model.CreateObjectRequest
+import fr.larmoirecommune.app.model.Fermeture
 import fr.larmoirecommune.app.model.Objet
 import fr.larmoirecommune.app.model.ObjetWithReservation
 import fr.larmoirecommune.app.model.Reservation
 import fr.larmoirecommune.app.model.ScanResult
+import fr.larmoirecommune.app.model.SetFermeturesRequest
 import fr.larmoirecommune.app.network.ApiClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
@@ -223,6 +225,30 @@ class AdminRepository {
         } catch (e: Exception) {
             e.printStackTrace()
             false
+        }
+    }
+
+    // --- CONGÉS ADMIN (FERMETURES) ---
+
+    suspend fun getFermetures(): List<Fermeture> {
+        return try {
+            ApiClient.client.get(ApiClient.getUrl("/fermetures")).body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    /** Remplace l'ensemble des semaines fermées par la liste fournie (ajouts + désélections en un appel). */
+    suspend fun setFermetures(semainesIso: List<String>): List<Fermeture>? {
+        return try {
+            ApiClient.client.put(ApiClient.getUrl("/admin/fermetures")) {
+                contentType(ContentType.Application.Json)
+                setBody(SetFermeturesRequest(semaines = semainesIso))
+            }.body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
     }
 }

@@ -45,6 +45,7 @@
         <activity android:name=".ui.home.ScannerActivity" />
         <activity android:name=".ui.admin.AdminVerificationActivity" />
         <activity android:name=".ui.admin.AdminMaintenanceObjectsActivity" />
+        <activity android:name=".ui.admin.AdminCongesActivity" />
         <activity android:name=".ui.admin.AdminDeleteObjectsActivity" />
         <activity android:name=".ui.profile.FaqActivity" />
         <activity android:name=".ui.profile.CreditsActivity" />

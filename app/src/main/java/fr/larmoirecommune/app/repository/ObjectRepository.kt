@@ -2,6 +2,7 @@ package fr.larmoirecommune.app.repository
 
 import android.util.Log
 import fr.larmoirecommune.app.model.CreateReservationRequest
+import fr.larmoirecommune.app.model.Fermeture
 import fr.larmoirecommune.app.model.Objet
 import fr.larmoirecommune.app.model.Reservation
 import fr.larmoirecommune.app.network.ApiClient
@@ -93,6 +94,16 @@ class ObjectRepository {
     suspend fun getReservationsForObjet(objetId: Int): List<Reservation> {
         return try {
             ApiClient.client.get(ApiClient.getUrl("/reservations/objet/$objetId")).body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    /** Semaines de congé admin — bloquent tous les objets, à griser comme le reste du calendrier */
+    suspend fun getFermetures(): List<Fermeture> {
+        return try {
+            ApiClient.client.get(ApiClient.getUrl("/fermetures")).body()
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()
