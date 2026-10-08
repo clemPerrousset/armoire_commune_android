@@ -6,9 +6,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import fr.larmoirecommune.app.R
-import fr.larmoirecommune.app.databinding.ActivityMainBinding
 import fr.larmoirecommune.app.model.User
 import fr.larmoirecommune.app.network.ApiClient
 import fr.larmoirecommune.app.ui.admin.AdminCreateLieuActivity
@@ -44,7 +46,7 @@ import io.ktor.client.request.get
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+    private var dashboardItems by mutableStateOf<List<DashboardItem>>(emptyList())
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -106,15 +108,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        binding.searchContainer.setOnClickListener {
-            startActivity(Intent(this, ObjectListActivity::class.java))
+        setContent {
+            HomeScreen(dashboardItems) {
+                startActivity(Intent(this, ObjectListActivity::class.java))
+            }
         }
-
-        // Configuration du LayoutManager pour la grille
-        binding.dashboardRecycler.layoutManager = GridLayoutManager(this, 2)
 
         setupWorker()
         checkNotificationPermission()
@@ -166,14 +164,14 @@ class MainActivity : AppCompatActivity() {
     private fun setupDashboardItems() {
         // Liste des éléments accessibles à tous
         val items = mutableListOf(
-            DashboardItem(getString(R.string.menu_lieux), R.drawable.ic_admin, R.drawable.bg_gradient_indigo) {
+            DashboardItem(getString(R.string.menu_lieux), R.drawable.ic_admin) {
                 startActivity(Intent(this, LieuMapActivity::class.java))
             },
 
-            DashboardItem(getString(R.string.menu_library), R.drawable.ic_objects, R.drawable.bg_gradient_green) {
+            DashboardItem(getString(R.string.menu_library), R.drawable.ic_objects) {
                 startActivity(Intent(this, ObjectListActivity::class.java))
             },
-            DashboardItem(getString(R.string.menu_my_reservations), R.drawable.ic_reservations, R.drawable.bg_gradient_orange) {
+            DashboardItem(getString(R.string.menu_my_reservations), R.drawable.ic_reservations) {
                 if (ApiClient.token == null) {
                     val loginIntent = Intent(this, LoginActivity::class.java)
                     startActivity(loginIntent)
@@ -181,7 +179,7 @@ class MainActivity : AppCompatActivity() {
                     startActivity(Intent(this, ReservationListActivity::class.java))
                 }
             },
-            DashboardItem(getString(R.string.menu_profile), R.drawable.ic_profile, R.drawable.bg_gradient_blue) {
+            DashboardItem(getString(R.string.menu_profile), R.drawable.ic_profile) {
                 if (ApiClient.token == null) {
                     val loginIntent = Intent(this, LoginActivity::class.java)
                     startActivity(loginIntent)
@@ -193,43 +191,43 @@ class MainActivity : AppCompatActivity() {
 
         // Ajout du scanner pour Admin ou Point Relais
         if (ApiClient.currentUserIsAdmin || ApiClient.currentUserIsPointRelais) {
-            items.add(0, DashboardItem("Scanner QR Code", R.drawable.ic_scan, R.drawable.bg_gradient_indigo) {
+            items.add(0, DashboardItem("Scanner QR Code", R.drawable.ic_scan) {
                 checkCameraPermissionAndScan()
             })
         }
 
         // Ajout des éléments Admin SI l'utilisateur est admin
         if (ApiClient.currentUserIsAdmin) {
-            items.add(DashboardItem(getString(R.string.menu_admin_create_object), R.drawable.ic_admin, R.drawable.bg_gradient_purple) {
+            items.add(DashboardItem(getString(R.string.menu_admin_create_object), R.drawable.ic_admin) {
                 startActivity(Intent(this, AdminCreateObjectActivity::class.java))
             })
-            items.add(DashboardItem(getString(R.string.menu_admin_create_lieu), R.drawable.ic_admin, R.drawable.bg_gradient_indigo) {
+            items.add(DashboardItem(getString(R.string.menu_admin_create_lieu), R.drawable.ic_admin) {
                 startActivity(Intent(this, AdminCreateLieuActivity::class.java))
             })
-            items.add(DashboardItem(getString(R.string.menu_admin_create_tag), R.drawable.ic_admin, R.drawable.bg_gradient_blue) {
+            items.add(DashboardItem(getString(R.string.menu_admin_create_tag), R.drawable.ic_admin) {
                 startActivity(Intent(this, AdminCreateTagActivity::class.java))
             })
-            items.add(DashboardItem("Objets en retard", R.drawable.ic_admin, R.drawable.bg_gradient_red) {
+            items.add(DashboardItem("Objets en retard", R.drawable.ic_admin, alert = true) {
                 startActivity(Intent(this, AdminAlertObjectsActivity::class.java))
             })
-            items.add(DashboardItem("À vérifier", R.drawable.ic_admin, R.drawable.bg_gradient_purple) {
+            items.add(DashboardItem("À vérifier", R.drawable.ic_admin) {
                 startActivity(Intent(this, AdminVerificationActivity::class.java))
             })
-            items.add(DashboardItem("En maintenance", R.drawable.ic_admin, R.drawable.bg_gradient_blue) {
+            items.add(DashboardItem("En maintenance", R.drawable.ic_admin) {
                 startActivity(Intent(this, AdminMaintenanceObjectsActivity::class.java))
             })
-            items.add(DashboardItem("Congé admin", R.drawable.ic_admin, R.drawable.bg_gradient_indigo) {
+            items.add(DashboardItem("Congé admin", R.drawable.ic_admin) {
                 startActivity(Intent(this, AdminCongesActivity::class.java))
             })
-            items.add(DashboardItem(getString(R.string.menu_admin_reservations), R.drawable.ic_admin, R.drawable.bg_gradient_orange) {
+            items.add(DashboardItem(getString(R.string.menu_admin_reservations), R.drawable.ic_admin) {
                 startActivity(Intent(this, AdminReservationsActivity::class.java))
             })
-            items.add(DashboardItem("Supprimer un objet", R.drawable.ic_delete, R.drawable.bg_gradient_red) {
+            items.add(DashboardItem("Supprimer un objet", R.drawable.ic_delete) {
                 startActivity(Intent(this, AdminDeleteObjectsActivity::class.java))
             })
         }
 
         // Affichage final dans le RecyclerView
-        binding.dashboardRecycler.adapter = DashboardAdapter(items)
+        dashboardItems = items
     }
 }
