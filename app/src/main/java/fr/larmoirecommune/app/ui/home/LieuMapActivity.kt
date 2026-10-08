@@ -9,7 +9,8 @@ import fr.larmoirecommune.app.model.Lieu
 import fr.larmoirecommune.app.repository.ObjectRepository
 import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import fr.larmoirecommune.app.utils.useAppPin
+import fr.larmoirecommune.app.utils.useIgnStyle
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
 
@@ -32,7 +33,7 @@ class LieuMapActivity : AppCompatActivity() {
     }
 
     private fun setupMap() {
-        binding.mapView.setTileSource(TileSourceFactory.MAPNIK)
+        binding.mapView.useIgnStyle()
         binding.mapView.setMultiTouchControls(true)
         val mapController = binding.mapView.controller
         mapController.setZoom(13.0)
@@ -56,7 +57,7 @@ class LieuMapActivity : AppCompatActivity() {
         for (lieu in lieux) {
             val marker = Marker(binding.mapView)
             marker.position = GeoPoint(lieu.lat, lieu.long)
-            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            marker.useAppPin(this)
             marker.title = lieu.nom
             marker.snippet = lieu.adresse
             binding.mapView.overlays.add(marker)

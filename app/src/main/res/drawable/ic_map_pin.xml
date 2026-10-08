@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="36dp"
+    android:height="46dp"
+    android:viewportWidth="40"
+    android:viewportHeight="52">
+    <!-- Ombre portée -->
+    <path
+        android:fillColor="#33000000"
+        android:pathData="M20,49.5m-9,0a9,2.5 0,1 1,18 0a9,2.5 0,1 1,-18 0" />
+    <!-- Corps du pin -->
+    <path
+        android:fillColor="#066372"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:pathData="M20,2C10,2 2,10 2,20C2,33 20,49 20,49C20,49 38,33 38,20C38,10 30,2 20,2Z" />
+    <!-- Disque blanc + point jaune -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M20,20m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0" />
+    <path
+        android:fillColor="#E5A82E"
+        android:pathData="M20,20m-4.5,0a4.5,4.5 0,1 1,9 0a4.5,4.5 0,1 1,-9 0" />
+</vector>

@@ -11,7 +11,8 @@ import fr.larmoirecommune.app.databinding.ActivityReservationBinding
 import fr.larmoirecommune.app.model.Lieu
 import fr.larmoirecommune.app.viewmodel.ReservationViewModel
 import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import fr.larmoirecommune.app.utils.useAppPin
+import fr.larmoirecommune.app.utils.useIgnStyle
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
@@ -180,7 +181,7 @@ class ReservationActivity : AppCompatActivity() {
     }
 
     private fun setupMap() {
-        binding.map.setTileSource(TileSourceFactory.MAPNIK)
+        binding.map.useIgnStyle()
         binding.map.setMultiTouchControls(true)
         binding.map.controller.setZoom(13.0)
         binding.map.controller.setCenter(GeoPoint(47.3220, 5.0415))
@@ -202,6 +203,7 @@ class ReservationActivity : AppCompatActivity() {
 
             val marker = Marker(binding.map)
             marker.position = GeoPoint(lieu.lat, lieu.long)
+            marker.useAppPin(this)
             marker.title = lieu.nom
             marker.subDescription = buildString {
                 append(lieu.adresse)
