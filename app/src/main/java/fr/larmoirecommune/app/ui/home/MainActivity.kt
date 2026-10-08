@@ -222,7 +222,7 @@ class MainActivity : AppCompatActivity() {
             items.add(DashboardItem(getString(R.string.menu_admin_reservations), R.drawable.ic_admin) {
                 startActivity(Intent(this, AdminReservationsActivity::class.java))
             })
-            items.add(DashboardItem("Supprimer un objet", R.drawable.ic_delete) {
+            items.add(DashboardItem("Supprimer un objet", R.drawable.ic_delete, alert = true) {
                 startActivity(Intent(this, AdminDeleteObjectsActivity::class.java))
             })
         }
