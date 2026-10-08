@@ -47,13 +47,13 @@ class ReservationActivity : AppCompatActivity() {
         viewModel.bookedRanges.observe(this) { _ -> buildThursdayChips() }
         viewModel.loadReservationsForObjet(objectId)
 
-        viewModel.reservationResult.observe(this) { success ->
-            if (success) {
+        viewModel.reservationResult.observe(this) { error ->
+            if (error == null) {
                 Toast.makeText(this, "Réservation confirmée !", Toast.LENGTH_LONG).show()
                 finish()
             } else {
                 binding.confirmButton.isEnabled = true
-                Toast.makeText(this, "Erreur : objet déjà réservé sur cette période", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Erreur : $error", Toast.LENGTH_LONG).show()
             }
         }
 

@@ -109,16 +109,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Setup Header Actions
-        binding.profileButton.setOnClickListener {
-            if (ApiClient.token == null) {
-                val loginIntent = Intent(this, LoginActivity::class.java)
-                startActivity(loginIntent)
-            } else {
-                startActivity(Intent(this, ProfileActivity::class.java))
-            }
-        }
-
         binding.searchContainer.setOnClickListener {
             startActivity(Intent(this, ObjectListActivity::class.java))
         }

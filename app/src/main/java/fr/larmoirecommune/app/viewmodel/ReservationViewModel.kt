@@ -11,8 +11,9 @@ import kotlinx.coroutines.launch
 class ReservationViewModel : ViewModel() {
     private val repository = ObjectRepository()
 
-    private val _reservationResult = MutableLiveData<Boolean>()
-    val reservationResult: LiveData<Boolean> = _reservationResult
+    /** null = succès, sinon message d'erreur du serveur. */
+    private val _reservationResult = MutableLiveData<String?>()
+    val reservationResult: LiveData<String?> = _reservationResult
 
     private val _lieux = MutableLiveData<List<Lieu>>()
     val lieux: LiveData<List<Lieu>> = _lieux
@@ -37,8 +38,7 @@ class ReservationViewModel : ViewModel() {
 
     fun createReservation(objetId: Int, lieuId: Int, date: String, nbSemaines: Int = 1) {
         viewModelScope.launch {
-            val success = repository.createReservation(objetId, lieuId, date, nbSemaines)
-            _reservationResult.value = success
+            _reservationResult.value = repository.createReservation(objetId, lieuId, date, nbSemaines)
         }
     }
 }

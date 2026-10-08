@@ -10,6 +10,8 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import org.json.JSONObject
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
@@ -116,7 +118,8 @@ class ObjectRepository {
         return cachedReservations.find { it.id == id }
     }
 
-    suspend fun createReservation(objetId: Int, lieuId: Int, dateDebut: String, nbSemaines: Int = 1): Boolean {
+    /** Retourne null en cas de succès, sinon le message d'erreur renvoyé par le serveur. */
+    suspend fun createReservation(objetId: Int, lieuId: Int, dateDebut: String, nbSemaines: Int = 1): String? {
         return try {
             val request = CreateReservationRequest(
                 objetId = objetId,
@@ -133,11 +136,20 @@ class ObjectRepository {
             // silencieusement traité comme un succès.
             if (response.status.value in 200..299) {
                 cachedReservations = emptyList()
-                true
-            } else false
+                null
+            } else {
+                val raw = response.bodyAsText()
+                Log.e("ObjectRepository", "createReservation ${response.status}: $raw")
+                val detail = try { JSONObject(raw).optString("detail") } catch (e: Exception) { "" }
+                when {
+                    detail.isNotBlank() -> detail
+                    response.status.value == 401 -> "Session expirée, reconnectez-vous"
+                    else -> "Erreur serveur (${response.status.value})"
+                }
+            }
         } catch (e: Exception) {
             e.printStackTrace()
-            false
+            "Impossible de joindre le serveur"
         }
     }
 
