@@ -121,8 +121,8 @@ class AdminRepository {
 
     suspend fun clearAlert(objetId: Int): Boolean {
         return try {
-            ApiClient.client.post(ApiClient.getUrl("/admin/objets/$objetId/clear-alert"))
-            true
+            val response = ApiClient.client.post(ApiClient.getUrl("/admin/objets/$objetId/clear-alert"))
+            response.status.value in 200..299
         } catch (e: Exception) {
             e.printStackTrace()
             false
@@ -148,6 +148,16 @@ class AdminRepository {
                 setBody(request)
             }
             true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun avancerReservation(reservationId: Int): Boolean {
+        return try {
+            val response = ApiClient.client.post(ApiClient.getUrl("/admin/reservations/$reservationId/avancer"))
+            response.status.value in 200..299
         } catch (e: Exception) {
             e.printStackTrace()
             false

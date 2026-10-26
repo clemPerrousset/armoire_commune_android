@@ -4,6 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import fr.larmoirecommune.app.model.ReservationStatus
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,10 +23,36 @@ class AdminReservationsActivity : AppCompatActivity() {
     private val repository = AdminRepository()
     private var activeFilter: String? = null
 
+    private val nextStatus = mapOf(
+        "en_preparation" to "mis_a_disposition",
+        "mis_a_disposition" to "retire",
+        "retire" to "restitue",
+        "restitue" to "en_verification"
+    )
+
     private val adapter = AdminReservationAdapter { reservation ->
-        startActivity(Intent(this, ObjectDetailActivity::class.java).apply {
-            putExtra("OBJECT_ID", reservation.objetId)
-        })
+        val next = nextStatus[reservation.status]
+        val builder = AlertDialog.Builder(this)
+            .setTitle(reservation.objet?.nom ?: "Objet #${reservation.objetId}")
+            .setNeutralButton("Voir l'objet") { _, _ ->
+                startActivity(Intent(this, ObjectDetailActivity::class.java).apply {
+                    putExtra("OBJECT_ID", reservation.objetId)
+                })
+            }
+            .setNegativeButton("Fermer", null)
+        if (next != null) {
+            builder.setMessage("Statut : ${ReservationStatus.label(reservation.status)}")
+            builder.setPositiveButton("Passer à « ${ReservationStatus.label(next)} »") { _, _ ->
+                lifecycleScope.launch {
+                    val ok = repository.avancerReservation(reservation.id ?: return@launch)
+                    Toast.makeText(this@AdminReservationsActivity, if (ok) "Statut mis à jour" else "Erreur", Toast.LENGTH_SHORT).show()
+                    loadReservations()
+                }
+            }
+        } else {
+            builder.setMessage("Statut : ${ReservationStatus.label(reservation.status)}")
+        }
+        builder.show()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +76,10 @@ class AdminReservationsActivity : AppCompatActivity() {
         val chips = listOf(
             binding.chipAll to null,
             binding.chipActive to "en_preparation",
+            binding.chipMisADispo to "mis_a_disposition",
             binding.chipEnCours to "retire",
+            binding.chipRestitue to "restitue",
+            binding.chipVerification to "en_verification",
             binding.chipTerminee to "terminee",
             binding.chipAnnulee to "annulee"
         )

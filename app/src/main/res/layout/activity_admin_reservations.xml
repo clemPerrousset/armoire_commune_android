@@ -66,14 +66,35 @@
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="En attente"/>
+                android:text="En préparation"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipMisADispo"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="À disposition"/>
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipEnCours"
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="En cours"/>
+                android:text="Retirées"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipRestitue"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Restituées"/>
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipVerification"
+                style="@style/Widget.MaterialComponents.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="En vérification"/>
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipTerminee"

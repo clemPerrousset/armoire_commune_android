@@ -66,6 +66,7 @@ class ObjectDetailActivity : AppCompatActivity() {
 
         viewModel.loadObject(objectId)
 
+        binding.btnQrCode.visibility = if (ApiClient.currentUserIsAdmin) View.VISIBLE else View.GONE
         binding.btnQrCode.setOnClickListener { showQrDialog() }
 
         if (ApiClient.token != null) {
@@ -137,19 +138,40 @@ class ObjectDetailActivity : AppCompatActivity() {
         binding.btnFavorite.alpha = if (isFavorite) 1.0f else 0.4f
     }
 
+    /** 10 prochaines semaines (jeudi → mercredi) : grisées si réservées ou fermées, sinon libres. */
     private fun loadReservationCalendar() {
         lifecycleScope.launch {
-            val reservations = objectRepository.getReservationsForObjet(objectId)
-            if (reservations.isEmpty()) {
-                binding.tvCalendar.text = "Aucune réservation en cours"
-                return@launch
+            val ranges = objectRepository.getReservationsForObjet(objectId).map { it.dateDebut to it.dateFin } +
+                objectRepository.getFermetures().map { it.dateDebut to it.dateFin }
+            val cal = ReservationActivity.firstUpcomingThursday()
+            val text = android.text.SpannableStringBuilder()
+            repeat(10) {
+                val start = cal.timeInMillis
+                val endCal = cal.clone() as java.util.Calendar
+                endCal.add(java.util.Calendar.DAY_OF_YEAR, 6)
+                val end = endCal.timeInMillis
+                val booked = ranges.any { (s, e) -> start <= isoToMillis(e) && end >= isoToMillis(s) }
+                val line = "Du ${fmt(cal)} au ${fmt(endCal)} : ${if (booked) "réservé" else "libre"}\n"
+                val from = text.length
+                text.append(line)
+                if (booked) text.setSpan(
+                    android.text.style.ForegroundColorSpan(android.graphics.Color.GRAY),
+                    from, text.length, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                cal.add(java.util.Calendar.WEEK_OF_YEAR, 1)
             }
-            val lines = reservations.joinToString("\n") { res ->
-                "• Du ${formatDate(res.dateDebut)} au ${formatDate(res.dateFin)} (${ReservationStatus.label(res.status)})"
-            }
-            binding.tvCalendar.text = "Semaines réservées :\n$lines"
+            binding.tvCalendar.text = text.trim()
         }
     }
+
+    private fun fmt(c: java.util.Calendar) = String.format(
+        "%02d/%02d/%04d", c.get(java.util.Calendar.DAY_OF_MONTH), c.get(java.util.Calendar.MONTH) + 1, c.get(java.util.Calendar.YEAR)
+    )
+
+    private fun isoToMillis(iso: String): Long = try {
+        val (y, m, d) = iso.substringBefore("T").split("-").map { it.toInt() }
+        java.util.Calendar.getInstance().apply { set(y, m - 1, d, 0, 0, 0); set(java.util.Calendar.MILLISECOND, 0) }.timeInMillis
+    } catch (e: Exception) { 0L }
 
     private fun formatDate(iso: String): String {
         return try {

@@ -19,6 +19,7 @@ import fr.larmoirecommune.app.ui.admin.AdminAlertObjectsActivity
 import fr.larmoirecommune.app.ui.admin.AdminVerificationActivity
 import fr.larmoirecommune.app.ui.admin.AdminMaintenanceObjectsActivity
 import fr.larmoirecommune.app.ui.admin.AdminCongesActivity
+import fr.larmoirecommune.app.ui.admin.AdminDeleteMetaActivity
 import fr.larmoirecommune.app.ui.admin.AdminDeleteObjectsActivity
 
 
@@ -224,6 +225,9 @@ class MainActivity : AppCompatActivity() {
             })
             items.add(DashboardItem("Supprimer un objet", R.drawable.ic_delete, alert = true) {
                 startActivity(Intent(this, AdminDeleteObjectsActivity::class.java))
+            })
+            items.add(DashboardItem("Supprimer tag / lieu", R.drawable.ic_delete, alert = true) {
+                startActivity(Intent(this, AdminDeleteMetaActivity::class.java))
             })
         }
 

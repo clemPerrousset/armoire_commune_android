@@ -19,7 +19,11 @@ class AdminAlertObjectsActivity : AppCompatActivity() {
 
     private val adapter = ObjectAdapter(
         onItemClick = { objet ->
-            AlertDialog.Builder(this)
+            if (!objet.alert) {
+                startActivity(Intent(this, ObjectDetailActivity::class.java).apply {
+                    putExtra("OBJECT_ID", objet.id)
+                })
+            } else AlertDialog.Builder(this)
                 .setTitle("Retirer l'alerte ?")
                 .setMessage("Voulez-vous retirer l'alerte sur l'objet ${objet.nom} ?")
                 .setPositiveButton("Oui") { _, _ ->

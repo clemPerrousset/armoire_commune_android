@@ -6,6 +6,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import fr.larmoirecommune.app.databinding.ActivityReservationDetailBinding
+import fr.larmoirecommune.app.model.ReservationStatus
 import fr.larmoirecommune.app.viewmodel.ReservationDetailViewModel
 
 class ReservationDetailActivity : AppCompatActivity() {
@@ -33,8 +34,8 @@ class ReservationDetailActivity : AppCompatActivity() {
             binding.resObjectName.text = res.objet?.nom ?: "Objet #${res.objetId}"
             binding.resLocation.text = res.lieu?.let { "${it.nom} — ${it.adresse}" } ?: "Lieu non précisé"
 
-            // Le bouton annuler n'est actif que si la réservation est encore "active"
-            val canCancel = res.status == "active"
+            // Annulation possible uniquement avant le retrait (en_preparation)
+            val canCancel = res.status == ReservationStatus.EN_PREPARATION
             binding.cancelButton.isEnabled = canCancel
             binding.cancelButton.alpha = if (canCancel) 1f else 0.4f
         }
@@ -70,11 +71,5 @@ class ReservationDetailActivity : AppCompatActivity() {
         } catch (e: Exception) { iso }
     }
 
-    private fun statusLabel(status: String) = when (status) {
-        "active"   -> "En attente de retrait"
-        "en_cours" -> "En cours"
-        "terminee" -> "Terminée"
-        "annulee"  -> "Annulée"
-        else       -> status
-    }
+    private fun statusLabel(status: String) = ReservationStatus.label(status)
 }
