@@ -2,6 +2,7 @@ package fr.larmoirecommune.app.repository
 
 import fr.larmoirecommune.app.model.Consommable
 import fr.larmoirecommune.app.model.CreateConsommableRequest
+import fr.larmoirecommune.app.model.UpdateConsommableRequest
 import fr.larmoirecommune.app.model.UpdateLieuRequest
 import fr.larmoirecommune.app.model.UpdateObjectRequest
 import fr.larmoirecommune.app.model.CreateLieuRequest
@@ -142,6 +143,29 @@ class AdminRepository {
         } catch (e: Exception) {
             e.printStackTrace()
             null
+        }
+    }
+
+    suspend fun updateConsommable(id: Int, request: UpdateConsommableRequest): Boolean {
+        return try {
+            val response = ApiClient.client.put(ApiClient.getUrl("/admin_meta/consommables/$id")) {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+            response.status.value in 200..299
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    suspend fun deleteConsommable(id: Int): Boolean {
+        return try {
+            val response = ApiClient.client.delete(ApiClient.getUrl("/admin_meta/consommables/$id"))
+            response.status.value in 200..299
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
     }
 

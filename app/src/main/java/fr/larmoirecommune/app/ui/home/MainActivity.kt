@@ -260,6 +260,12 @@ class MainActivity : AppCompatActivity() {
             items.add(DashboardItem("Créer consommable", R.drawable.ic_cart) {
                 startActivity(Intent(this, AdminCreateConsommableActivity::class.java))
             })
+            items.add(DashboardItem("Modifier un consommable", R.drawable.ic_edit) {
+                startActivity(Intent(this, AdminPickEditActivity::class.java).putExtra("TYPE", "consommable"))
+            })
+            items.add(DashboardItem("Supprimer un consommable", R.drawable.ic_delete, alert = true) {
+                startActivity(Intent(this, AdminPickEditActivity::class.java).putExtra("TYPE", "consommable_suppr"))
+            })
             items.add(DashboardItem("Supprimer un objet", R.drawable.ic_delete, alert = true) {
                 startActivity(Intent(this, AdminDeleteObjectsActivity::class.java))
             })

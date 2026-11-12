@@ -125,6 +125,14 @@ data class CreateConsommableRequest(
 )
 
 @Serializable
+data class UpdateConsommableRequest(
+    val nom: String,
+    val description: String,   // vide = effacer
+    val prix: Double,
+    val url: String            // vide = effacer
+)
+
+@Serializable
 data class UpdateLieuRequest(
     val nom: String? = null,
     val adresse: String? = null,
