@@ -50,6 +50,9 @@
         <activity android:name=".ui.admin.AdminDeleteMetaActivity" />
         <activity android:name=".ui.profile.FaqActivity" />
         <activity android:name=".ui.profile.CreditsActivity" />
+        <activity android:name=".ui.admin.AdminPickEditActivity" />
+        <activity android:name=".ui.admin.AdminCreateConsommableActivity" />
+        <activity android:name=".ui.common.ImageViewerActivity" />
     </application>
 
 </manifest>

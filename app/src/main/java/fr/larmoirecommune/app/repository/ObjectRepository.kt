@@ -62,7 +62,9 @@ class ObjectRepository {
 
     suspend fun getObject(id: Int): Objet? {
         return try {
-            ApiClient.unauthenticatedClient.get(ApiClient.getUrl("/objets/$id")).body()
+            // Avec token : le serveur renvoie aussi le champ `stockage` aux admins
+            val http = if (ApiClient.token != null) ApiClient.client else ApiClient.unauthenticatedClient
+            http.get(ApiClient.getUrl("/objets/$id")).body()
         } catch (e: Exception) {
             Log.e("ObjectRepository", "getObject($id) failed: ${e::class.simpleName} — ${e.message}", e)
             cachedObjects.find { it.id == id }

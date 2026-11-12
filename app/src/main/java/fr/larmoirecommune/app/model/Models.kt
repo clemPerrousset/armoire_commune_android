@@ -104,7 +104,40 @@ data class Consommable(
     val nom: String,
     val description: String? = null,
     val quantite: Int = 0,
-    val prix: Double
+    val prix: Double,
+    val image: String? = null,
+    val url: String? = null   // lien d'achat (Yapla pour l'instant)
+)
+
+@Serializable
+data class AppNotification(
+    val id: Int,
+    val message: String,
+    @SerialName("created_at") val createdAt: String = ""
+)
+
+@Serializable
+data class CreateConsommableRequest(
+    val nom: String,
+    val description: String? = null,
+    val prix: Double,
+    val url: String? = null
+)
+
+@Serializable
+data class UpdateLieuRequest(
+    val nom: String? = null,
+    val adresse: String? = null,
+    val description: String? = null
+)
+
+@Serializable
+data class UpdateObjectRequest(
+    val nom: String,
+    val description: String,
+    @SerialName("tag_ids") val tagIds: List<Int>,
+    @SerialName("consommable_ids") val consommableIds: List<Int>,
+    val stockage: String? = null
 )
 
 // --- OBJETS ET RÉSERVATIONS ---
@@ -126,8 +159,13 @@ data class Objet(
     val tagId: Int? = null,
 
     val tag: Tag? = null,
-    val consommables: List<Consommable> = emptyList()
-)
+    val tags: List<Tag> = emptyList(),
+    val consommables: List<Consommable> = emptyList(),
+    val stockage: String? = null   // renvoyé uniquement aux admins
+) {
+    /** Toutes les catégories (anciens serveurs : seulement `tag`). */
+    val allTags: List<Tag> get() = tags.ifEmpty { listOfNotNull(tag) }
+}
 
 // Versions allégées d'Objet/Lieu telles que renvoyées par l'API dans les réservations
 // (routers/reservations.py : ObjetBrief/LieuBrief). Ne PAS utiliser Objet/Lieu ici :
@@ -200,9 +238,10 @@ data class CreateObjectRequest(
     val nom: String,
     val description: String,
     // quantite supprimée
-    @SerialName("tag_id") val tagId: Int? = null,
+    @SerialName("tag_ids") val tagIds: List<Int> = emptyList(),
     @SerialName("consommable_ids") val consommableIds: List<Int>,
-    @SerialName("disponibilite_globale") val disponibiliteGlobale: Boolean = true
+    @SerialName("disponibilite_globale") val disponibiliteGlobale: Boolean = true,
+    val stockage: String? = null
 )
 
 @Serializable

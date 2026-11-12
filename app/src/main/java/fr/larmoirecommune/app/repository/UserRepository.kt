@@ -1,5 +1,6 @@
 package fr.larmoirecommune.app.repository
 
+import fr.larmoirecommune.app.model.AppNotification
 import fr.larmoirecommune.app.model.Objet
 import fr.larmoirecommune.app.network.ApiClient
 import io.ktor.client.call.body
@@ -24,6 +25,23 @@ class UserRepository {
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()
+        }
+    }
+
+    suspend fun getNotifications(): List<AppNotification> {
+        return try {
+            ApiClient.client.get(ApiClient.getUrl("/users/notifications")).body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    suspend fun markNotificationRead(id: Int) {
+        try {
+            ApiClient.client.post(ApiClient.getUrl("/users/notifications/$id/lu"))
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

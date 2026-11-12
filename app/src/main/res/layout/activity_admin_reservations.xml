@@ -73,21 +73,21 @@
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="À disposition"/>
+                android:text="Mis à disposition"/>
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipEnCours"
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Retirées"/>
+                android:text="Retiré"/>
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipRestitue"
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Restituées"/>
+                android:text="Restitué"/>
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipVerification"

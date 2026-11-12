@@ -18,7 +18,7 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:background="@color/background_page"
-            android:scaleType="centerCrop"
+            android:scaleType="fitCenter"
             android:src="@drawable/ic_objects"
             android:padding="10dp"
             app:layout_constraintStart_toStartOf="parent"

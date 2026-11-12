@@ -20,6 +20,7 @@ import fr.larmoirecommune.app.network.ApiClient
 import fr.larmoirecommune.app.repository.ObjectRepository
 import fr.larmoirecommune.app.repository.UserRepository
 import fr.larmoirecommune.app.ui.auth.LoginActivity
+import fr.larmoirecommune.app.ui.common.ImageViewerActivity
 import fr.larmoirecommune.app.viewmodel.ObjectDetailViewModel
 import kotlinx.coroutines.launch
 
@@ -45,11 +46,20 @@ class ObjectDetailActivity : AppCompatActivity() {
             binding.detailDesc.text = obj.description
             binding.reserveButton.isEnabled = obj.disponibiliteGlobale
 
-            if (obj.tag != null) {
-                binding.tvTag.text = obj.tag.nom
+            val categories = obj.allTags
+            if (categories.isNotEmpty()) {
+                binding.tvTag.text = categories.joinToString("  ·  ") { it.nom }
                 binding.tvTag.visibility = View.VISIBLE
             } else {
                 binding.tvTag.visibility = View.GONE
+            }
+
+            // Code d'emplacement : renvoyé par le serveur uniquement aux admins
+            if (ApiClient.currentUserIsAdmin && !obj.stockage.isNullOrBlank()) {
+                binding.tvStockage.text = "Stockage : ${obj.stockage}"
+                binding.tvStockage.visibility = View.VISIBLE
+            } else {
+                binding.tvStockage.visibility = View.GONE
             }
 
             if (!obj.image.isNullOrBlank()) {
@@ -58,6 +68,10 @@ class ObjectDetailActivity : AppCompatActivity() {
                 binding.objectImage.load(imageUrl) {
                     crossfade(true)
                     error(android.R.drawable.ic_menu_gallery)
+                }
+                // Toucher la photo : plein écran avec zoom
+                binding.objectImage.setOnClickListener {
+                    startActivity(Intent(this, ImageViewerActivity::class.java).putExtra("URL", imageUrl))
                 }
             } else {
                 Log.d("ObjectDetail", "No image for object ${obj.id}")

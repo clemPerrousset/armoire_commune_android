@@ -9,6 +9,7 @@ import fr.larmoirecommune.app.model.Lieu
 import fr.larmoirecommune.app.repository.ObjectRepository
 import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
+import fr.larmoirecommune.app.utils.showLieuBottomSheet
 import fr.larmoirecommune.app.utils.useAppPin
 import fr.larmoirecommune.app.utils.useIgnStyle
 import org.osmdroid.util.GeoPoint
@@ -59,7 +60,11 @@ class LieuMapActivity : AppCompatActivity() {
             marker.position = GeoPoint(lieu.lat, lieu.long)
             marker.useAppPin(this)
             marker.title = lieu.nom
-            marker.snippet = lieu.adresse
+            marker.setOnMarkerClickListener { m, map ->
+                map.controller.animateTo(m.position)
+                showLieuBottomSheet(this, lieu)
+                true
+            }
             binding.mapView.overlays.add(marker)
         }
         binding.mapView.invalidate()

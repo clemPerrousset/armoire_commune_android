@@ -13,8 +13,9 @@
         <ImageView
             android:id="@+id/objectImage"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop"
+            android:layout_height="240dp"
+            android:scaleType="fitCenter"
+            android:contentDescription="Photo de l'objet (toucher pour agrandir)"
             android:background="#EEE"
             android:src="@drawable/bg_placeholder_teal"/> <!-- Placeholder -->
 
@@ -65,6 +66,15 @@
             android:paddingHorizontal="10dp"
             android:paddingVertical="4dp"
             android:layout_marginTop="4dp"/>
+
+        <TextView
+            android:id="@+id/tvStockage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:textSize="13sp"
+            android:textStyle="italic"
+            android:layout_marginTop="6dp"/>
 
         <TextView
             android:id="@+id/detailDesc"

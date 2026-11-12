@@ -104,7 +104,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="• Chaque adhérent commence avec 100 crédits par an.\n\n• 1 semaine d'emprunt = 1 crédit déduit.\n\n• 2 semaines = 2 crédits, 3 semaines = 3 crédits.\n\n• En cas d'annulation, les crédits sont remboursés.\n\n• Les crédits sont remis à 100 à chaque renouvellement d'adhésion."
+                        android:text="• Chaque adhérent commence avec 100 crédits par an.\n\n• 1 semaine d'emprunt = 1 crédit déduit.\n\n• 2 semaines = 2 crédits, 3 semaines = 3 crédits.\n\n• En cas d'annulation, les crédits sont remboursés.\n\n• Les crédits sont remis à 100 à chaque renouvellement d'adhésion.\n\nExemples : 1 objet emprunté 1 semaine = 1 crédit ; 1 objet emprunté 2 semaines = 2 crédits ; 2 objets empruntés 2 semaines = 4 crédits."
                         android:layout_marginTop="12dp"
                         android:lineSpacingMultiplier="1.4"/>
                 </LinearLayout>

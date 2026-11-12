@@ -13,6 +13,9 @@ import androidx.compose.runtime.setValue
 import fr.larmoirecommune.app.R
 import fr.larmoirecommune.app.model.User
 import fr.larmoirecommune.app.network.ApiClient
+import fr.larmoirecommune.app.ui.admin.AdminCreateConsommableActivity
+import fr.larmoirecommune.app.ui.admin.AdminPickEditActivity
+import fr.larmoirecommune.app.repository.UserRepository
 import fr.larmoirecommune.app.ui.admin.AdminCreateLieuActivity
 import fr.larmoirecommune.app.ui.admin.AdminCreateTagActivity
 import fr.larmoirecommune.app.ui.admin.AdminAlertObjectsActivity
@@ -28,6 +31,7 @@ import fr.larmoirecommune.app.ui.admin.AdminReservationsActivity
 import fr.larmoirecommune.app.ui.auth.LoginActivity
 import fr.larmoirecommune.app.ui.objects.ObjectListActivity
 import fr.larmoirecommune.app.ui.objects.ReservationListActivity
+import fr.larmoirecommune.app.ui.profile.FavoriteListActivity
 import fr.larmoirecommune.app.ui.profile.ProfileActivity
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -145,6 +149,8 @@ class MainActivity : AppCompatActivity() {
                 ApiClient.currentUserEmail = user.email
                 ApiClient.currentUserCredits = user.credits
 
+                showPendingNotifications()
+
                 // Update welcome text if user has a name (assuming User has prenom/nom)
                 // binding.welcomeText.text = "Bonjour ${user.prenom ?: ""} !"
 
@@ -162,10 +168,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /** Messages du serveur (ex. réservation prolongée car l'équipe est en congé) : affichés une fois puis marqués lus. */
+    private fun showPendingNotifications() {
+        lifecycleScope.launch {
+            val repo = UserRepository()
+            val notifs = repo.getNotifications()
+            if (notifs.isEmpty()) return@launch
+            androidx.appcompat.app.AlertDialog.Builder(this@MainActivity)
+                .setTitle("Information")
+                .setMessage(notifs.joinToString("\n\n") { it.message })
+                .setPositiveButton("OK", null)
+                .show()
+            notifs.forEach { repo.markNotificationRead(it.id) }
+        }
+    }
+
     private fun setupDashboardItems() {
         // Liste des éléments accessibles à tous
         val items = mutableListOf(
-            DashboardItem(getString(R.string.menu_lieux), R.drawable.ic_admin) {
+            DashboardItem(getString(R.string.menu_lieux), R.drawable.ic_map_pin) {
                 startActivity(Intent(this, LieuMapActivity::class.java))
             },
 
@@ -178,6 +199,13 @@ class MainActivity : AppCompatActivity() {
                     startActivity(loginIntent)
                 } else {
                     startActivity(Intent(this, ReservationListActivity::class.java))
+                }
+            },
+            DashboardItem("Mes Favoris", R.drawable.ic_heart) {
+                if (ApiClient.token == null) {
+                    startActivity(Intent(this, LoginActivity::class.java))
+                } else {
+                    startActivity(Intent(this, FavoriteListActivity::class.java))
                 }
             },
             DashboardItem(getString(R.string.menu_profile), R.drawable.ic_profile) {
@@ -199,29 +227,38 @@ class MainActivity : AppCompatActivity() {
 
         // Ajout des éléments Admin SI l'utilisateur est admin
         if (ApiClient.currentUserIsAdmin) {
-            items.add(DashboardItem(getString(R.string.menu_admin_create_object), R.drawable.ic_admin) {
+            items.add(DashboardItem(getString(R.string.menu_admin_create_object), R.drawable.ic_add_box) {
                 startActivity(Intent(this, AdminCreateObjectActivity::class.java))
             })
-            items.add(DashboardItem(getString(R.string.menu_admin_create_lieu), R.drawable.ic_admin) {
+            items.add(DashboardItem(getString(R.string.menu_admin_create_lieu), R.drawable.ic_map_pin) {
                 startActivity(Intent(this, AdminCreateLieuActivity::class.java))
             })
-            items.add(DashboardItem(getString(R.string.menu_admin_create_tag), R.drawable.ic_admin) {
+            items.add(DashboardItem(getString(R.string.menu_admin_create_tag), R.drawable.ic_label) {
                 startActivity(Intent(this, AdminCreateTagActivity::class.java))
             })
-            items.add(DashboardItem("Objets en retard", R.drawable.ic_admin, alert = true) {
+            items.add(DashboardItem("Objets en retard", R.drawable.ic_warning, alert = true) {
                 startActivity(Intent(this, AdminAlertObjectsActivity::class.java))
             })
-            items.add(DashboardItem("À vérifier", R.drawable.ic_admin) {
+            items.add(DashboardItem("À vérifier", R.drawable.ic_check_circle) {
                 startActivity(Intent(this, AdminVerificationActivity::class.java))
             })
-            items.add(DashboardItem("En maintenance", R.drawable.ic_admin) {
+            items.add(DashboardItem("En maintenance", R.drawable.ic_build) {
                 startActivity(Intent(this, AdminMaintenanceObjectsActivity::class.java))
             })
-            items.add(DashboardItem("Congé admin", R.drawable.ic_admin) {
+            items.add(DashboardItem("Congé admin", R.drawable.ic_event) {
                 startActivity(Intent(this, AdminCongesActivity::class.java))
             })
-            items.add(DashboardItem(getString(R.string.menu_admin_reservations), R.drawable.ic_admin) {
+            items.add(DashboardItem(getString(R.string.menu_admin_reservations), R.drawable.ic_list) {
                 startActivity(Intent(this, AdminReservationsActivity::class.java))
+            })
+            items.add(DashboardItem("Modifier un objet", R.drawable.ic_edit) {
+                startActivity(Intent(this, AdminPickEditActivity::class.java).putExtra("TYPE", "objet"))
+            })
+            items.add(DashboardItem("Modifier un lieu", R.drawable.ic_edit) {
+                startActivity(Intent(this, AdminPickEditActivity::class.java).putExtra("TYPE", "lieu"))
+            })
+            items.add(DashboardItem("Créer consommable", R.drawable.ic_cart) {
+                startActivity(Intent(this, AdminCreateConsommableActivity::class.java))
             })
             items.add(DashboardItem("Supprimer un objet", R.drawable.ic_delete, alert = true) {
                 startActivity(Intent(this, AdminDeleteObjectsActivity::class.java))

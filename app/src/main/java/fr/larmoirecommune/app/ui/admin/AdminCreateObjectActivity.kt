@@ -1,127 +1,137 @@
 package fr.larmoirecommune.app.ui.admin
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import fr.larmoirecommune.app.databinding.ActivityAdminCreateObjectBinding
+import fr.larmoirecommune.app.model.Consommable
 import fr.larmoirecommune.app.model.Tag
+import fr.larmoirecommune.app.model.UpdateObjectRequest
+import fr.larmoirecommune.app.network.ApiClient
 import fr.larmoirecommune.app.repository.AdminRepository
 import fr.larmoirecommune.app.repository.ObjectRepository
+import fr.larmoirecommune.app.ui.common.PhotoPicker
 import kotlinx.coroutines.launch
-import java.io.File
-import java.util.UUID
 
+/**
+ * Création d'un objet — ou, avec l'extra EDIT_OBJECT_ID, modification d'un objet existant
+ * (photo, description, catégories, consommables, stockage).
+ */
 class AdminCreateObjectActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAdminCreateObjectBinding
     private val repository = AdminRepository()
     private val objectRepository = ObjectRepository()
+
     private var availableTags: List<Tag> = emptyList()
-    private var selectedTagId: Int? = null
+    private val selectedTagIds = linkedSetOf<Int>()
+    private var availableConsommables: List<Consommable> = emptyList()
+    private val selectedConsommableIds = linkedSetOf<Int>()
+
     private var selectedImageUri: Uri? = null
-    private var tempCameraUri: Uri? = null
+    private var editId: Int? = null
 
-    // Constante pour la demande de permission
-    private val RC_CAMERA = 42
-
-    private val pickImage = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        uri?.let { setSelectedImage(it) }
-    }
-
-    private val takePhoto = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        if (success) tempCameraUri?.let { setSelectedImage(it) }
-    }
+    private val photoPicker = PhotoPicker(this) { setSelectedImage(it) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAdminCreateObjectBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnBack.setOnClickListener { finish() }
-
-        lifecycleScope.launch {
-            availableTags = objectRepository.getTags()
+        editId = intent.getIntExtra("EDIT_OBJECT_ID", -1).takeIf { it != -1 }
+        if (editId != null) {
+            binding.screenTitle.text = "Modifier un objet"
+            binding.createButton.text = "Enregistrer"
+            binding.btnPickImage.text = "Changer la photo"
         }
+
+        binding.btnBack.setOnClickListener { finish() }
 
         binding.objectTagId.setOnClickListener { showTagPicker() }
         binding.objectTagId.isFocusable = false
+        binding.objectConsommables.setOnClickListener { showConsommablePicker() }
+        binding.objectConsommables.isFocusable = false
 
-        binding.btnPickImage.setOnClickListener { showImageSourceDialog() }
-        binding.createButton.setOnClickListener { createObject() }
+        binding.btnPickImage.setOnClickListener { photoPicker.show() }
+        binding.createButton.setOnClickListener { save() }
+
+        lifecycleScope.launch {
+            availableTags = objectRepository.getTags()
+            availableConsommables = repository.getConsommables()
+            editId?.let { loadExisting(it) }
+        }
+    }
+
+    private suspend fun loadExisting(id: Int) {
+        val obj = repository.getObjetAdmin(id)
+        if (obj == null) {
+            Toast.makeText(this, "Objet introuvable", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+        binding.objectName.setText(obj.nom)
+        binding.objectDesc.setText(obj.description)
+        binding.objectStockage.setText(obj.stockage.orEmpty())
+        selectedTagIds.clear()
+        selectedTagIds.addAll(obj.allTags.mapNotNull { it.id })
+        selectedConsommableIds.clear()
+        selectedConsommableIds.addAll(obj.consommables.mapNotNull { it.id })
+        refreshPickerTexts()
+        if (!obj.image.isNullOrBlank()) {
+            binding.imagePreview.visibility = View.VISIBLE
+            binding.imagePreview.load(ApiClient.getUrl(obj.image)) { crossfade(true) }
+        }
+    }
+
+    // --- Sélections multiples ---
+
+    private fun refreshPickerTexts() {
+        binding.objectTagId.setText(availableTags.filter { it.id in selectedTagIds }.joinToString(", ") { it.nom })
+        binding.objectConsommables.setText(
+            availableConsommables.filter { it.id in selectedConsommableIds }.joinToString(", ") { it.nom }
+        )
     }
 
     private fun showTagPicker() {
         if (availableTags.isEmpty()) {
-            Toast.makeText(this, "Aucun tag disponible", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Aucune catégorie disponible", Toast.LENGTH_SHORT).show()
             return
         }
-        val tagNames = availableTags.map { it.nom }.toTypedArray()
+        multiPick("Choisir les catégories", availableTags.map { it.nom }, availableTags.map { it.id }, selectedTagIds)
+    }
+
+    private fun showConsommablePicker() {
+        if (availableConsommables.isEmpty()) {
+            Toast.makeText(this, "Aucun consommable : créez-en un depuis le menu admin", Toast.LENGTH_LONG).show()
+            return
+        }
+        multiPick(
+            "Consommables associés",
+            availableConsommables.map { "${it.nom} (${"%.2f".format(it.prix)} €)" },
+            availableConsommables.map { it.id },
+            selectedConsommableIds
+        )
+    }
+
+    private fun multiPick(title: String, labels: List<String>, ids: List<Int?>, selection: MutableSet<Int>) {
+        val checked = BooleanArray(labels.size) { ids[it] in selection }
         AlertDialog.Builder(this)
-            .setTitle("Choisir une catégorie")
-            .setItems(tagNames) { _, idx ->
-                selectedTagId = availableTags[idx].id
-                binding.objectTagId.setText(availableTags[idx].nom)
+            .setTitle(title)
+            .setMultiChoiceItems(labels.toTypedArray(), checked) { _, which, isChecked -> checked[which] = isChecked }
+            .setPositiveButton("OK") { _, _ ->
+                selection.clear()
+                checked.forEachIndexed { i, c -> if (c) ids[i]?.let { selection.add(it) } }
+                refreshPickerTexts()
             }
-            .setNeutralButton("Aucune catégorie") { _, _ ->
-                selectedTagId = null
-                binding.objectTagId.setText("")
-            }
+            .setNegativeButton("Annuler", null)
             .show()
     }
 
-    private fun showImageSourceDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Ajouter une photo")
-            .setItems(arrayOf("Galerie", "Appareil photo")) { _, which ->
-                when (which) {
-                    0 -> pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                    1 -> requestCameraPermissionAndOpen()
-                }
-            }
-            .show()
-    }
-
-    // --- Caméra ---
-
-    private fun requestCameraPermissionAndOpen() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            launchCamera()
-        } else {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), RC_CAMERA)
-        }
-    }
-
-    private fun launchCamera() {
-        val imagesDir = File(filesDir, "images").apply { if (!exists()) mkdirs() }
-        val photoFile = File(imagesDir, "camera_${UUID.randomUUID()}.jpg")
-        val uri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", photoFile)
-        tempCameraUri = uri
-        takePhoto.launch(uri)
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        val granted = grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED
-        when (requestCode) {
-            RC_CAMERA -> {
-                if (granted) launchCamera()
-                else Toast.makeText(this, "Permission caméra refusée", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    // --- Image sélectionnée ---
+    // --- Image sélectionnée (déjà recadrée par PhotoPicker) ---
 
     private fun setSelectedImage(uri: Uri) {
         selectedImageUri = uri
@@ -130,11 +140,12 @@ class AdminCreateObjectActivity : AppCompatActivity() {
         binding.btnPickImage.text = "Changer la photo"
     }
 
-    // --- Création ---
+    // --- Enregistrement ---
 
-    private fun createObject() {
+    private fun save() {
         val nom = binding.objectName.text.toString().trim()
         val desc = binding.objectDesc.text.toString().trim()
+        val stockage = binding.objectStockage.text.toString().trim()
 
         if (nom.isBlank()) {
             Toast.makeText(this, "Le nom est obligatoire", Toast.LENGTH_SHORT).show()
@@ -145,24 +156,43 @@ class AdminCreateObjectActivity : AppCompatActivity() {
         binding.progressBar.visibility = View.VISIBLE
 
         lifecycleScope.launch {
-            val objet = repository.createObject(nom, desc, tagId = selectedTagId)
+            val existingId = editId
+            val objetId: Int? = if (existingId == null) {
+                repository.createObject(
+                    nom, desc,
+                    tagIds = selectedTagIds.toList(),
+                    consommableIds = selectedConsommableIds.toList(),
+                    stockage = stockage.ifBlank { null }
+                )?.id
+            } else {
+                repository.updateObject(
+                    existingId,
+                    UpdateObjectRequest(nom, desc, selectedTagIds.toList(), selectedConsommableIds.toList(), stockage)
+                )?.id
+            }
 
-            if (objet == null) {
+            if (objetId == null) {
                 binding.createButton.isEnabled = true
                 binding.progressBar.visibility = View.GONE
-                Toast.makeText(this@AdminCreateObjectActivity, "Erreur lors de la création", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@AdminCreateObjectActivity, "Erreur lors de l'enregistrement", Toast.LENGTH_SHORT).show()
                 return@launch
             }
 
             val imageUri = selectedImageUri
-            if (imageUri != null && objet.id != null) {
+            if (imageUri != null) {
                 val bytes = contentResolver.openInputStream(imageUri)?.use { it.readBytes() }
                 val mime = contentResolver.getType(imageUri) ?: "image/jpeg"
-                if (bytes != null) repository.uploadObjetImage(objet.id, bytes, mime)
+                if (bytes != null && !repository.uploadObjetImage(objetId, bytes, mime)) {
+                    Toast.makeText(this@AdminCreateObjectActivity, "Objet enregistré, mais la photo n'a pas pu être envoyée", Toast.LENGTH_LONG).show()
+                }
             }
 
             binding.progressBar.visibility = View.GONE
-            Toast.makeText(this@AdminCreateObjectActivity, "Objet créé", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this@AdminCreateObjectActivity,
+                if (existingId == null) "Objet créé" else "Objet modifié",
+                Toast.LENGTH_SHORT
+            ).show()
             finish()
         }
     }

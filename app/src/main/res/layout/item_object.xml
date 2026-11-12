@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="140dp"
             android:background="@color/background_page"
-            android:scaleType="centerCrop"
+            android:scaleType="fitCenter"
             android:src="@drawable/ic_objects"
             app:layout_constraintTop_toTopOf="parent"
             android:padding="40dp"/>

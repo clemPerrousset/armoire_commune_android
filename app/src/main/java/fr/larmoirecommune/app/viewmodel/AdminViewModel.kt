@@ -21,9 +21,9 @@ class AdminViewModel : ViewModel() {
     private val _reservations = MutableLiveData<List<Reservation>>()
     val reservations: LiveData<List<Reservation>> = _reservations
 
-    fun createObject(nom: String, desc: String, tagId: Int? = null) {
+    fun createObject(nom: String, desc: String, tagIds: List<Int> = emptyList()) {
         viewModelScope.launch {
-            val objet = repository.createObject(nom, desc, tagId = tagId)
+            val objet = repository.createObject(nom, desc, tagIds = tagIds)
             _createResult.value = objet
         }
     }

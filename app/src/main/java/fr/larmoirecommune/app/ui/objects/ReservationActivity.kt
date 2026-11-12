@@ -8,7 +8,14 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.chip.Chip
 import fr.larmoirecommune.app.R
 import fr.larmoirecommune.app.databinding.ActivityReservationBinding
+import android.content.Intent
+import android.net.Uri
+import android.view.View
+import androidx.lifecycle.lifecycleScope
+import fr.larmoirecommune.app.repository.ObjectRepository
+import kotlinx.coroutines.launch
 import fr.larmoirecommune.app.model.Lieu
+import fr.larmoirecommune.app.utils.formatHoraires
 import fr.larmoirecommune.app.viewmodel.ReservationViewModel
 import org.osmdroid.config.Configuration
 import fr.larmoirecommune.app.utils.useAppPin
@@ -41,6 +48,7 @@ class ReservationActivity : AppCompatActivity() {
 
         setupMap()
         setupWeekSelector()
+        loadConsommables()
 
         viewModel.lieux.observe(this) { lieux -> updateMapMarkers(lieux) }
         viewModel.loadLieux()
@@ -178,6 +186,7 @@ class ReservationActivity : AppCompatActivity() {
         )
 
         binding.tvDateSummary.text = "Retrait : $startStr\nRetour avant : $endStr"
+        updateClosureWarning()
     }
 
     private fun setupMap() {
@@ -185,6 +194,74 @@ class ReservationActivity : AppCompatActivity() {
         binding.map.setMultiTouchControls(true)
         binding.map.controller.setZoom(13.0)
         binding.map.controller.setCenter(GeoPoint(47.3220, 5.0415))
+    }
+
+    /** Consommables liés à l'objet : bouton d'achat vers le lien (Yapla pour l'instant ; Stripe plus tard). */
+    private fun loadConsommables() {
+        lifecycleScope.launch {
+            val consommables = ObjectRepository().getObject(objectId)?.consommables.orEmpty()
+            if (consommables.isEmpty()) return@launch
+            val dp = resources.displayMetrics.density
+            val container = binding.consommablesContainer
+            container.removeAllViews()
+            container.addView(android.widget.TextView(this@ReservationActivity).apply {
+                text = "Consommables pour cet objet (optionnel)"
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
+            })
+            consommables.forEach { c ->
+                container.addView(android.widget.Button(this@ReservationActivity).apply {
+                    val price = "%.2f €".format(c.prix)
+                    text = if (c.url.isNullOrBlank()) "${c.nom} — $price (lien indisponible)" else "Acheter : ${c.nom} — $price"
+                    isEnabled = !c.url.isNullOrBlank()
+                    setOnClickListener {
+                        try {
+                            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(c.url)))
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "Impossible d'ouvrir le lien", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    layoutParams = android.widget.LinearLayout.LayoutParams(
+                        android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                        android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).apply { topMargin = (6 * dp).toInt() }
+                })
+            }
+            container.visibility = View.VISIBLE
+        }
+    }
+
+    /** Affiche en haut du panneau de réservation le lieu choisi, son adresse et ses horaires. */
+    private fun showLieuInfo(lieu: Lieu) {
+        val horaires = formatHoraires(lieu.description)
+        binding.tvLieuInfo.text = buildString {
+            append("📍 ${lieu.nom}\n${lieu.adresse}")
+            append("\n\nHoraires :\n")
+            append(horaires.ifBlank { "Non renseignés" })
+        }
+        binding.tvLieuInfo.visibility = View.VISIBLE
+    }
+
+    /** Congés de l'équipe qui chevauchent la période choisie (en semaines). */
+    private fun closedWeeksInRange(): Int {
+        val start = selectedThursday.timeInMillis
+        val endCal = selectedThursday.clone() as Calendar
+        endCal.add(Calendar.DAY_OF_YEAR, 7 * nbSemaines - 1)
+        val end = endCal.timeInMillis
+        return (viewModel.fermetureRanges.value ?: emptyList()).count { (s, e) ->
+            start <= parseIsoToMillis(e) && end >= parseIsoToMillis(s)
+        }
+    }
+
+    private fun updateClosureWarning() {
+        val n = closedWeeksInRange()
+        if (n == 0) {
+            binding.tvClosureWarning.visibility = View.GONE
+        } else {
+            binding.tvClosureWarning.text =
+                "⚠ Attention : l'équipe est en congé sur cette période. Vous pouvez réserver quand même : " +
+                    "la réservation sera plus longue de $n semaine(s), sans crédit supplémentaire."
+            binding.tvClosureWarning.visibility = View.VISIBLE
+        }
     }
 
     private fun updateMapMarkers(lieux: List<Lieu>) {
@@ -205,15 +282,9 @@ class ReservationActivity : AppCompatActivity() {
             marker.position = GeoPoint(lieu.lat, lieu.long)
             marker.useAppPin(this)
             marker.title = lieu.nom
-            marker.subDescription = buildString {
-                append(lieu.adresse)
-                lieu.description?.let { append("\n$it") }
-            }
-
             marker.setOnMarkerClickListener { m, _ ->
                 lieu.id?.let { id -> selectedLieuId = id }
-                m.showInfoWindow()
-                Toast.makeText(this, "Lieu sélectionné : ${lieu.nom}", Toast.LENGTH_SHORT).show()
+                showLieuInfo(lieu)
                 true
             }
             binding.map.overlays.add(marker)

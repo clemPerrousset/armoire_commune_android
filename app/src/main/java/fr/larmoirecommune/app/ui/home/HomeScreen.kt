@@ -84,14 +84,6 @@ fun HomeScreen(items: List<DashboardItem>, onSearchClick: () -> Unit) {
                             .height(96.dp)
                             .padding(top = 4.dp)
                     )
-                    Text(
-                        text = "Que souhaitez-vous faire aujourd'hui ?",
-                        color = Teal,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
                 }
             }
             item(span = { GridItemSpan(maxLineSpan) }) { SearchBar(onSearchClick) }

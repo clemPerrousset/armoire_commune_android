@@ -1,5 +1,9 @@
 package fr.larmoirecommune.app.repository
 
+import fr.larmoirecommune.app.model.Consommable
+import fr.larmoirecommune.app.model.CreateConsommableRequest
+import fr.larmoirecommune.app.model.UpdateLieuRequest
+import fr.larmoirecommune.app.model.UpdateObjectRequest
 import fr.larmoirecommune.app.model.CreateLieuRequest
 import fr.larmoirecommune.app.model.CreateObjectRequest
 import fr.larmoirecommune.app.model.Fermeture
@@ -53,14 +57,21 @@ class AdminRepository {
 
     // --- OBJETS ---
 
-    suspend fun createObject(nom: String, description: String, tagId: Int? = null, consommableIds: List<Int> = emptyList()): Objet? {
+    suspend fun createObject(
+        nom: String,
+        description: String,
+        tagIds: List<Int> = emptyList(),
+        consommableIds: List<Int> = emptyList(),
+        stockage: String? = null
+    ): Objet? {
         return try {
             val request = CreateObjectRequest(
                 nom = nom,
                 description = description,
-                tagId = tagId,
+                tagIds = tagIds,
                 consommableIds = consommableIds,
-                disponibiliteGlobale = true
+                disponibiliteGlobale = true,
+                stockage = stockage
             )
             ApiClient.client.post(ApiClient.getUrl("/objets")) {
                 contentType(ContentType.Application.Json)
@@ -72,10 +83,78 @@ class AdminRepository {
         }
     }
 
-    suspend fun uploadObjetImage(objetId: Int, imageBytes: ByteArray, mimeType: String): Boolean {
+    /** Fiche complète avec token : inclut le champ `stockage`, réservé aux admins. */
+    suspend fun getObjetAdmin(objetId: Int): Objet? {
+        return try {
+            ApiClient.client.get(ApiClient.getUrl("/objets/$objetId")).body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    suspend fun updateObject(objetId: Int, request: UpdateObjectRequest): Objet? {
+        return try {
+            val response = ApiClient.client.put(ApiClient.getUrl("/admin/objets/$objetId")) {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+            if (response.status.value in 200..299) response.body() else null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    // --- LIEUX (édition) ---
+
+    suspend fun updateLieu(lieuId: Int, request: UpdateLieuRequest): Boolean {
+        return try {
+            val response = ApiClient.client.put(ApiClient.getUrl("/admin_meta/lieux/$lieuId")) {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+            response.status.value in 200..299
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    // --- CONSOMMABLES ---
+
+    suspend fun getConsommables(): List<Consommable> {
+        return try {
+            ApiClient.client.get(ApiClient.getUrl("/admin_meta/consommables")).body()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    suspend fun createConsommable(request: CreateConsommableRequest): Consommable? {
+        return try {
+            val response = ApiClient.client.post(ApiClient.getUrl("/admin_meta/consommables")) {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }
+            if (response.status.value in 200..299) response.body() else null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    suspend fun uploadConsommableImage(consommableId: Int, imageBytes: ByteArray, mimeType: String): Boolean =
+        uploadImage("/admin_meta/consommables/$consommableId/image", imageBytes, mimeType)
+
+    suspend fun uploadObjetImage(objetId: Int, imageBytes: ByteArray, mimeType: String): Boolean =
+        uploadImage("/admin/objets/$objetId/image", imageBytes, mimeType)
+
+    private suspend fun uploadImage(path: String, imageBytes: ByteArray, mimeType: String): Boolean {
         return try {
             val ext = if (mimeType == "image/png") "png" else "jpg"
-            ApiClient.client.post(ApiClient.getUrl("/admin/objets/$objetId/image")) {
+            val response = ApiClient.client.post(ApiClient.getUrl(path)) {
                 setBody(MultiPartFormDataContent(formData {
                     append("file", imageBytes, Headers.build {
                         append(HttpHeaders.ContentType, mimeType)
@@ -83,7 +162,7 @@ class AdminRepository {
                     })
                 }))
             }
-            true
+            response.status.value in 200..299
         } catch (e: Exception) {
             e.printStackTrace()
             false

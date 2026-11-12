@@ -21,6 +21,10 @@ class ReservationViewModel : ViewModel() {
     private val _bookedRanges = MutableLiveData<List<Pair<String, String>>>(emptyList())
     val bookedRanges: LiveData<List<Pair<String, String>>> = _bookedRanges
 
+    /** Semaines de congé de l'équipe : n'empêchent plus la réservation, la prolongent. */
+    private val _fermetureRanges = MutableLiveData<List<Pair<String, String>>>(emptyList())
+    val fermetureRanges: LiveData<List<Pair<String, String>>> = _fermetureRanges
+
     fun loadLieux() {
         viewModelScope.launch {
             _lieux.value = repository.getLieux()
@@ -31,8 +35,8 @@ class ReservationViewModel : ViewModel() {
         viewModelScope.launch {
             val reservations = repository.getReservationsForObjet(objetId)
             val fermetures = repository.getFermetures()
-            _bookedRanges.value = reservations.map { Pair(it.dateDebut, it.dateFin) } +
-                fermetures.map { Pair(it.dateDebut, it.dateFin) }
+            _fermetureRanges.value = fermetures.map { Pair(it.dateDebut, it.dateFin) }
+            _bookedRanges.value = reservations.map { Pair(it.dateDebut, it.dateFin) }
         }
     }
 
