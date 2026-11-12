@@ -2,7 +2,12 @@ package fr.larmoirecommune.app.repository
 
 import fr.larmoirecommune.app.model.Consommable
 import fr.larmoirecommune.app.model.CreateConsommableRequest
+import fr.larmoirecommune.app.model.StatsResponse
 import fr.larmoirecommune.app.model.UpdateConsommableRequest
+import io.ktor.client.statement.bodyAsText
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import fr.larmoirecommune.app.model.UpdateLieuRequest
 import fr.larmoirecommune.app.model.UpdateObjectRequest
 import fr.larmoirecommune.app.model.CreateLieuRequest
@@ -166,6 +171,32 @@ class AdminRepository {
         } catch (e: Exception) {
             e.printStackTrace()
             false
+        }
+    }
+
+    // --- STATISTIQUES ---
+
+    suspend fun getStats(periode: String): StatsResponse? {
+        return try {
+            val response = ApiClient.client.get(ApiClient.getUrl("/admin/stats?periode=$periode"))
+            if (response.status.value in 200..299) response.body() else null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    /** Demande au serveur d'envoyer le PDF par e-mail. Retourne null si OK, sinon le message d'erreur. */
+    suspend fun exportStats(periode: String): String? {
+        return try {
+            val response = ApiClient.client.post(ApiClient.getUrl("/admin/stats/export?periode=$periode"))
+            if (response.status.value in 200..299) null
+            else runCatching {
+                Json.parseToJsonElement(response.bodyAsText()).jsonObject["detail"]?.jsonPrimitive?.content
+            }.getOrNull() ?: "Échec de l'envoi (code ${response.status.value})"
+        } catch (e: Exception) {
+            e.printStackTrace()
+            "Serveur injoignable"
         }
     }
 

@@ -132,6 +132,64 @@ data class UpdateConsommableRequest(
     val url: String            // vide = effacer
 )
 
+// --- STATISTIQUES (vue admin) ---
+
+@Serializable
+data class StatsResponse(
+    val periode: String,
+    @SerialName("periode_label") val periodeLabel: String,
+    val debut: String,
+    val fin: String,
+    @SerialName("genere_le") val genereLe: String,
+    val snapshot: StatsSnapshot,
+    val activite: StatsActivite,
+    val series: StatsSeries
+)
+
+@Serializable
+data class StatutCount(val statut: String, val label: String, val nombre: Int)
+
+@Serializable
+data class NomCount(val nom: String, val reservations: Int)
+
+@Serializable
+data class StatsSnapshot(
+    @SerialName("utilisateurs_inscrits") val utilisateursInscrits: Int = 0,
+    @SerialName("points_relais") val pointsRelais: Int = 0,
+    val administrateurs: Int = 0,
+    @SerialName("objets_total") val objetsTotal: Int = 0,
+    @SerialName("objets_en_maintenance") val objetsEnMaintenance: Int = 0,
+    @SerialName("objets_empruntes") val objetsEmpruntes: Int = 0,
+    @SerialName("objets_en_verification") val objetsEnVerification: Int = 0,
+    @SerialName("objets_en_retard") val objetsEnRetard: Int = 0,
+    val lieux: Int = 0,
+    @SerialName("reservations_en_cours") val reservationsEnCours: Int = 0,
+    @SerialName("reservations_par_statut") val reservationsParStatut: List<StatutCount> = emptyList()
+)
+
+@Serializable
+data class StatsActivite(
+    val reservations: Int = 0,
+    @SerialName("semaines_reservees") val semainesReservees: Int = 0,
+    @SerialName("credits_consommes") val creditsConsommes: Int = 0,
+    val annulations: Int = 0,
+    @SerialName("taux_annulation") val tauxAnnulation: Double = 0.0,
+    @SerialName("objets_rendus") val objetsRendus: Int = 0,
+    @SerialName("objets_distincts_reserves") val objetsDistinctsReserves: Int = 0,
+    @SerialName("emprunteurs_actifs") val emprunteursActifs: Int = 0,
+    @SerialName("nouveaux_inscrits") val nouveauxInscrits: Int = 0,
+    @SerialName("top_objets") val topObjets: List<NomCount> = emptyList(),
+    @SerialName("par_categorie") val parCategorie: List<NomCount> = emptyList(),
+    @SerialName("par_lieu") val parLieu: List<NomCount> = emptyList()
+)
+
+@Serializable
+data class StatsSeries(
+    val labels: List<String> = emptyList(),
+    val reservations: List<Int> = emptyList(),
+    val retours: List<Int> = emptyList()
+)
+
 @Serializable
 data class UpdateLieuRequest(
     val nom: String? = null,

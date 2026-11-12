@@ -15,6 +15,7 @@ import fr.larmoirecommune.app.model.User
 import fr.larmoirecommune.app.network.ApiClient
 import fr.larmoirecommune.app.ui.admin.AdminCreateConsommableActivity
 import fr.larmoirecommune.app.ui.admin.AdminPickEditActivity
+import fr.larmoirecommune.app.ui.admin.AdminStatsActivity
 import fr.larmoirecommune.app.repository.UserRepository
 import fr.larmoirecommune.app.ui.admin.AdminCreateLieuActivity
 import fr.larmoirecommune.app.ui.admin.AdminCreateTagActivity
@@ -235,6 +236,9 @@ class MainActivity : AppCompatActivity() {
             })
             items.add(DashboardItem(getString(R.string.menu_admin_create_tag), R.drawable.ic_label) {
                 startActivity(Intent(this, AdminCreateTagActivity::class.java))
+            })
+            items.add(DashboardItem("Statistiques", R.drawable.ic_chart) {
+                startActivity(Intent(this, AdminStatsActivity::class.java))
             })
             items.add(DashboardItem("Objets en retard", R.drawable.ic_warning, alert = true) {
                 startActivity(Intent(this, AdminAlertObjectsActivity::class.java))
