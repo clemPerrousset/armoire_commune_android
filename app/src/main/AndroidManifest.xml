@@ -53,6 +53,10 @@
         <activity android:name=".ui.admin.AdminPickEditActivity" />
         <activity android:name=".ui.admin.AdminCreateConsommableActivity" />
         <activity android:name=".ui.common.ImageViewerActivity" />
+        <!-- uCrop ne déclare pas son activité : sans ça, le recadrage plante -->
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
     </application>
 
 </manifest>
