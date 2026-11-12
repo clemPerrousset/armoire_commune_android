@@ -6,10 +6,12 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.yalantis.ucrop.UCrop
+import fr.larmoirecommune.app.R
 import java.io.File
 import java.util.UUID
 
@@ -44,15 +46,19 @@ class PhotoPicker(
     }
 
     fun show() {
-        AlertDialog.Builder(activity)
-            .setTitle("Ajouter une photo")
-            .setItems(arrayOf("Galerie", "Appareil photo")) { _, which ->
-                when (which) {
-                    0 -> pick.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                    1 -> cameraPermission.launch(Manifest.permission.CAMERA)
-                }
-            }
-            .show()
+        // Feuille du bas avec icônes, plutôt qu'une liste de dialogue
+        val sheet = BottomSheetDialog(activity)
+        val view = activity.layoutInflater.inflate(R.layout.sheet_photo_source, null)
+        view.findViewById<View>(R.id.optGallery).setOnClickListener {
+            sheet.dismiss()
+            pick.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+        view.findViewById<View>(R.id.optCamera).setOnClickListener {
+            sheet.dismiss()
+            cameraPermission.launch(Manifest.permission.CAMERA)
+        }
+        sheet.setContentView(view)
+        sheet.show()
     }
 
     private fun launchCamera() {

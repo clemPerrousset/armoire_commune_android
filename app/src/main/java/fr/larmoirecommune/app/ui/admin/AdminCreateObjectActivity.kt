@@ -4,10 +4,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import coil.load
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import fr.larmoirecommune.app.R
 import fr.larmoirecommune.app.databinding.ActivityAdminCreateObjectBinding
 import fr.larmoirecommune.app.model.Consommable
 import fr.larmoirecommune.app.model.Tag
@@ -51,17 +53,13 @@ class AdminCreateObjectActivity : AppCompatActivity() {
 
         binding.btnBack.setOnClickListener { finish() }
 
-        binding.objectTagId.setOnClickListener { showTagPicker() }
-        binding.objectTagId.isFocusable = false
-        binding.objectConsommables.setOnClickListener { showConsommablePicker() }
-        binding.objectConsommables.isFocusable = false
-
         binding.btnPickImage.setOnClickListener { photoPicker.show() }
         binding.createButton.setOnClickListener { save() }
 
         lifecycleScope.launch {
             availableTags = objectRepository.getTags()
             availableConsommables = repository.getConsommables()
+            renderChips()
             editId?.let { loadExisting(it) }
         }
     }
@@ -80,7 +78,7 @@ class AdminCreateObjectActivity : AppCompatActivity() {
         selectedTagIds.addAll(obj.allTags.mapNotNull { it.id })
         selectedConsommableIds.clear()
         selectedConsommableIds.addAll(obj.consommables.mapNotNull { it.id })
-        refreshPickerTexts()
+        renderChips()
         if (!obj.image.isNullOrBlank()) {
             binding.imagePreview.visibility = View.VISIBLE
             binding.imagePreview.load(ApiClient.getUrl(obj.image)) { crossfade(true) }
@@ -89,46 +87,31 @@ class AdminCreateObjectActivity : AppCompatActivity() {
 
     // --- Sélections multiples ---
 
-    private fun refreshPickerTexts() {
-        binding.objectTagId.setText(availableTags.filter { it.id in selectedTagIds }.joinToString(", ") { it.nom })
-        binding.objectConsommables.setText(
-            availableConsommables.filter { it.id in selectedConsommableIds }.joinToString(", ") { it.nom }
+    /** (Re)construit les puces des catégories et des consommables selon la sélection courante. */
+    private fun renderChips() {
+        fillChips(
+            binding.tagChips,
+            availableTags.mapNotNull { t -> t.id?.let { it to t.nom } },
+            selectedTagIds
         )
-    }
-
-    private fun showTagPicker() {
-        if (availableTags.isEmpty()) {
-            Toast.makeText(this, "Aucune catégorie disponible", Toast.LENGTH_SHORT).show()
-            return
-        }
-        multiPick("Choisir les catégories", availableTags.map { it.nom }, availableTags.map { it.id }, selectedTagIds)
-    }
-
-    private fun showConsommablePicker() {
-        if (availableConsommables.isEmpty()) {
-            Toast.makeText(this, "Aucun consommable : créez-en un depuis le menu admin", Toast.LENGTH_LONG).show()
-            return
-        }
-        multiPick(
-            "Consommables associés",
-            availableConsommables.map { "${it.nom} (${"%.2f".format(it.prix)} €)" },
-            availableConsommables.map { it.id },
+        fillChips(
+            binding.consommableChips,
+            availableConsommables.mapNotNull { c -> c.id?.let { it to "${c.nom} · ${"%.2f".format(c.prix)} €" } },
             selectedConsommableIds
         )
+        binding.consommablesEmpty.visibility =
+            if (availableConsommables.isEmpty()) View.VISIBLE else View.GONE
     }
 
-    private fun multiPick(title: String, labels: List<String>, ids: List<Int?>, selection: MutableSet<Int>) {
-        val checked = BooleanArray(labels.size) { ids[it] in selection }
-        AlertDialog.Builder(this)
-            .setTitle(title)
-            .setMultiChoiceItems(labels.toTypedArray(), checked) { _, which, isChecked -> checked[which] = isChecked }
-            .setPositiveButton("OK") { _, _ ->
-                selection.clear()
-                checked.forEachIndexed { i, c -> if (c) ids[i]?.let { selection.add(it) } }
-                refreshPickerTexts()
-            }
-            .setNegativeButton("Annuler", null)
-            .show()
+    private fun fillChips(group: ChipGroup, items: List<Pair<Int, String>>, selection: MutableSet<Int>) {
+        group.removeAllViews()
+        items.forEach { (id, label) ->
+            val chip = layoutInflater.inflate(R.layout.item_filter_chip, group, false) as Chip
+            chip.text = label
+            chip.isChecked = id in selection
+            chip.setOnCheckedChangeListener { _, checked -> if (checked) selection.add(id) else selection.remove(id) }
+            group.addView(chip)
+        }
     }
 
     // --- Image sélectionnée (déjà recadrée par PhotoPicker) ---

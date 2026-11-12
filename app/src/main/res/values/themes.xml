@@ -10,6 +10,9 @@
 
         <item name="colorSecondary">@color/mint_dark</item>
         <item name="colorOnSecondary">@color/white</item>
+        <!-- Puces sélectionnées (filtres, catégories) : menthe claire plutôt que violet par défaut -->
+        <item name="colorSecondaryContainer">@color/mint_light</item>
+        <item name="colorOnSecondaryContainer">@color/mint_dark</item>
 
         <item name="android:colorBackground">@color/background_page</item>
         <item name="colorSurface">@color/surface_card</item>
