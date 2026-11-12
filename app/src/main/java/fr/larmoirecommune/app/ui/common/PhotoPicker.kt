@@ -70,8 +70,9 @@ class PhotoPicker(
             setCompressionQuality(90)
             setToolbarTitle("Recadrer la photo")
         }
-        cropResult.launch(
-            UCrop.of(source, dest).withOptions(options).withMaxResultSize(1600, 1600).getIntent(activity)
-        )
+        val intent = UCrop.of(source, dest).withOptions(options).withMaxResultSize(1600, 1600)
+            .getIntent(activity)
+            .setClass(activity, CropActivity::class.java) // version qui respecte la safe zone
+        cropResult.launch(intent)
     }
 }
