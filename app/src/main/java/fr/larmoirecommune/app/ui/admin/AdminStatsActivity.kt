@@ -1,14 +1,17 @@
 package fr.larmoirecommune.app.ui.admin
 
+import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.card.MaterialCardView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import fr.larmoirecommune.app.R
 import fr.larmoirecommune.app.databinding.ActivityAdminStatsBinding
 import fr.larmoirecommune.app.databinding.ItemKpiBinding
@@ -17,7 +20,10 @@ import fr.larmoirecommune.app.model.NomCount
 import fr.larmoirecommune.app.model.StatsResponse
 import fr.larmoirecommune.app.repository.AdminRepository
 import fr.larmoirecommune.app.ui.common.BarChartView
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 
 /**
  * Vue statistiques (admin) : filtre semaine / mois / année, chiffres clés, graphique
@@ -48,7 +54,7 @@ class AdminStatsActivity : AppCompatActivity() {
             }
             load()
         }
-        binding.btnExport.setOnClickListener { confirmExport() }
+        binding.btnExport.setOnClickListener { exportPdf() }
         load()
     }
 
@@ -158,28 +164,51 @@ class AdminStatsActivity : AppCompatActivity() {
         fillRows(container, items.map { it.nom to it.reservations })
     }
 
-    // --- Export PDF par e-mail ---
+    // --- Export PDF : généré par le serveur, envoyé depuis l'application e-mail du téléphone ---
 
-    private fun confirmExport() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle("Envoyer le rapport ?")
-            .setMessage("Le rapport PDF (${binding.periodLabel.text.toString().substringBefore(" ·")}) sera envoyé par e-mail à contact@larmoirecommune.fr.")
-            .setPositiveButton("Envoyer") { _, _ -> export() }
-            .setNegativeButton("Annuler", null)
-            .show()
+    private fun exportPdf() {
+        binding.btnExport.isEnabled = false
+        binding.progressBar.visibility = View.VISIBLE
+        lifecycleScope.launch {
+            val pdf = repository.downloadStatsPdf(periode)
+            binding.progressBar.visibility = View.GONE
+            binding.btnExport.isEnabled = true
+            if (pdf == null) {
+                Toast.makeText(this@AdminStatsActivity, "Impossible de générer le rapport", Toast.LENGTH_LONG).show()
+                return@launch
+            }
+            val dir = File(cacheDir, "reports").apply { mkdirs() }
+            val file = File(dir, "statistiques-$periode.pdf")
+            withContext(Dispatchers.IO) { file.writeBytes(pdf) }
+            sendByEmail(file)
+        }
     }
 
-    private fun export() {
-        binding.btnExport.isEnabled = false
-        lifecycleScope.launch {
-            val error = repository.exportStats(periode)
-            binding.btnExport.isEnabled = true
-            Toast.makeText(
-                this@AdminStatsActivity,
-                error ?: "Rapport envoyé à contact@larmoirecommune.fr",
-                Toast.LENGTH_LONG
-            ).show()
+    /** Ouvre l'application e-mail du téléphone : destinataire, objet, texte et PDF en pièce jointe sont préremplis. */
+    private fun sendByEmail(file: File) {
+        val uri = FileProvider.getUriForFile(this, "$packageName.fileprovider", file)
+        val label = binding.periodLabel.text.toString().substringBefore(" ·")
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "message/rfc822" // limite le choix aux applications e-mail
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(CONTACT_EMAIL))
+            putExtra(Intent.EXTRA_SUBJECT, "L'Armoire Commune - statistiques ($label)")
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "Bonjour,\n\nVeuillez trouver ci-joint le rapport d'activité de l'Armoire Commune ($label).\n"
+            )
+            putExtra(Intent.EXTRA_STREAM, uri)
+            clipData = ClipData.newRawUri("rapport", uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
+        try {
+            startActivity(Intent.createChooser(intent, "Envoyer le rapport avec"))
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(this, "Aucune application e-mail trouvée sur ce téléphone", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private companion object {
+        const val CONTACT_EMAIL = "contact@larmoirecommune.fr"
     }
 
     /** « 2030-01-15 » → « 15/01/2030 » */

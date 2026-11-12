@@ -4,10 +4,6 @@ import fr.larmoirecommune.app.model.Consommable
 import fr.larmoirecommune.app.model.CreateConsommableRequest
 import fr.larmoirecommune.app.model.StatsResponse
 import fr.larmoirecommune.app.model.UpdateConsommableRequest
-import io.ktor.client.statement.bodyAsText
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import fr.larmoirecommune.app.model.UpdateLieuRequest
 import fr.larmoirecommune.app.model.UpdateObjectRequest
 import fr.larmoirecommune.app.model.CreateLieuRequest
@@ -186,17 +182,14 @@ class AdminRepository {
         }
     }
 
-    /** Demande au serveur d'envoyer le PDF par e-mail. Retourne null si OK, sinon le message d'erreur. */
-    suspend fun exportStats(periode: String): String? {
+    /** Télécharge le rapport PDF de la période (null en cas d'échec). */
+    suspend fun downloadStatsPdf(periode: String): ByteArray? {
         return try {
-            val response = ApiClient.client.post(ApiClient.getUrl("/admin/stats/export?periode=$periode"))
-            if (response.status.value in 200..299) null
-            else runCatching {
-                Json.parseToJsonElement(response.bodyAsText()).jsonObject["detail"]?.jsonPrimitive?.content
-            }.getOrNull() ?: "Échec de l'envoi (code ${response.status.value})"
+            val response = ApiClient.client.get(ApiClient.getUrl("/admin/stats/pdf?periode=$periode"))
+            if (response.status.value in 200..299) response.body<ByteArray>() else null
         } catch (e: Exception) {
             e.printStackTrace()
-            "Serveur injoignable"
+            null
         }
     }
 
