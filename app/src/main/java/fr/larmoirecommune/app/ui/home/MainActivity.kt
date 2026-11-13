@@ -53,6 +53,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private var dashboardItems by mutableStateOf<List<DashboardItem>>(emptyList())
+    private var showPasswordReminder by mutableStateOf(false)
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -115,7 +116,11 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
-            HomeScreen(dashboardItems) {
+            HomeScreen(
+                items = dashboardItems,
+                showPasswordReminder = showPasswordReminder,
+                onPasswordReminderClick = { startActivity(Intent(this, ProfileActivity::class.java)) }
+            ) {
                 startActivity(Intent(this, ObjectListActivity::class.java))
             }
         }
@@ -137,6 +142,8 @@ class MainActivity : AppCompatActivity() {
                     ApiClient.currentUserIsAdmin = false
                     ApiClient.currentUserIsPointRelais = false
                     ApiClient.currentUserEmail = null
+                    ApiClient.currentUserHasDefaultPassword = false
+                    showPasswordReminder = false
                     setupDashboardItems()
                     return@launch
                 }
@@ -149,6 +156,8 @@ class MainActivity : AppCompatActivity() {
                 ApiClient.currentUserIsPointRelais = user.isPointRelais
                 ApiClient.currentUserEmail = user.email
                 ApiClient.currentUserCredits = user.credits
+                ApiClient.currentUserHasDefaultPassword = user.hasDefaultPassword
+                showPasswordReminder = user.hasDefaultPassword
 
                 showPendingNotifications()
 

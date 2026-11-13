@@ -14,6 +14,17 @@ import fr.larmoirecommune.app.ui.home.MainActivity
 import fr.larmoirecommune.app.ui.objects.ReservationListActivity
 import fr.larmoirecommune.app.utils.ProfileManager
 import android.widget.EditText
+import android.view.View
+import android.view.inputmethod.EditorInfo
+import androidx.core.widget.doAfterTextChanged
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.snackbar.Snackbar
+import fr.larmoirecommune.app.databinding.DialogChangePasswordBinding
+import android.text.InputType
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import fr.larmoirecommune.app.repository.UserRepository
 import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.activity.result.PickVisualMediaRequest
@@ -224,6 +235,13 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
+        // Changer le mot de passe
+        with(binding.btnChangePassword) {
+            optionIcon.setImageResource(R.drawable.ic_admin)
+            optionTitle.text = "Changer mon mot de passe"
+            root.setOnClickListener { showChangePasswordDialog() }
+        }
+
         // Crédits
         with(binding.btnCredits) {
             optionIcon.setImageResource(R.drawable.ic_reservations)
@@ -239,7 +257,62 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
+    private fun showChangePasswordDialog() {
+        val sheet = BottomSheetDialog(this)
+        val ui = DialogChangePasswordBinding.inflate(layoutInflater)
+        sheet.setContentView(ui.root)
+        sheet.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        sheet.behavior.skipCollapsed = true
+
+        // Les erreurs disparaissent dès que l'utilisateur corrige le champ
+        listOf(ui.inputCurrent to ui.layoutCurrent, ui.inputNew to ui.layoutNew, ui.inputConfirm to ui.layoutConfirm)
+            .forEach { (input, layout) -> input.doAfterTextChanged { layout.error = null } }
+
+        fun setLoading(loading: Boolean) {
+            ui.progress.visibility = if (loading) View.VISIBLE else View.INVISIBLE
+            ui.btnSave.isEnabled = !loading
+            ui.btnCancel.isEnabled = !loading
+            sheet.setCancelable(!loading)
+        }
+
+        fun submit() {
+            val currentPwd = ui.inputCurrent.text.toString()
+            val newPwd = ui.inputNew.text.toString()
+            when {
+                currentPwd.isEmpty() -> ui.layoutCurrent.error = "Saisissez votre mot de passe actuel"
+                newPwd.length < 6 -> ui.layoutNew.error = "6 caractères minimum"
+                newPwd == "123456" -> ui.layoutNew.error = "Choisissez un mot de passe différent du mot de passe initial"
+                newPwd != ui.inputConfirm.text.toString() -> ui.layoutConfirm.error = "Les mots de passe ne correspondent pas"
+                else -> {
+                    setLoading(true)
+                    lifecycleScope.launch {
+                        val error = UserRepository().changePassword(currentPwd, newPwd)
+                        setLoading(false)
+                        if (error == null) {
+                            ApiClient.currentUserHasDefaultPassword = false
+                            sheet.dismiss()
+                            Snackbar.make(binding.root, "Mot de passe modifié", Snackbar.LENGTH_LONG).show()
+                        } else if (error.contains("actuel", ignoreCase = true)) {
+                            ui.layoutCurrent.error = error
+                        } else {
+                            ui.layoutNew.error = error
+                        }
+                    }
+                }
+            }
+        }
+
+        ui.btnSave.setOnClickListener { submit() }
+        ui.btnCancel.setOnClickListener { sheet.dismiss() }
+        ui.inputConfirm.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) { submit(); true } else false
+        }
+        sheet.show()
+        ui.inputCurrent.requestFocus()
+    }
+
     private fun logout() {
+        ApiClient.currentUserHasDefaultPassword = false
         ApiClient.token = null
         ApiClient.currentUserIsAdmin = false
         ApiClient.currentUserEmail = null

@@ -59,7 +59,12 @@ data class DashboardItem(
 )
 
 @Composable
-fun HomeScreen(items: List<DashboardItem>, onSearchClick: () -> Unit) {
+fun HomeScreen(
+    items: List<DashboardItem>,
+    showPasswordReminder: Boolean = false,
+    onPasswordReminderClick: () -> Unit = {},
+    onSearchClick: () -> Unit
+) {
     Box(
         Modifier
             .fillMaxSize()
@@ -86,6 +91,9 @@ fun HomeScreen(items: List<DashboardItem>, onSearchClick: () -> Unit) {
                     )
                 }
             }
+            if (showPasswordReminder) {
+                item(span = { GridItemSpan(maxLineSpan) }) { PasswordReminder(onPasswordReminderClick) }
+            }
             item(span = { GridItemSpan(maxLineSpan) }) { SearchBar(onSearchClick) }
             // Turquoise, jaune, vert en alternance ; rouge réservé aux éléments d'alerte
             val palette = listOf(Tone.TEAL, Tone.YELLOW, Tone.GREEN)
@@ -94,6 +102,33 @@ fun HomeScreen(items: List<DashboardItem>, onSearchClick: () -> Unit) {
                 DashboardCard(item, if (item.alert) Tone.RED else palette[tones[index] % palette.size])
             }
         }
+    }
+}
+
+@Composable
+private fun PasswordReminder(onClick: () -> Unit) {
+    val shape = RoundedCornerShape(14.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(Color(0xFFFFF4D6))
+            .border(1.dp, Color(0xFFEDB544), shape)
+            .clickable(onClick = onClick)
+            .padding(14.dp)
+    ) {
+        Text(
+            text = "Sécurisez votre compte",
+            color = Color(0xFF7A5200),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            text = "Vous utilisez encore le mot de passe initial. Touchez ici pour le changer dans votre profil.",
+            color = Color(0xFF7A5200),
+            fontSize = 13.sp,
+            modifier = Modifier.padding(top = 4.dp)
+        )
     }
 }
 

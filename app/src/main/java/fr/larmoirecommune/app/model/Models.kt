@@ -19,7 +19,14 @@ data class User(
     val email: String,
     @SerialName("is_admin") val isAdmin: Boolean = false,
     @SerialName("is_point_relais") val isPointRelais: Boolean = false,
-    val credits: Int = 100
+    val credits: Int = 100,
+    @SerialName("has_default_password") val hasDefaultPassword: Boolean = false
+)
+
+@Serializable
+data class PasswordChangeRequest(
+    @SerialName("current_password") val currentPassword: String,
+    @SerialName("new_password") val newPassword: String
 )
 
 // Statuts de réservation
